@@ -691,101 +691,84 @@ Now process the following inputs:\n\n` });
 
       case 'video':
         return (
-          <div className="max-w-4xl mx-auto pb-20">
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-              <div className="bg-rose-50 p-8 text-center border-b border-rose-100">
-                <h2 className="text-2xl font-black text-rose-900 mb-2">🎬 숏폼 영상 만들기</h2>
-                <p className="text-rose-700 font-medium">사진 몇 장만 고르면 틱톡, 릴스에 올릴 수 있는 세련된 영상이 뚝딱!</p>
+          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-16 px-8">
+            <div className="max-w-3xl w-full">
+              {/* 헤더 */}
+              <div className="mb-12">
+                <h1 className="text-[2rem] font-bold text-black mb-3">AI 영상 제작</h1>
+                <p className="text-neutral-500 text-[15px]">사진 몇 장만 선택하면 틱톡, 릴스에 바로 올릴 수 있는 숏폼 영상을 만들어 드립니다.</p>
               </div>
-              
-              <div className="p-8 space-y-12">
+
+              <div className="space-y-6">
                 {/* Step 1 */}
-                <motion.section variants={itemVariants}>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span className="bg-rose-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-md">1</span>
-                    영상에 들어갈 사진을 골라주세요 (최대 5장)
-                  </h3>
-                  <div className="flex gap-4 overflow-x-auto pb-4 px-2">
+                <div className="bg-white rounded-xl p-6 border border-neutral-100">
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="w-7 h-7 rounded-full bg-neutral-900 text-white text-[12px] font-bold flex items-center justify-center">1</span>
+                    <h3 className="text-[15px] font-bold text-black">영상에 들어갈 사진을 골라주세요 (최대 5장)</h3>
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
                     {[1,2,3].map(i => (
-                      <div key={i} className="w-32 h-40 bg-slate-100 rounded-2xl border-2 border-slate-200 flex flex-col items-center justify-center shrink-0 relative overflow-hidden group">
+                      <div key={i} className="w-28 aspect-[4/5] bg-neutral-100 rounded-lg border border-neutral-200 shrink-0 relative overflow-hidden">
                         <img src={`https://picsum.photos/seed/fashion${i}/200/300`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                        <div className="absolute top-2 right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-white">
-                          {i}
-                        </div>
+                        <div className="absolute top-2 right-2 w-5 h-5 bg-neutral-900 text-white rounded-full text-[10px] font-bold flex items-center justify-center">{i}</div>
                       </div>
                     ))}
-                    <div className="w-32 h-40 bg-rose-50 rounded-2xl border-2 border-dashed border-rose-300 flex flex-col items-center justify-center shrink-0 cursor-pointer hover:bg-rose-100 transition-colors">
-                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2">
-                        <span className="text-rose-500 text-2xl font-bold">+</span>
-                      </div>
-                      <span className="text-rose-700 font-bold text-sm">사진 추가</span>
-                    </div>
+                    <button className="w-28 aspect-[4/5] bg-neutral-50 rounded-lg border border-dashed border-neutral-300 shrink-0 flex flex-col items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all">
+                      <Upload className="w-4 h-4 text-neutral-400 mb-1" />
+                      <span className="text-[11px] text-neutral-400 font-medium">추가</span>
+                    </button>
                   </div>
-                </motion.section>
+                </div>
 
                 {/* Step 2 */}
-                <motion.section variants={itemVariants}>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span className="bg-rose-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-md">2</span>
-                    어떤 분위기의 음악을 깔아드릴까요?
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-xl p-6 border border-neutral-100">
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="w-7 h-7 rounded-full bg-neutral-900 text-white text-[12px] font-bold flex items-center justify-center">2</span>
+                    <h3 className="text-[15px] font-bold text-black">음악 분위기 선택</h3>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
                     {[
-                      { id: 'trendy', name: '트렌디한 팝', desc: '틱톡/릴스 추천', icon: '🎧' },
-                      { id: 'calm', name: '차분한 감성', desc: '카페 음악 스타일', icon: '☕' },
-                      { id: 'dance', name: '신나는 댄스', desc: '시선 집중!', icon: '💃' },
+                      { id: 'trendy', name: '트렌디 팝', desc: '틱톡/릴스 추천' },
+                      { id: 'calm', name: '차분한 감성', desc: '카페 음악 스타일' },
+                      { id: 'dance', name: '신나는 댄스', desc: '시선 집중' },
                     ].map(vibe => (
-                      <div 
-                        key={vibe.id}
-                        onClick={() => setVideoVibe(vibe.id)}
-                        className={`p-5 rounded-2xl cursor-pointer border-2 transition-all flex flex-col items-center text-center gap-2 ${videoVibe === vibe.id ? 'border-rose-600 bg-rose-50 shadow-md' : 'border-slate-200 hover:border-rose-300'}`}
-                      >
-                        <span className="text-4xl mb-1">{vibe.icon}</span>
-                        <span className={`font-bold ${videoVibe === vibe.id ? 'text-rose-900' : 'text-slate-700'}`}>{vibe.name}</span>
-                        <span className="text-xs text-slate-500">{vibe.desc}</span>
-                      </div>
+                      <button key={vibe.id} onClick={() => setVideoVibe(vibe.id)} className={`p-4 rounded-xl cursor-pointer border-2 transition-all duration-200 text-left ${videoVibe === vibe.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300'}`}>
+                        <span className={`text-[14px] font-semibold block mb-1 ${videoVibe === vibe.id ? 'text-black' : 'text-neutral-700'}`}>{vibe.name}</span>
+                        <span className="text-[12px] text-neutral-400">{vibe.desc}</span>
+                      </button>
                     ))}
                   </div>
-                </motion.section>
+                </div>
 
                 {/* Step 3 */}
-                <motion.section variants={itemVariants}>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span className="bg-rose-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-md">3</span>
-                    AI 성우가 제품을 설명해 줄까요?
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white rounded-xl p-6 border border-neutral-100">
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="w-7 h-7 rounded-full bg-neutral-900 text-white text-[12px] font-bold flex items-center justify-center">3</span>
+                    <h3 className="text-[15px] font-bold text-black">AI 성우 선택</h3>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
                     {[
-                      { id: 'cn_f', name: '중국어 여성 성우', desc: '중국 바이어에게 딱 맞아요', flag: '🇨🇳' },
-                      { id: 'kr_f', name: '한국어 여성 성우', desc: '국내 쇼핑몰용', flag: '🇰🇷' },
-                      { id: 'none', name: '목소리 없이 음악만', desc: '깔끔한 영상', flag: '🎵' },
+                      { id: 'cn_f', name: '중국어 여성 성우', desc: '중국 바이어 타겟' },
+                      { id: 'kr_f', name: '한국어 여성 성우', desc: '국내 쇼핑몰용' },
+                      { id: 'none', name: '음악만 (성우 없음)', desc: '깔끔한 영상' },
                     ].map(voice => (
-                      <div 
-                        key={voice.id}
-                        onClick={() => setVideoVoice(voice.id)}
-                        className={`p-5 rounded-2xl cursor-pointer border-2 transition-all flex items-center gap-4 ${videoVoice === voice.id ? 'border-rose-600 bg-rose-50 shadow-md' : 'border-slate-200 hover:border-rose-300'}`}
-                      >
-                        <span className="text-3xl">{voice.flag}</span>
-                        <div className="flex-1 text-left">
-                          <div className={`font-bold ${videoVoice === voice.id ? 'text-rose-900' : 'text-slate-700'}`}>{voice.name}</div>
-                          <div className="text-xs text-slate-500">{voice.desc}</div>
+                      <button key={voice.id} onClick={() => setVideoVoice(voice.id)} className={`p-4 rounded-xl cursor-pointer border-2 transition-all duration-200 flex items-center justify-between ${videoVoice === voice.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300'}`}>
+                        <div>
+                          <span className={`text-[14px] font-semibold block ${videoVoice === voice.id ? 'text-black' : 'text-neutral-700'}`}>{voice.name}</span>
+                          <span className="text-[12px] text-neutral-400">{voice.desc}</span>
                         </div>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${videoVoice === voice.id ? 'bg-rose-600 border-rose-600 text-white' : 'border-slate-300'}`}>
-                          {videoVoice === voice.id && <CheckCircle2 className="w-4 h-4" />}
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${videoVoice === voice.id ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300'}`}>
+                          {videoVoice === voice.id && <div className="w-2 h-2 rounded-full bg-white" />}
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
-                </motion.section>
+                </div>
 
-                {/* Action */}
-                <motion.button 
-                  variants={itemVariants}
-                  onClick={handleGenerate}
-                  className="w-full bg-rose-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-rose-700 transition-all shadow-lg hover:shadow-rose-500/30 flex items-center justify-center gap-3"
-                >
-                  {isGenerating ? <span className="animate-pulse">음악과 더빙을 합성하여 영상을 만들고 있습니다...</span> : <><PlaySquare className="w-6 h-6" /> 숏폼 영상 완성하기 (클릭)</>}
-                </motion.button>
+                {/* 생성 버튼 */}
+                <button onClick={handleGenerate} disabled={isGenerating} className={`w-full py-4 rounded-xl font-semibold text-[15px] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${isGenerating ? 'bg-neutral-200 text-neutral-400' : 'bg-neutral-900 text-white hover:bg-neutral-800 active:scale-[0.98]'}`}>
+                  {isGenerating ? <span className="animate-pulse">영상 제작 중...</span> : <><Video className="w-4 h-4" /> 영상 제작하기</>}
+                </button>
               </div>
             </div>
           </div>
@@ -793,69 +776,81 @@ Now process the following inputs:\n\n` });
 
       case 'floorcut':
         return (
-          <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl p-8">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Camera className="w-8 h-8" />
+          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-16 px-8">
+            <div className="max-w-2xl w-full">
+              <div className="mb-12">
+                <h1 className="text-[2rem] font-bold text-black mb-3">촬영 예약</h1>
+                <p className="text-neutral-500 text-[15px]">유어스몰 현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영해 드립니다.</p>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">바닥컷 촬영 예약</h2>
-              <p className="text-slate-500">유어스몰 현장 스튜디오에서 전문 포토그래퍼가 촬영해 드립니다.</p>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center gap-2"><Calendar className="w-4 h-4"/> 날짜 선택</label>
-                  <input type="date" className="w-full border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-emerald-500" />
+
+              <div className="bg-white rounded-xl p-8 border border-neutral-100 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[13px] font-semibold text-neutral-900 mb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-neutral-400"/> 날짜 선택</label>
+                    <input type="date" className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50" />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-semibold text-neutral-900 mb-2 flex items-center gap-2"><Clock className="w-4 h-4 text-neutral-400"/> 시간 선택</label>
+                    <select className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50">
+                      <option>오전 10:00</option>
+                      <option>오후 02:00</option>
+                      <option>오후 04:00</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center gap-2"><Clock className="w-4 h-4"/> 시간 선택</label>
-                  <select className="w-full border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-emerald-500">
-                    <option>오전 10:00</option>
-                    <option>오후 02:00</option>
-                    <option>오후 04:00</option>
-                  </select>
+                  <label className="block text-[13px] font-semibold text-neutral-900 mb-2">촬영할 의류 수량</label>
+                  <input type="number" placeholder="예: 5" className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50" />
                 </div>
+                <div>
+                  <label className="block text-[13px] font-semibold text-neutral-900 mb-2">요청 사항 (선택)</label>
+                  <textarea rows={3} placeholder="촬영 관련 특별 요청사항이 있다면 적어주세요." className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50 resize-none"></textarea>
+                </div>
+                <button className="w-full bg-neutral-900 text-white py-4 rounded-xl font-semibold text-[15px] hover:bg-neutral-800 active:scale-[0.98] transition-all cursor-pointer">
+                  예약 신청하기
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">촬영할 의류 수량</label>
-                <input type="number" placeholder="예: 5" className="w-full border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-emerald-500" />
-              </div>
-              <button className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors">
-                예약 신청하기
-              </button>
             </div>
           </div>
         );
 
       case 'cs':
         return (
-          <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl p-8">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="w-8 h-8" />
+          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-16 px-8">
+            <div className="max-w-2xl w-full">
+              <div className="mb-12">
+                <h1 className="text-[2rem] font-bold text-black mb-3">Help</h1>
+                <p className="text-neutral-500 text-[15px]">AI 사용이 어려우신가요? 저희가 대신 작업해 드립니다.</p>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">대행 서비스 요청 (CS)</h2>
-              <p className="text-slate-500">AI 사용이 어려우신가요? 저희가 대신 작업해 드립니다.</p>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">요청 유형</label>
-                <select className="w-full border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-slate-500">
-                  <option>AI 모델컷 생성 대행</option>
-                  <option>상세페이지 번역 및 제작 대행</option>
-                  <option>숏폼 영상 제작 대행</option>
-                  <option>기타 문의</option>
-                </select>
+
+              <div className="bg-white rounded-xl p-8 border border-neutral-100 space-y-6">
+                <div>
+                  <label className="block text-[13px] font-semibold text-neutral-900 mb-2">요청 유형</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: 'modelcut', label: 'AI 모델컷 대행' },
+                      { id: 'translate', label: '상세페이지 번역 대행' },
+                      { id: 'video', label: '숏폼 영상 대행' },
+                      { id: 'etc', label: '기타 문의' },
+                    ].map(opt => (
+                      <button key={opt.id} className="px-4 py-3 rounded-lg border border-neutral-200 text-[13px] font-medium text-neutral-700 hover:border-neutral-900 hover:text-black transition-all cursor-pointer text-left focus:border-neutral-900 focus:bg-neutral-50">
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[13px] font-semibold text-neutral-900 mb-2">상세 내용</label>
+                  <textarea rows={5} placeholder="어떤 작업이 필요하신지 자세히 적어주세요." className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50 resize-none"></textarea>
+                </div>
+                <div>
+                  <label className="block text-[13px] font-semibold text-neutral-900 mb-2">연락처</label>
+                  <input type="text" placeholder="연락 가능한 전화번호 또는 이메일" className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50" />
+                </div>
+                <button className="w-full bg-neutral-900 text-white py-4 rounded-xl font-semibold text-[15px] hover:bg-neutral-800 active:scale-[0.98] transition-all cursor-pointer">
+                  요청 보내기
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">상세 내용</label>
-                <textarea rows={5} placeholder="어떤 작업이 필요하신지 자세히 적어주세요." className="w-full border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-slate-500"></textarea>
-              </div>
-              <button className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors">
-                요청 보내기
-              </button>
             </div>
           </div>
         );
