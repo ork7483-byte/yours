@@ -39,6 +39,10 @@ body {
 .scroll-fade-delay-2 { transition-delay: 0.2s; }
 .scroll-fade-delay-3 { transition-delay: 0.3s; }
 
+/* ─── Scrollbar Hide ─── */
+.scroll-hide::-webkit-scrollbar { display: none; }
+.scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ─── Mobile Responsive ─── */
 @media (max-width: 767px) {
   /* 히어로 이미지 블록 모바일 숨김 */

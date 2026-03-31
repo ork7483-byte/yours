@@ -413,131 +413,136 @@ Now process the following inputs:\n\n` });
         return (
           <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9]">
             {/* 좌측 패널 */}
-            <div className="w-full md:w-[380px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
-              <div className="flex-1 overflow-y-auto py-6 px-5 md:py-8 md:px-10 flex flex-col gap-0">
+            <div className="w-full md:w-[320px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
+              <div className="flex-1 overflow-y-auto py-6 px-5 md:py-4 md:px-5 flex flex-col gap-0">
 
                 {/* 01 의상 */}
-                <div className="mb-3 bg-pink-50/60 rounded-xl p-5 border border-pink-100/60">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[11px] text-neutral-400 tracking-[0.15em] tabular-nums select-none font-medium">01</span>
-                    <h3 className="text-[14px] font-bold text-neutral-900">의상</h3>
+                <div className="mb-2 bg-white rounded-xl p-3.5 pl-4 border border-neutral-200/80 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">01</span>
+                    <h3 className="text-[13px] font-bold text-neutral-900">의상</h3>
                     <div className="flex bg-white p-0.5 rounded-lg ml-auto shadow-sm border border-neutral-100" role="tablist">
-                      <button role="tab" aria-selected={clothingMode === 'separates'} onClick={() => setClothingMode('separates')} className={`px-3 py-1.5 text-[11px] font-medium rounded-md transition-colors duration-200 cursor-pointer ${clothingMode === 'separates' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:text-neutral-600'}`}>상/하의</button>
-                      <button role="tab" aria-selected={clothingMode === 'onepiece'} onClick={() => setClothingMode('onepiece')} className={`px-3 py-1.5 text-[11px] font-medium rounded-md transition-colors duration-200 cursor-pointer ${clothingMode === 'onepiece' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:text-neutral-600'}`}>원피스</button>
+                      <button role="tab" aria-selected={clothingMode === 'separates'} onClick={() => setClothingMode('separates')} className={`px-3.5 py-2 text-[11px] font-medium rounded-md transition-colors duration-200 cursor-pointer min-h-[36px] flex items-center ${clothingMode === 'separates' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:text-neutral-600'}`}>상/하의</button>
+                      <button role="tab" aria-selected={clothingMode === 'onepiece'} onClick={() => setClothingMode('onepiece')} className={`px-3.5 py-2 text-[11px] font-medium rounded-md transition-colors duration-200 cursor-pointer min-h-[36px] flex items-center ${clothingMode === 'onepiece' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:text-neutral-600'}`}>원피스</button>
                     </div>
                   </div>
                   {clothingMode === 'separates' ? (
                     <div>
                       <p className="text-[11px] text-neutral-400 mb-2 font-medium uppercase tracking-wider">상의</p>
-                      <div className="grid grid-cols-3 gap-2.5 mb-5">
+                      <div className="flex gap-2 overflow-x-auto pb-1 mb-3 scroll-hide">
                         {topImages.map((img, i) => (
-                          <button key={`top${i}`} onClick={() => selectPresetImage('top', img)} className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedTop?.url === img ? 'border-neutral-900 shadow-sm' : 'border-neutral-200/60 hover:border-neutral-400'}`}>
+                          <button key={`top${i}`} onClick={() => selectPresetImage('top', img)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedTop?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="상의 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
-                        <button aria-label="상의 업로드" onClick={() => document.getElementById('top-upload')?.click()} className="w-full aspect-square bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
+                        <button aria-label="상의 업로드" onClick={() => document.getElementById('top-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
                           {uploadedTop && !uploadedTop.url.startsWith('/images') ? <img src={uploadedTop.url} alt="상의" className="w-full h-full object-cover rounded-lg" /> : <Upload className="w-4 h-4 text-neutral-300" />}
                         </button>
                         <input id="top-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleClothingUpload('top', e)} />
                       </div>
                       <p className="text-[11px] text-neutral-400 mb-2 font-medium uppercase tracking-wider">하의</p>
-                      <div className="grid grid-cols-3 gap-2.5">
+                      <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                         {bottomImages.map((img, i) => (
-                          <button key={`bot${i}`} onClick={() => selectPresetImage('bottom', img)} className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedBottom?.url === img ? 'border-neutral-900 shadow-sm' : 'border-neutral-200/60 hover:border-neutral-400'}`}>
+                          <button key={`bot${i}`} onClick={() => selectPresetImage('bottom', img)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedBottom?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="하의 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
-                        <button aria-label="하의 업로드" onClick={() => document.getElementById('bottom-upload')?.click()} className="w-full aspect-square bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
+                        <button aria-label="하의 업로드" onClick={() => document.getElementById('bottom-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
                           {uploadedBottom && !uploadedBottom.url.startsWith('/images') ? <img src={uploadedBottom.url} alt="하의" className="w-full h-full object-cover rounded-lg" /> : <Upload className="w-4 h-4 text-neutral-300" />}
                         </button>
                         <input id="bottom-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleClothingUpload('bottom', e)} />
                       </div>
+                      <button onClick={() => document.getElementById('bottom-upload')?.click()} className="mt-1.5 w-full py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-pink-300 text-pink-600 bg-pink-50/40 hover:bg-pink-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                     </div>
                   ) : (
                     <div>
-                      <div className="grid grid-cols-3 gap-2.5">
+                      <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                         {onepieceImages.map((img, i) => (
-                          <button key={`dress${i}`} onClick={() => selectPresetImage('dress', img)} className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedDress?.url === img ? 'border-neutral-900 shadow-sm' : 'border-neutral-200/60 hover:border-neutral-400'}`}>
+                          <button key={`dress${i}`} onClick={() => selectPresetImage('dress', img)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedDress?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="원피스 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
-                        <button aria-label="원피스 업로드" onClick={() => document.getElementById('dress-upload')?.click()} className="w-full aspect-square bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
+                        <button aria-label="원피스 업로드" onClick={() => document.getElementById('dress-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
                           {uploadedDress && !uploadedDress.url.startsWith('/images') ? <img src={uploadedDress.url} alt="원피스" className="w-full h-full object-cover rounded-lg" /> : <Upload className="w-4 h-4 text-neutral-300" />}
                         </button>
                         <input id="dress-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleClothingUpload('dress', e)} />
                       </div>
+                      <button onClick={() => document.getElementById('dress-upload')?.click()} className="mt-1.5 w-full py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-pink-300 text-pink-600 bg-pink-50/40 hover:bg-pink-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                     </div>
                   )}
                 </div>
 
                 {/* 02 모델 */}
-                <div className="mb-3 bg-blue-50/60 rounded-xl p-5 border border-blue-100/60">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[11px] text-neutral-400 tracking-[0.15em] tabular-nums select-none font-medium">02</span>
-                    <h3 className="text-[14px] font-bold text-neutral-900">모델</h3>
+                <div className="mb-2 bg-white rounded-xl p-3.5 pl-4 border border-neutral-200/80 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">02</span>
+                    <h3 className="text-[13px] font-bold text-neutral-900">모델</h3>
                   </div>
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                       {[
                         ...modelImages.map((img, i) => ({ id: `model${i}`, img })),
                         ...customModels
                       ].map(m => (
-                        <button key={m.id} aria-label={`모델 ${m.id} 미리보기`} onClick={() => selectPresetFor('model', m.img, m.id)} className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookModel === m.id ? 'border-neutral-900 shadow-lg ring-2 ring-neutral-900/5' : 'border-neutral-200/60 hover:border-neutral-400'}`}>
+                        <button key={m.id} aria-label={`모델 ${m.id} 미리보기`} onClick={() => selectPresetFor('model', m.img, m.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookModel === m.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={m.img} alt={`모델 ${m.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 모델 업로드" onClick={() => document.getElementById('model-upload')?.click()} className="w-full aspect-square bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                      <button aria-label="커스텀 모델 업로드" onClick={() => document.getElementById('model-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="model-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('model', e)} />
                     </div>
+                    <button onClick={() => document.getElementById('model-upload')?.click()} className="mt-1.5 w-full py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-blue-300 text-blue-600 bg-blue-50/40 hover:bg-blue-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
                 {/* 03 포즈 */}
-                <div className="mb-3 bg-amber-50/60 rounded-xl p-5 border border-amber-100/60">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[11px] text-neutral-400 tracking-[0.15em] tabular-nums select-none font-medium">03</span>
-                    <h3 className="text-[14px] font-bold text-neutral-900">포즈</h3>
+                <div className="mb-2 bg-white rounded-xl p-3.5 pl-4 border border-neutral-200/80 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">03</span>
+                    <h3 className="text-[13px] font-bold text-neutral-900">포즈</h3>
                   </div>
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                       {[
                         ...poseImages.map((img, i) => ({ id: `pose${i}`, img })),
                         ...customPoses
                       ].map(p => (
-                        <button key={p.id} aria-label={`포즈 ${p.id} 미리보기`} onClick={() => selectPresetFor('pose', p.img, p.id)} className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookPose === p.id ? 'border-neutral-900 shadow-lg ring-2 ring-neutral-900/5' : 'border-neutral-200/60 hover:border-neutral-400'}`}>
+                        <button key={p.id} aria-label={`포즈 ${p.id} 미리보기`} onClick={() => selectPresetFor('pose', p.img, p.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookPose === p.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={p.img} alt={`포즈 ${p.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 포즈 업로드" onClick={() => document.getElementById('pose-upload')?.click()} className="w-full aspect-square bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                      <button aria-label="커스텀 포즈 업로드" onClick={() => document.getElementById('pose-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="pose-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('pose', e)} />
                     </div>
+                    <button onClick={() => document.getElementById('pose-upload')?.click()} className="mt-1.5 w-full py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-amber-300 text-amber-600 bg-amber-50/40 hover:bg-amber-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
                 {/* 04 배경 */}
-                <div className="mb-3 bg-emerald-50/60 rounded-xl p-5 border border-emerald-100/60">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[11px] text-neutral-400 tracking-[0.15em] tabular-nums select-none font-medium">04</span>
-                    <h3 className="text-[14px] font-bold text-neutral-900">배경</h3>
+                <div className="mb-2 bg-white rounded-xl p-3.5 pl-4 border border-neutral-200/80 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">04</span>
+                    <h3 className="text-[13px] font-bold text-neutral-900">배경</h3>
                   </div>
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                       {[
                         ...bgImages.map((img, i) => ({ id: `bg${i}`, img })),
                         ...customBgs
                       ].map(b => (
-                        <button key={b.id} aria-label={`배경 ${b.id} 미리보기`} onClick={() => selectPresetFor('bg', b.img, b.id)} className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookBg === b.id ? 'border-neutral-900 shadow-lg ring-2 ring-neutral-900/5' : 'border-neutral-200/60 hover:border-neutral-400'}`}>
+                        <button key={b.id} aria-label={`배경 ${b.id} 미리보기`} onClick={() => selectPresetFor('bg', b.img, b.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookBg === b.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={b.img} alt={`배경 ${b.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 배경 업로드" onClick={() => document.getElementById('bg-upload')?.click()} className="w-full aspect-square bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                      <button aria-label="커스텀 배경 업로드" onClick={() => document.getElementById('bg-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="bg-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('bg', e)} />
                     </div>
+                    <button onClick={() => document.getElementById('bg-upload')?.click()} className="mt-1.5 w-full py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-emerald-300 text-emerald-600 bg-emerald-50/40 hover:bg-emerald-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
                 {/* AI 모델 선택 */}
-                <div className="bg-neutral-100/60 rounded-xl p-5 border border-neutral-200/60">
+                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200/80">
                   <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-[10px] text-neutral-400 font-medium tracking-wider">AI</span>
                     <div className="flex bg-neutral-100 p-0.5 rounded-md" role="radiogroup" aria-label="AI 모델 선택">
@@ -560,25 +565,25 @@ Now process the following inputs:\n\n` });
               </div>
 
               {/* 하단 고정: 에러 + 생성 버튼 */}
-              <div className="px-5 py-4 md:px-8 md:py-6 border-t border-neutral-100 bg-white">
+              <div className="px-5 py-4 md:px-5 md:py-4 border-t border-neutral-100 bg-white">
                 {errorMsg && (
                   <div role="alert" className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-xs font-medium text-center">{errorMsg}</div>
                 )}
-                <button onClick={handleGenerate} disabled={isGenerating} aria-label="이미지 생성하기" className={`w-full py-4 rounded-lg font-semibold text-[13px] tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer ${isGenerating ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed' : 'bg-neutral-900 text-white hover:bg-neutral-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2'}`}>
+                <button onClick={handleGenerate} disabled={isGenerating} aria-label="이미지 생성하기" className={`w-full py-3 rounded-lg font-semibold text-[13px] tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer ${isGenerating ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed' : 'bg-neutral-900 text-white hover:bg-neutral-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2'}`}>
                   {isGenerating ? <span className="animate-pulse">생성 중...</span> : <><Wand2 className="w-4 h-4" /> 생성하기</>}
                 </button>
               </div>
             </div>
 
             {/* 중앙 — 이미지 프리뷰 */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 md:px-8 md:py-8 relative min-h-0">
-              <div className="w-full max-w-sm md:max-w-md aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0">
+              <div className="w-full max-w-sm md:max-w-md xl:max-w-lg aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
                     <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" />
                     {/* 호버 시 액션 버튼 */}
                     {!isGenerating && (
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2 justify-end">
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent opacity-100 flex gap-2 justify-end">
                         <button
                           onClick={() => setShowFullPreview(true)}
                           className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer flex items-center gap-1.5"
@@ -631,8 +636,8 @@ Now process the following inputs:\n\n` });
                   </>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400/60">
-                    <ImageIcon className="w-10 h-10 mb-4 opacity-40" strokeWidth={1} />
-                    <p className="text-[13px] font-light tracking-wide text-neutral-400">의상을 첨부하고 생성하기를 눌러주세요</p>
+                    <ImageIcon className="w-12 h-12 mb-3 opacity-50" strokeWidth={1} />
+                    <p className="text-[14px] font-normal text-neutral-500">의상을 첨부하고 생성하기를 눌러주세요</p>
                   </div>
                 )}
                 {isGenerating && (
@@ -646,12 +651,12 @@ Now process the following inputs:\n\n` });
             </div>
 
             {/* 우측 — 저장 갤러리 */}
-            <div className="w-[280px] shrink-0 bg-white border-l border-neutral-100 flex flex-col hidden xl:flex">
-              <div className="px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
-                <h3 className="text-[14px] font-bold text-neutral-900">내 갤러리</h3>
+            <div className="w-[220px] shrink-0 bg-white border-l border-neutral-100 flex flex-col hidden lg:flex">
+              <div className="px-3.5 py-3 border-b border-neutral-100 flex items-center justify-between">
+                <h3 className="text-[13px] font-bold text-neutral-900">내 갤러리</h3>
                 <span className="text-[11px] text-neutral-400">{gallery.length}장</span>
               </div>
-              <div className="flex-1 overflow-y-auto p-3">
+              <div className="flex-1 overflow-y-auto p-2.5">
                 {!user ? (
                   <div className="flex flex-col items-center justify-center h-full text-center px-4">
                     <Cloud className="w-8 h-8 text-neutral-200 mb-3" />
@@ -668,7 +673,7 @@ Now process the following inputs:\n\n` });
                     <p className="text-[13px] text-neutral-400">아직 저장된 이미지가 없어요.<br/>이미지를 생성하고 저장해보세요!</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1.5">
                     {gallery.map((img: any) => (
                       <div key={img.id} className="group relative aspect-square rounded-lg overflow-hidden bg-neutral-100 cursor-pointer" onClick={() => setGalleryPreview(img.image_url)}>
                         <img src={img.image_url} alt="" className="w-full h-full object-cover" />
@@ -993,7 +998,7 @@ Now process the following inputs:\n\n` });
     <div className="min-h-screen bg-neutral-50 flex flex-col font-sans antialiased">
       {/* Top Navigation Bar */}
       {/* 상단 바: 홈 링크 + 로그인 */}
-      <div className="bg-white border-b border-neutral-100 px-5 md:px-8 py-3 flex items-center justify-between shrink-0 z-10">
+      <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
         <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
         <div className="flex items-center gap-3">
           {authLoading ? null : user ? (
