@@ -215,22 +215,22 @@ function ServiceShowcase() {
   const current = SHOWCASE_TABS.find(t => t.id === activeTab) || SHOWCASE_TABS[0];
 
   return (
-    <section id="service5" className="py-32 bg-white/70 relative z-10">
-      <div className="max-w-[1400px] mx-auto px-8 lg:px-16">
+    <section id="service5" className="py-16 md:py-32 bg-white/70 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-16">
         {/* 헤더 */}
         <div className="text-center mb-12">
-          <h2 className="text-[40px] font-bold leading-[1.2] text-black mb-5 scroll-fade">
+          <h2 className="text-[1.6rem] md:text-[40px] font-bold leading-[1.2] text-black mb-5 scroll-fade">
             평범한 제품 사진을<br/>AI로 아름다운 비주얼로
           </h2>
         </div>
 
         {/* 탭 버튼 */}
-        <div className="flex justify-center gap-3 mb-12 flex-wrap">
+        <div className="flex justify-center gap-2 md:gap-3 mb-8 md:mb-12 flex-wrap">
           {SHOWCASE_TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="cursor-pointer px-8 py-3.5 rounded-xl text-[15px] font-semibold transition-all duration-300"
+              className="cursor-pointer px-4 py-2.5 md:px-8 md:py-3.5 rounded-lg md:rounded-xl text-[13px] md:text-[15px] font-semibold transition-all duration-300"
               style={{
                 background: activeTab === tab.id ? '#0a0a0a' : '#fafafa',
                 color: activeTab === tab.id ? '#fff' : '#525252',
@@ -283,7 +283,7 @@ function ServiceShowcase() {
                   }}
                   onPointerUp={() => {
                     thumbDrag.current = null;
-                    localStorage.setItem('showcase-thumb-pos', JSON.stringify(thumbPos));
+                    // saved via updateThumb
                   }}
                 >
                   <div className="w-full h-full rounded-lg overflow-hidden">
@@ -339,10 +339,10 @@ function FaqSection() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="py-32 bg-white/70 relative z-10">
-      <div className="max-w-5xl mx-auto px-8 lg:px-16">
+    <section id="faq" className="py-16 md:py-32 bg-white/70 relative z-10">
+      <div className="max-w-5xl mx-auto px-5 md:px-8 lg:px-16">
         <div className="text-center mb-14">
-          <h2 className="text-[2.5rem] font-bold text-black mb-3 scroll-fade">자주 묻는 질문</h2>
+          <h2 className="text-[1.8rem] md:text-[2.5rem] font-bold text-black mb-3 scroll-fade">자주 묻는 질문</h2>
           <div className="w-24 h-[2px] bg-black/15 mx-auto overflow-hidden">
             <div className="h-full bg-black/40 animate-[slideRight_2s_ease-out_forwards]" />
           </div>
@@ -352,7 +352,7 @@ function FaqSection() {
             <div key={i} className="border border-neutral-200/60 rounded-2xl overflow-hidden bg-white/60">
               <button
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className="w-full flex items-center justify-between px-7 py-5 text-left cursor-pointer"
+                className="w-full flex items-center justify-between px-5 md:px-7 py-4 md:py-5 text-left cursor-pointer"
               >
                 <span className="text-[16px] font-semibold text-black pr-4">{item.q}</span>
                 <span className={`text-neutral-400 text-xl shrink-0 transition-transform duration-300 ${openIdx === i ? 'rotate-45' : ''}`}>+</span>
@@ -361,7 +361,7 @@ function FaqSection() {
                 className="overflow-hidden transition-all duration-300"
                 style={{ maxHeight: openIdx === i ? 200 : 0, opacity: openIdx === i ? 1 : 0 }}
               >
-                <p className="px-7 pb-6 text-neutral-600 text-[15px] leading-relaxed">{item.a}</p>
+                <p className="px-5 md:px-7 pb-5 md:pb-6 text-neutral-600 text-[14px] md:text-[15px] leading-relaxed">{item.a}</p>
               </div>
             </div>
           ))}
@@ -376,9 +376,9 @@ function CtaSection() {
   const style = 6;
 
   return (
-    <section id="cta" className="py-32 bg-white/70 relative z-10">
+    <section id="cta" className="py-16 md:py-32 bg-white/70 relative z-10">
       <div className="text-center mb-12 px-8">
-        <h2 className="text-[2.8rem] lg:text-[3.5rem] font-bold leading-[1.15] text-black tracking-tight scroll-fade">
+        <h2 className="text-[1.8rem] md:text-[2.8rem] lg:text-[3.5rem] font-bold leading-[1.15] text-black tracking-tight scroll-fade">
           Yours의 도약,<br/>Junto AI가 함께 합니다.
         </h2>
       </div>
@@ -563,7 +563,7 @@ export default function Main2() {
             <div className="flex items-center" style={{ gap: 8 - navProgress * 4, maxWidth: navProgress < 0.3 ? 1280 : 'none', margin: '0 auto' }}>
               {/* 로고 */}
               <div className="overflow-hidden" style={{ width: (1 - navProgress) * 200, opacity: 1 - navProgress * 1.5, flexShrink: 0 }}>
-                <span className="text-lg font-bold tracking-tight text-black whitespace-nowrap">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</span>
+                <span className="text-sm md:text-lg font-bold tracking-tight text-black whitespace-nowrap">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</span>
               </div>
               {/* 스페이서 */}
               <div style={{ flex: navProgress < 0.5 ? 1 : 0 }} />
@@ -630,70 +630,89 @@ export default function Main2() {
       <section id="main" className="relative z-10 min-h-screen overflow-hidden bg-white/70" style={{ touchAction: editing ? 'none' : 'auto' }}>
 
         {/* 좌측 메인 이미지 */}
-        <DraggableBlock id="left-main" layout={layouts['left-main']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl shadow-neutral-400/20">
-            <img src="/images/hero.webp" alt="AI 생성 패션 모델컷" className="w-full h-full object-cover" />
-          </div>
-        </DraggableBlock>
+        <div className="hidden md:block">
+          <DraggableBlock id="left-main" layout={layouts['left-main']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl shadow-neutral-400/20">
+              <img src="/images/hero.webp" alt="AI 생성 패션 모델컷" className="w-full h-full object-cover" />
+            </div>
+          </DraggableBlock>
+        </div>
 
         {/* 좌측 의상 썸네일 */}
-        <DraggableBlock id="left-dress" layout={layouts['left-dress']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
-            <img src="/images/Hero_.webp" alt="원본 의상" className="w-full h-full object-cover rounded" />
-          </div>
-        </DraggableBlock>
+        <div className="hidden md:block">
+          <DraggableBlock id="left-dress" layout={layouts['left-dress']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
+              <img src="/images/Hero_.webp" alt="원본 의상" className="w-full h-full object-cover rounded" />
+            </div>
+          </DraggableBlock>
+        </div>
 
         {/* 좌측 가방 */}
-        <DraggableBlock id="left-bag" layout={layouts['left-bag']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
-            <img src="/images/jacket.webp" alt="자켓 아이템" className="w-full h-full object-cover rounded" />
-          </div>
-        </DraggableBlock>
+        <div className="hidden md:block">
+          <DraggableBlock id="left-bag" layout={layouts['left-bag']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
+              <img src="/images/jacket.webp" alt="자켓 아이템" className="w-full h-full object-cover rounded" />
+            </div>
+          </DraggableBlock>
+        </div>
 
         {/* 좌측 신발 */}
-        <DraggableBlock id="left-shoes" layout={layouts['left-shoes']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
-            <img src="/images/skirts.webp" alt="스커트 아이템" className="w-full h-full object-cover rounded" />
-          </div>
-        </DraggableBlock>
+        <div className="hidden md:block">
+          <DraggableBlock id="left-shoes" layout={layouts['left-shoes']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
+              <img src="/images/skirts.webp" alt="스커트 아이템" className="w-full h-full object-cover rounded" />
+            </div>
+          </DraggableBlock>
+        </div>
 
-        {/* 중앙 텍스트 */}
-        <DraggableBlock id="center-text" layout={layouts['center-text']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
-            <h1
-              className="text-[clamp(2.2rem,4.5vw,3.5rem)] font-bold leading-[1.4] tracking-tight text-black animate-[fadeInUp_1s_ease-out_both]"
-            >
-              <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Yours</span>의 새로운 시작,<br/>
-              <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Junto AI</span>가 함께 합니다.
-            </h1>
-          </div>
-        </DraggableBlock>
+        {/* 중앙 텍스트 — 데스크톱: DraggableBlock / 모바일: 일반 흐름 */}
+        <div className="hidden md:block">
+          <DraggableBlock id="center-text" layout={layouts['center-text']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
+              <h1 className="text-[clamp(2.2rem,4.5vw,3.5rem)] font-bold leading-[1.4] tracking-tight text-black animate-[fadeInUp_1s_ease-out_both]">
+                <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Yours</span>의 새로운 시작,<br/>
+                <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Junto AI</span>가 함께 합니다.
+              </h1>
+            </div>
+          </DraggableBlock>
+        </div>
+        {/* 모바일 히어로 텍스트 */}
+        <div className="md:hidden flex items-center justify-center min-h-screen px-6">
+          <h1 className="text-[2rem] font-bold leading-[1.4] tracking-tight text-black text-center animate-[fadeInUp_1s_ease-out_both]">
+            <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Yours</span>의 새로운 시작,<br/>
+            <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Junto AI</span>가 함께 합니다.
+          </h1>
+        </div>
 
         {/* 우측 메인 이미지 */}
-        <DraggableBlock id="right-main" layout={layouts['right-main']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl shadow-neutral-400/20">
-            <img src="/images/hero(2).webp" alt="AI 생성 제품 사진" className="w-full h-full object-cover" />
-          </div>
-        </DraggableBlock>
+        <div className="hidden md:block">
+          <DraggableBlock id="right-main" layout={layouts['right-main']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl shadow-neutral-400/20">
+              <img src="/images/hero(2).webp" alt="AI 생성 제품 사진" className="w-full h-full object-cover" />
+            </div>
+          </DraggableBlock>
+        </div>
 
         {/* 우측 원본 제품 */}
-        <DraggableBlock id="right-product" layout={layouts['right-product']} editing={editing} onUpdate={updateLayout}>
-          <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
-            <img src="/images/hero(2)_.webp" alt="원본 제품" className="w-full h-full object-cover rounded" />
-          </div>
-        </DraggableBlock>
+        <div className="hidden md:block">
+          <DraggableBlock id="right-product" layout={layouts['right-product']} editing={editing} onUpdate={updateLayout}>
+            <div className="w-full h-full bg-white rounded-lg shadow-lg border border-neutral-100 p-1.5">
+              <img src="/images/hero(2)_.webp" alt="원본 제품" className="w-full h-full object-cover rounded" />
+            </div>
+          </DraggableBlock>
+        </div>
       </section>
 
       {/* ─── 대표님들의 핵심 고민 ─── */}
-      <section className="py-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16">
+      <section className="py-16 md:py-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16">
           <div className="text-center mb-14">
-            <h2 className="text-[2.5rem] font-bold text-black mb-4 scroll-fade">대표님들의 핵심 고민</h2>
+            <h2 className="text-[1.8rem] md:text-[2.5rem] font-bold text-black mb-4 scroll-fade">대표님들의 핵심 고민</h2>
             <div className="w-24 h-[2px] bg-black/15 mx-auto overflow-hidden">
               <div className="h-full bg-black/40 animate-[slideRight_2s_ease-out_forwards]" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 scroll-fade scroll-fade-delay-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 scroll-fade scroll-fade-delay-1">
             {[
               {
                 img: '/images/h1.png',
@@ -724,9 +743,9 @@ export default function Main2() {
       </section>
 
       {/* ─── 서비스 타이틀 ─── */}
-      <div className="pt-24 pb-4 bg-white/70 relative z-10">
+      <div className="pt-12 md:pt-24 pb-4 bg-white/70 relative z-10">
         <div className="text-center">
-          <h2 className="text-[2.5rem] font-bold text-black mb-4 scroll-fade">이렇게 해결해 드릴게요!</h2>
+          <h2 className="text-[1.8rem] md:text-[2.5rem] font-bold text-black mb-4 scroll-fade">이렇게 해결해 드릴게요!</h2>
           <div className="w-24 h-[2px] bg-black/15 mx-auto overflow-hidden">
             <div className="h-full bg-black/40 animate-[slideRight_2s_ease-out_forwards]" />
           </div>
@@ -734,8 +753,8 @@ export default function Main2() {
       </div>
 
       {/* ─── Service 1: AI 모델컷 생성 (이미지 좌 / 텍스트 우) ─── */}
-      <section id="service1" className="pt-12 pb-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col lg:flex-row items-center gap-16">
+      <section id="service1" className="pt-8 md:pt-12 pb-16 md:pb-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16 flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
           {/* 좌측 — Before/After 이미지 */}
           <div className="flex-1 w-full">
             <div className="bg-neutral-100 rounded-2xl p-10 flex items-center justify-center gap-6 relative scroll-fade">
@@ -757,7 +776,7 @@ export default function Main2() {
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-purple-100 text-purple-700 scroll-fade text-[16px] font-semibold mb-6">
               <ImageIcon className="w-4 h-4" /> 핵심 AI 기능 1
             </div>
-            <h3 className="text-[2.3rem] font-bold leading-[1.3] text-black mb-5 scroll-fade scroll-fade-delay-1">바닥컷 한 장이<br/>고퀄리티 룩북으로</h3>
+            <h3 className="text-[1.6rem] md:text-[2.3rem] font-bold leading-[1.3] text-black mb-4 md:mb-5 scroll-fade scroll-fade-delay-1">바닥컷 한 장이<br/>고퀄리티 룩북으로</h3>
             <p className="hidden">
               옷 사진만 업로드하세요. 원하는 인종, 체형, 포즈, 배경의 AI 모델이 착용한 고해상도 룩북 이미지를 30초 만에 생성합니다.
             </p>
@@ -773,8 +792,8 @@ export default function Main2() {
       </section>
 
       {/* ─── Service 2: 숏폼 영상 제작 (텍스트 좌 / 이미지 우) ─── */}
-      <section id="service2" className="py-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col lg:flex-row-reverse items-center gap-16">
+      <section id="service2" className="py-16 md:py-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16 flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16">
           {/* 우측 — 준비중 */}
           <div className="flex-1 w-full">
             <div className="aspect-[4/3] rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50/80 flex items-center justify-center">
@@ -786,7 +805,7 @@ export default function Main2() {
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-100 text-blue-700 scroll-fade text-[16px] font-semibold mb-6">
               <Globe className="w-4 h-4" /> 핵심 AI 기능 2
             </div>
-            <h3 className="text-[2.3rem] font-bold leading-[1.3] text-black mb-5 scroll-fade scroll-fade-delay-1">클릭 한 번으로<br/>중국어 상세페이지 완성</h3>
+            <h3 className="text-[1.6rem] md:text-[2.3rem] font-bold leading-[1.3] text-black mb-4 md:mb-5 scroll-fade scroll-fade-delay-1">클릭 한 번으로<br/>중국어 상세페이지 완성</h3>
             <p className="hidden">
               한국어로 제품 정보만 입력하세요. AI가 레이아웃을 구성하고 중국어/영어로 완벽하게 번역된 상세페이지를 즉시 만들어냅니다.
             </p>
@@ -802,8 +821,8 @@ export default function Main2() {
       </section>
 
       {/* ─── Service 3: 숏폼 영상 제작 (이미지 좌 / 텍스트 우) ─── */}
-      <section id="service3" className="py-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col lg:flex-row items-center gap-16">
+      <section id="service3" className="py-16 md:py-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16 flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
           {/* 좌측 — 숏폼 영상 */}
           <div className="flex-1 w-full">
             <div className="rounded-2xl overflow-hidden shadow-2xl shadow-neutral-400/10">
@@ -815,7 +834,7 @@ export default function Main2() {
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-100 text-emerald-700 scroll-fade text-[16px] font-semibold mb-6">
               <Sparkles className="w-4 h-4" /> 핵심 AI 기능 3
             </div>
-            <h3 className="text-[2.3rem] font-bold leading-[1.3] text-black mb-5 scroll-fade scroll-fade-delay-1">사진만 올리면<br/>숏폼 영상이 완성</h3>
+            <h3 className="text-[1.6rem] md:text-[2.3rem] font-bold leading-[1.3] text-black mb-4 md:mb-5 scroll-fade scroll-fade-delay-1">사진만 올리면<br/>숏폼 영상이 완성</h3>
             <p className="hidden">
               제품 사진 몇 장만 선택하세요. AI가 트렌디한 음악과 자연스러운 전환 효과를 적용하여 틱톡, 릴스에 바로 올릴 수 있는 숏폼 영상을 자동 제작합니다.
             </p>
@@ -831,8 +850,8 @@ export default function Main2() {
       </section>
 
       {/* ─── Service 4: 바닥컷 촬영 예약 (텍스트 좌 / 이미지 우) ─── */}
-      <section id="service4" className="py-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col lg:flex-row-reverse items-center gap-16">
+      <section id="service4" className="py-16 md:py-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16 flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16">
           {/* 우측 — 스튜디오 이미지 */}
           <div className="flex-1 w-full">
             <div className="rounded-2xl overflow-hidden shadow-2xl shadow-neutral-400/10">
@@ -844,7 +863,7 @@ export default function Main2() {
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-100 text-amber-700 scroll-fade text-[16px] font-semibold mb-6">
               <Camera className="w-4 h-4" /> 바닥컷 예약서비스
             </div>
-            <h3 className="text-[2.3rem] font-bold leading-[1.3] text-black mb-5 scroll-fade scroll-fade-delay-1">전문 포토그래퍼가<br/>직접 촬영해 드립니다</h3>
+            <h3 className="text-[1.6rem] md:text-[2.3rem] font-bold leading-[1.3] text-black mb-4 md:mb-5 scroll-fade scroll-fade-delay-1">전문 포토그래퍼가<br/>직접 촬영해 드립니다</h3>
             <p className="hidden">
               유어스몰 현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영합니다. 온라인 예약 한 번이면 고퀄리티 원본 사진이 준비됩니다.
             </p>
@@ -860,8 +879,8 @@ export default function Main2() {
       </section>
 
       {/* ─── Help 섹션 ─── */}
-      <section className="py-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col lg:flex-row items-center gap-16">
+      <section className="py-16 md:py-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16 flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
           <div className="flex-1 w-full">
             <div className="aspect-[4/3] rounded-2xl bg-neutral-100 flex items-center justify-center overflow-hidden">
               <img src="https://picsum.photos/seed/help-support/800/600" alt="Help 서비스" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -871,7 +890,7 @@ export default function Main2() {
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-rose-100 text-rose-700 text-[16px] font-semibold mb-6 scroll-fade">
               <HelpCircle className="w-4 h-4" /> 헬프 서비스
             </div>
-            <h3 className="text-[2.3rem] font-bold leading-[1.3] text-black mb-5 scroll-fade scroll-fade-delay-1">AI가 어렵다면,<br/>저희가 대신 해드립니다</h3>
+            <h3 className="text-[1.6rem] md:text-[2.3rem] font-bold leading-[1.3] text-black mb-4 md:mb-5 scroll-fade scroll-fade-delay-1">AI가 어렵다면,<br/>저희가 대신 해드립니다</h3>
             <p className="hidden"></p>
             <ul className="space-y-4 scroll-fade scroll-fade-delay-2">
               {['AI 모델컷 생성부터 상세페이지까지 풀 대행', '전담 매니저 1:1 배정', '작업 완료 후 수정 무제한'].map((text, i) => (
@@ -891,16 +910,16 @@ export default function Main2() {
       <ServiceShowcase />
 
       {/* ─── Coming Soon 그리드 ─── */}
-      <section className="py-32 bg-white/70 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16">
+      <section className="py-16 md:py-32 bg-white/70 relative z-10">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-16">
           <div className="text-center mb-14">
-            <h2 className="text-[2.5rem] font-bold text-black mb-3 scroll-fade">Coming Soon</h2>
+            <h2 className="text-[1.8rem] md:text-[2.5rem] font-bold text-black mb-3 scroll-fade">Coming Soon</h2>
             <p className="text-neutral-800 text-[16px] mb-5">곧 업데이트 될 기능들입니다.</p>
             <div className="w-24 h-[2px] bg-black/15 mx-auto overflow-hidden">
               <div className="h-full bg-black/40 animate-[slideRight_2s_ease-out_forwards]" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
             {[
               { img: '/images/cs-1.jpg', title: 'AI 가상 피팅', desc: '어떤 의류든 AI 모델에 즉시 입혀보세요. 촬영 없이 전문 모델 사진을 완성합니다.' },
               { img: '/images/cs-product-to-model.jpg', title: '제품컷 → 모델컷', desc: '바닥컷 한 장을 모델 착용 사진으로 즉시 변환합니다.' },

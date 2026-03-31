@@ -388,10 +388,10 @@ Now process the following inputs:\n\n` });
         };
 
         return (
-          <div className="flex h-full min-h-screen bg-[#FAFAF9]">
+          <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9]">
             {/* 좌측 패널 */}
-            <div className="w-[380px] shrink-0 bg-white flex flex-col border-r border-neutral-100">
-              <div className="flex-1 overflow-y-auto py-8 px-10 flex flex-col gap-0">
+            <div className="w-full md:w-[380px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
+              <div className="flex-1 overflow-y-auto py-6 px-5 md:py-8 md:px-10 flex flex-col gap-0">
 
                 {/* 01 의상 */}
                 <div className="mb-3 bg-pink-50/60 rounded-xl p-5 border border-pink-100/60">
@@ -537,7 +537,7 @@ Now process the following inputs:\n\n` });
               </div>
 
               {/* 하단 고정: 에러 + 생성 버튼 */}
-              <div className="px-8 py-6 border-t border-neutral-100 bg-white">
+              <div className="px-5 py-4 md:px-8 md:py-6 border-t border-neutral-100 bg-white">
                 {errorMsg && (
                   <div role="alert" className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-xs font-medium text-center">{errorMsg}</div>
                 )}
@@ -548,8 +548,8 @@ Now process the following inputs:\n\n` });
             </div>
 
             {/* 중앙 — 이미지 프리뷰 */}
-            <div className="flex-1 flex flex-col items-center justify-center px-20 py-12 relative min-h-0">
-              <div className="w-full max-w-lg aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 md:px-20 md:py-12 relative min-h-0">
+              <div className="w-full max-w-sm md:max-w-lg aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
                     <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" />
@@ -691,17 +691,17 @@ Now process the following inputs:\n\n` });
 
       case 'video':
         return (
-          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-16 px-8">
+          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-8 px-5 md:py-16 md:px-8">
             <div className="max-w-3xl w-full">
               {/* 헤더 */}
               <div className="mb-12">
-                <h1 className="text-[2rem] font-bold text-black mb-3">AI 영상 제작</h1>
+                <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-black mb-3">AI 영상 제작</h1>
                 <p className="text-neutral-500 text-[15px]">사진 몇 장만 선택하면 틱톡, 릴스에 바로 올릴 수 있는 숏폼 영상을 만들어 드립니다.</p>
               </div>
 
               <div className="space-y-6">
                 {/* Step 1 */}
-                <div className="bg-white rounded-xl p-6 border border-neutral-100">
+                <div className="bg-white rounded-xl p-4 md:p-6 border border-neutral-100">
                   <div className="flex items-center gap-3 mb-5">
                     <span className="w-7 h-7 rounded-full bg-neutral-900 text-white text-[12px] font-bold flex items-center justify-center">1</span>
                     <h3 className="text-[15px] font-bold text-black">영상에 들어갈 사진을 골라주세요 (최대 5장)</h3>
@@ -721,12 +721,12 @@ Now process the following inputs:\n\n` });
                 </div>
 
                 {/* Step 2 */}
-                <div className="bg-white rounded-xl p-6 border border-neutral-100">
+                <div className="bg-white rounded-xl p-4 md:p-6 border border-neutral-100">
                   <div className="flex items-center gap-3 mb-5">
                     <span className="w-7 h-7 rounded-full bg-neutral-900 text-white text-[12px] font-bold flex items-center justify-center">2</span>
                     <h3 className="text-[15px] font-bold text-black">음악 분위기 선택</h3>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
                       { id: 'trendy', name: '트렌디 팝', desc: '틱톡/릴스 추천' },
                       { id: 'calm', name: '차분한 감성', desc: '카페 음악 스타일' },
@@ -741,7 +741,7 @@ Now process the following inputs:\n\n` });
                 </div>
 
                 {/* Step 3 */}
-                <div className="bg-white rounded-xl p-6 border border-neutral-100">
+                <div className="bg-white rounded-xl p-4 md:p-6 border border-neutral-100">
                   <div className="flex items-center gap-3 mb-5">
                     <span className="w-7 h-7 rounded-full bg-neutral-900 text-white text-[12px] font-bold flex items-center justify-center">3</span>
                     <h3 className="text-[15px] font-bold text-black">AI 성우 선택</h3>
@@ -776,15 +776,15 @@ Now process the following inputs:\n\n` });
 
       case 'floorcut':
         return (
-          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-16 px-8">
+          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-8 px-5 md:py-16 md:px-8">
             <div className="max-w-2xl w-full">
               <div className="mb-12">
-                <h1 className="text-[2rem] font-bold text-black mb-3">촬영 예약</h1>
+                <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-black mb-3">촬영 예약</h1>
                 <p className="text-neutral-500 text-[15px]">유어스몰 현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영해 드립니다.</p>
               </div>
 
-              <div className="bg-white rounded-xl p-8 border border-neutral-100 space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-5 md:p-8 border border-neutral-100 space-y-5 md:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[13px] font-semibold text-neutral-900 mb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-neutral-400"/> 날짜 선택</label>
                     <input type="date" className="w-full border border-neutral-200 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors bg-neutral-50" />
@@ -816,17 +816,17 @@ Now process the following inputs:\n\n` });
 
       case 'cs':
         return (
-          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-16 px-8">
+          <div className="min-h-screen bg-[#FAFAF9] flex items-start justify-center py-8 px-5 md:py-16 md:px-8">
             <div className="max-w-2xl w-full">
               <div className="mb-12">
-                <h1 className="text-[2rem] font-bold text-black mb-3">Help</h1>
+                <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-black mb-3">Help</h1>
                 <p className="text-neutral-500 text-[15px]">AI 사용이 어려우신가요? 저희가 대신 작업해 드립니다.</p>
               </div>
 
-              <div className="bg-white rounded-xl p-8 border border-neutral-100 space-y-6">
+              <div className="bg-white rounded-xl p-5 md:p-8 border border-neutral-100 space-y-5 md:space-y-6">
                 <div>
                   <label className="block text-[13px] font-semibold text-neutral-900 mb-2">요청 유형</label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {[
                       { id: 'modelcut', label: 'AI 모델컷 대행' },
                       { id: 'translate', label: '상세페이지 번역 대행' },
