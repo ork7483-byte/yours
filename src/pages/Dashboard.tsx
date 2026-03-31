@@ -565,44 +565,40 @@ Now process the following inputs:\n\n` });
             {/* 중앙 — 이미지 프리뷰 */}
             <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0 bg-neutral-100/50">
               {/* 비율 선택 */}
-              <div className="flex gap-1.5 mb-3">
-                {[
-                  { label: '16:9', value: '16/9' },
-                  { label: '3:2', value: '3/2' },
-                  { label: '4:3', value: '4/3' },
-                  { label: '1:1', value: '1/1' },
-                  { label: '3:4', value: '3/4' },
-                  { label: '2:3', value: '2/3' },
-                  { label: '9:16', value: '9/16' },
-                ].map(r => (
-                  <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-3.5 py-1.5 text-[13px] font-semibold rounded-lg transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
-                ))}
+              <div className="flex items-center gap-2.5 mb-3 bg-white rounded-xl px-4 py-2.5 border border-neutral-100 shadow-sm">
+                <span className="text-[12px] font-semibold text-neutral-600 shrink-0">비율 :</span>
+                <div className="flex gap-1.5 flex-wrap">
+                  {[
+                    { label: '16:9', value: '16/9' },
+                    { label: '3:2', value: '3/2' },
+                    { label: '4:3', value: '4/3' },
+                    { label: '1:1', value: '1/1' },
+                    { label: '3:4', value: '3/4' },
+                    { label: '2:3', value: '2/3' },
+                    { label: '9:16', value: '9/16' },
+                  ].map(r => (
+                    <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-3.5 py-1.5 text-[13px] font-semibold rounded-lg transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white shadow-sm' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
+                  ))}
+                </div>
               </div>
               <div className="w-full max-w-sm md:max-w-lg xl:max-w-xl bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ aspectRatio: imageRatio, boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
-                    <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" />
-                    {/* 호버 시 액션 버튼 */}
+                    <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 cursor-pointer ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" onClick={() => !isGenerating && setShowFullPreview(true)} />
+                    {/* 다운로드 버튼 — 우상단 */}
                     {!isGenerating && (
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent opacity-100 flex gap-2 justify-end">
-                        <button
-                          onClick={() => setShowFullPreview(true)}
-                          className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer flex items-center gap-1.5"
-                        >
-                          <Maximize2 className="w-3.5 h-3.5" /> 크게 보기
-                        </button>
-                        <button
-                          onClick={() => {
-                            const link = document.createElement('a');
-                            link.href = generatedImage;
-                            link.download = `junto-ai-${Date.now()}.png`;
-                            link.click();
-                          }}
-                          className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer flex items-center gap-1.5"
-                        >
-                          <Download className="w-3.5 h-3.5" /> 저장
-                        </button>
-                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const link = document.createElement('a');
+                          link.href = generatedImage;
+                          link.download = `junto-ai-${Date.now()}.png`;
+                          link.click();
+                        }}
+                        className="absolute top-3 right-3 p-2.5 bg-white/90 backdrop-blur-sm rounded-lg text-neutral-900 hover:bg-white transition-colors cursor-pointer shadow-sm"
+                      >
+                        <Download className="w-4 h-4" />
+                      </button>
                     )}
                   </>
                 ) : (
