@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
-  const [imageRatio, setImageRatio] = useState('4/5');
+  const [imageRatio, setImageRatio] = useState('2/3');
   const [gallery, setGallery] = useState<any[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryPreview, setGalleryPreview] = useState<string | null>(null);
@@ -310,7 +310,8 @@ Now process the following inputs:\n\n` });
         instructions += "- BACKGROUND: Use a clean, professional studio background with natural lighting.\n";
       }
 
-      instructions += "\nOUTPUT: Generate a single, seamless, photorealistic 8K resolution fashion lookbook image. The clothing must fit the model naturally with proper folds, shadows, and proportions. Ensure natural lighting and shadows consistent with the background.";
+      const ratioLabel = imageRatio.replace('/', ':');
+      instructions += `\nOUTPUT: Generate a single, seamless, photorealistic 8K resolution fashion lookbook image in ${ratioLabel} aspect ratio. The clothing must fit the model naturally with proper folds, shadows, and proportions. Ensure natural lighting and shadows consistent with the background.`;
       
       parts.push({ text: instructions });
 
@@ -339,6 +340,12 @@ Now process the following inputs:\n\n` });
 
       if (newImageUrl) {
         setGeneratedImage(newImageUrl);
+        // 자동 클라우드 저장
+        if (user) {
+          saveGeneratedImage(newImageUrl, user.id, `피팅 ${ratioLabel}`).then(({ error }) => {
+            if (!error) loadGallery();
+          });
+        }
       } else {
         setErrorMsg("이미지 생성에 실패했습니다. (응답에 이미지 데이터가 없습니다)");
       }
@@ -561,9 +568,11 @@ Now process the following inputs:\n\n` });
               <div className="flex gap-1.5 mb-3">
                 {[
                   { label: '16:9', value: '16/9' },
+                  { label: '3:2', value: '3/2' },
                   { label: '4:3', value: '4/3' },
                   { label: '1:1', value: '1/1' },
                   { label: '3:4', value: '3/4' },
+                  { label: '2:3', value: '2/3' },
                   { label: '9:16', value: '9/16' },
                 ].map(r => (
                   <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-2.5 py-1 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
@@ -591,38 +600,8 @@ Now process the following inputs:\n\n` });
                           }}
                           className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer flex items-center gap-1.5"
                         >
-                          <Download className="w-3.5 h-3.5" /> PC 저장
+                          <Download className="w-3.5 h-3.5" /> 저장
                         </button>
-                        {user ? (
-                          <button
-                            onClick={async () => {
-                              if (!generatedImage || isSaving) return;
-                              setIsSaving(true);
-                              setSaveMsg(null);
-                              const { error } = await saveGeneratedImage(generatedImage, user.id, '피팅 이미지');
-                              setIsSaving(false);
-                              setSaveMsg(error ? `오류: ${error}` : '저장 완료!');
-                              if (!error) loadGallery();
-                              setTimeout(() => setSaveMsg(null), 3000);
-                            }}
-                            disabled={isSaving}
-                            className="px-4 py-2 bg-neutral-900/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-white hover:bg-neutral-900 transition-colors cursor-pointer flex items-center gap-1.5"
-                          >
-                            {isSaving ? '저장 중...' : <><Cloud className="w-3.5 h-3.5" /> 클라우드 저장</>}
-                          </button>
-                        ) : (
-                          <button
-                            onClick={signInWithGoogle}
-                            className="px-4 py-2 bg-neutral-900/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-white hover:bg-neutral-900 transition-colors cursor-pointer flex items-center gap-1.5"
-                          >
-                            <Cloud className="w-3.5 h-3.5" /> 로그인 후 저장
-                          </button>
-                        )}
-                      </div>
-                    )}
-                    {saveMsg && (
-                      <div className={`absolute top-4 right-4 px-4 py-2 rounded-lg text-[12px] font-semibold backdrop-blur-sm ${saveMsg.includes('오류') ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'}`}>
-                        {saveMsg}
                       </div>
                     )}
                   </>
