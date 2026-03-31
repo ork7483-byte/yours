@@ -31,7 +31,9 @@ import {
   Download,
   Maximize2,
   Cloud,
-  LogIn
+  LogIn,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 
@@ -52,6 +54,7 @@ export default function Dashboard() {
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [imageRatio, setImageRatio] = useState('4/5');
   const [gallery, setGallery] = useState<any[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryPreview, setGalleryPreview] = useState<string | null>(null);
@@ -399,9 +402,7 @@ Now process the following inputs:\n\n` });
         };
         const handleModalSelect = () => {
           if (!modalPreview) return;
-          if (modalPreview.type === 'model') setLookbookModel(modalPreview.id);
-          else if (modalPreview.type === 'pose') setLookbookPose(modalPreview.id);
-          else if (modalPreview.type === 'bg') setLookbookBg(modalPreview.id);
+          selectPresetFor(modalPreview.type, modalPreview.img, modalPreview.id);
           setModalPreview(null);
         };
         const isSelected = (type: 'model' | 'pose' | 'bg', id: string) => {
@@ -411,7 +412,7 @@ Now process the following inputs:\n\n` });
         };
 
         return (
-          <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9]">
+          <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9] md:px-[4%] xl:px-[7%]">
             {/* 좌측 패널 */}
             <div className="w-full md:w-[320px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
               <div className="flex-1 overflow-y-auto py-6 px-5 md:py-4 md:px-5 flex flex-col gap-0">
@@ -483,11 +484,11 @@ Now process the following inputs:\n\n` });
                         ...modelImages.map((img, i) => ({ id: `model${i}`, img })),
                         ...customModels
                       ].map(m => (
-                        <button key={m.id} aria-label={`모델 ${m.id} 미리보기`} onClick={() => selectPresetFor('model', m.img, m.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookModel === m.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                        <button key={m.id} aria-label={`모델 ${m.id} 미리보기`} onClick={() => handleThumbClick(m.img, 'model', m.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookModel === m.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={m.img} alt={`모델 ${m.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 모델 업로드" onClick={() => document.getElementById('model-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                      <button aria-label="커스텀 모델 업로드" onClick={() => document.getElementById('model-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="model-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('model', e)} />
@@ -506,11 +507,11 @@ Now process the following inputs:\n\n` });
                         ...poseImages.map((img, i) => ({ id: `pose${i}`, img })),
                         ...customPoses
                       ].map(p => (
-                        <button key={p.id} aria-label={`포즈 ${p.id} 미리보기`} onClick={() => selectPresetFor('pose', p.img, p.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookPose === p.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                        <button key={p.id} aria-label={`포즈 ${p.id} 미리보기`} onClick={() => handleThumbClick(p.img, 'pose', p.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookPose === p.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={p.img} alt={`포즈 ${p.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 포즈 업로드" onClick={() => document.getElementById('pose-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                      <button aria-label="커스텀 포즈 업로드" onClick={() => document.getElementById('pose-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="pose-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('pose', e)} />
@@ -529,11 +530,11 @@ Now process the following inputs:\n\n` });
                         ...bgImages.map((img, i) => ({ id: `bg${i}`, img })),
                         ...customBgs
                       ].map(b => (
-                        <button key={b.id} aria-label={`배경 ${b.id} 미리보기`} onClick={() => selectPresetFor('bg', b.img, b.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 ${lookbookBg === b.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                        <button key={b.id} aria-label={`배경 ${b.id} 미리보기`} onClick={() => handleThumbClick(b.img, 'bg', b.id)} className={`w-[68px] h-[68px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookBg === b.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={b.img} alt={`배경 ${b.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 배경 업로드" onClick={() => document.getElementById('bg-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                      <button aria-label="커스텀 배경 업로드" onClick={() => document.getElementById('bg-upload')?.click()} className="w-[68px] h-[68px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="bg-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('bg', e)} />
@@ -577,7 +578,19 @@ Now process the following inputs:\n\n` });
 
             {/* 중앙 — 이미지 프리뷰 */}
             <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0">
-              <div className="w-full max-w-sm md:max-w-md xl:max-w-lg aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
+              {/* 비율 선택 */}
+              <div className="flex gap-1.5 mb-3">
+                {[
+                  { label: '16:9', value: '16/9' },
+                  { label: '4:3', value: '4/3' },
+                  { label: '1:1', value: '1/1' },
+                  { label: '3:4', value: '3/4' },
+                  { label: '9:16', value: '9/16' },
+                ].map(r => (
+                  <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-2.5 py-1 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
+                ))}
+              </div>
+              <div className="w-full max-w-sm md:max-w-md xl:max-w-lg bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ aspectRatio: imageRatio, boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
                     <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" />
