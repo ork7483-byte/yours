@@ -575,7 +575,7 @@ Now process the following inputs:\n\n` });
                   { label: '2:3', value: '2/3' },
                   { label: '9:16', value: '9/16' },
                 ].map(r => (
-                  <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-2.5 py-1 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
+                  <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-3.5 py-1.5 text-[13px] font-semibold rounded-lg transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
                 ))}
               </div>
               <div className="w-full max-w-sm md:max-w-lg xl:max-w-xl bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ aspectRatio: imageRatio, boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
