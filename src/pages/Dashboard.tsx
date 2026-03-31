@@ -542,27 +542,6 @@ Now process the following inputs:\n\n` });
                     <button onClick={() => document.getElementById('bg-upload')?.click()} className="mt-1.5 w-full py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-emerald-300 text-emerald-600 bg-emerald-50/40 hover:bg-emerald-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
-                {/* AI 모델 선택 */}
-                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200/80">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-[10px] text-neutral-400 font-medium tracking-wider">AI</span>
-                    <div className="flex bg-neutral-100 p-0.5 rounded-md" role="radiogroup" aria-label="AI 모델 선택">
-                      {[
-                        { id: 'gemini-3.1-flash-image-preview', label: 'Flash' },
-                        { id: 'gemini-3-pro-image-preview', label: 'Pro' },
-                      ].map(m => (
-                        <button key={m.id} role="radio" aria-checked={aiModel === m.id} onClick={() => setAiModel(m.id)} className={`px-3.5 py-1.5 text-[10px] font-semibold tracking-wider rounded-[5px] transition-all duration-200 cursor-pointer ${aiModel === m.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}>{m.label}</button>
-                      ))}
-                    </div>
-                    {aiModel === 'gemini-3-pro-image-preview' && (
-                      <div className="flex gap-1.5">
-                        {(['1K', '2K', '4K'] as const).map(res => (
-                          <button key={res} onClick={() => setImageResolution(res)} className={`px-2.5 py-1 text-[10px] font-medium rounded-md transition-all duration-200 cursor-pointer ${imageResolution === res ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{res}</button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
 
               {/* 하단 고정: 에러 + 생성 버튼 */}
@@ -1014,6 +993,25 @@ Now process the following inputs:\n\n` });
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
         <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
         <div className="flex items-center gap-3">
+          {/* AI 모델 선택 */}
+          <div className="flex items-center gap-2">
+            <div className="flex bg-neutral-100 p-0.5 rounded-md">
+              {[
+                { id: 'gemini-3.1-flash-image-preview', label: 'Flash' },
+                { id: 'gemini-3-pro-image-preview', label: 'Pro' },
+              ].map(m => (
+                <button key={m.id} onClick={() => setAiModel(m.id)} className={`px-3 py-1 text-[10px] font-semibold tracking-wider rounded-[4px] transition-all duration-200 cursor-pointer ${aiModel === m.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}>{m.label}</button>
+              ))}
+            </div>
+            {aiModel === 'gemini-3-pro-image-preview' && (
+              <div className="flex gap-1">
+                {(['1K', '2K', '4K'] as const).map(res => (
+                  <button key={res} onClick={() => setImageResolution(res)} className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all cursor-pointer ${imageResolution === res ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-400'}`}>{res}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="w-px h-5 bg-neutral-200 hidden md:block" />
           {authLoading ? null : user ? (
             <>
               <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
