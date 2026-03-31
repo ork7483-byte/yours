@@ -179,7 +179,18 @@ function ServiceShowcase() {
   const [activeTab, setActiveTab] = useState(SHOWCASE_TABS[0].id);
 
   interface ThumbConfig { size: number; posX: number; posY: number; objX: number; objY: number; zoom: number; }
-  const defaultThumb: ThumbConfig = { size: 140, posX: 5, posY: 10, objX: 50, objY: 50, zoom: 100 };
+  const defaultThumb: ThumbConfig = { size: 140, posX: 3, posY: 2.5, objX: 50, objY: 50, zoom: 100 };
+  const defaultConfigs: Record<string, Partial<ThumbConfig>> = {
+    shirt: { posX: 1.8, posY: 1.75, objY: 41, zoom: 136 },
+    skirt: { posX: 3, posY: 2.5, zoom: 95 },
+    skirts: { posX: 1.8, posY: 1.9, objY: 41, zoom: 112 },
+    dress: { posX: 3, posY: 3.1, zoom: 120 },
+    coat: { posX: 2, posY: 2.35, objY: 39, zoom: 134 },
+    bag: { posX: 3.2, posY: 2.2, objY: 97, zoom: 157 },
+    bag2: { posX: 3, posY: 2.5, objY: 69, zoom: 146 },
+    sunglasses: { posX: 3.4, posY: 2.35, objY: 31, zoom: 92 },
+    shoes: { posX: 3.8, posY: 2.65, objY: 100, zoom: 150 },
+  };
 
   const [thumbConfigs, setThumbConfigs] = useState<Record<string, ThumbConfig>>(() => {
     try {
@@ -188,7 +199,7 @@ function ServiceShowcase() {
     } catch { return {}; }
   });
 
-  const getThumb = (id: string): ThumbConfig => ({ ...defaultThumb, ...(thumbConfigs[id] || {}) });
+  const getThumb = (id: string): ThumbConfig => ({ ...defaultThumb, ...(defaultConfigs[id] || {}), ...(thumbConfigs[id] || {}) });
   const updateThumb = (id: string, patch: Partial<ThumbConfig>) => {
     setThumbConfigs(prev => {
       const next = { ...prev, [id]: { ...getThumb(id), ...patch } };
