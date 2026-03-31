@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GoogleGenAI } from '@google/genai';
 import { useAuth } from '../lib/useAuth';
-import { saveGeneratedImage } from '../lib/imageStorage';
+import { saveGeneratedImage, getMyImages, deleteImage } from '../lib/imageStorage';
 import { 
   BarChart3, 
   Bell, 
@@ -52,6 +52,9 @@ export default function Dashboard() {
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [galleryPreview, setGalleryPreview] = useState<string | null>(null);
   const [presentationMode, setPresentationMode] = useState(false);
 
   // UI States for Demo
@@ -119,6 +122,19 @@ export default function Dashboard() {
   useEffect(() => {
     setActiveTab(tabMap[loc.pathname] || 'lookbook');
   }, [loc.pathname]);
+
+  // 갤러리 로드
+  const loadGallery = async () => {
+    if (!user) return;
+    setGalleryLoading(true);
+    const { images } = await getMyImages(user.id);
+    setGallery(images);
+    setGalleryLoading(false);
+  };
+
+  useEffect(() => {
+    if (user) loadGallery();
+  }, [user]);
 
   const menuItems = [
     { id: 'lookbook', label: '제품 → 모델컷', icon: <ImageIcon className="w-5 h-5" /> },
@@ -555,8 +571,8 @@ Now process the following inputs:\n\n` });
             </div>
 
             {/* 중앙 — 이미지 프리뷰 */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 md:px-20 md:py-12 relative min-h-0">
-              <div className="w-full max-w-sm md:max-w-lg aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 md:px-8 md:py-8 relative min-h-0">
+              <div className="w-full max-w-sm md:max-w-md aspect-[4/5] bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
                     <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" />
@@ -589,6 +605,7 @@ Now process the following inputs:\n\n` });
                               const { error } = await saveGeneratedImage(generatedImage, user.id, '피팅 이미지');
                               setIsSaving(false);
                               setSaveMsg(error ? `오류: ${error}` : '저장 완료!');
+                              if (!error) loadGallery();
                               setTimeout(() => setSaveMsg(null), 3000);
                             }}
                             disabled={isSaving}
@@ -626,14 +643,90 @@ Now process the following inputs:\n\n` });
                 )}
               </div>
 
-              {/* 우측 태그라인 */}
-              <div className="absolute right-20 top-1/2 -translate-y-1/2 max-w-[220px] text-right hidden xl:block select-none">
-                <p className="text-[22px] font-extralight text-neutral-600 leading-[1.6] tracking-tight">
-                  스튜디오도, 모델도,<br/>촬영도<br/>
-                  <span className="font-semibold text-neutral-900">더이상 필요하지<br/>않습니다.</span>
-                </p>
+            </div>
+
+            {/* 우측 — 저장 갤러리 */}
+            <div className="w-[280px] shrink-0 bg-white border-l border-neutral-100 flex flex-col hidden xl:flex">
+              <div className="px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
+                <h3 className="text-[14px] font-bold text-neutral-900">내 갤러리</h3>
+                <span className="text-[11px] text-neutral-400">{gallery.length}장</span>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3">
+                {!user ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                    <Cloud className="w-8 h-8 text-neutral-200 mb-3" />
+                    <p className="text-[13px] text-neutral-400 mb-4">로그인하면 생성한 이미지를<br/>자동으로 저장할 수 있어요</p>
+                    <button onClick={signInWithGoogle} className="px-4 py-2 bg-neutral-900 text-white text-[12px] font-semibold rounded-lg hover:bg-neutral-800 cursor-pointer transition-colors">Google 로그인</button>
+                  </div>
+                ) : galleryLoading ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="w-6 h-6 border-2 border-neutral-300 border-t-neutral-900 rounded-full animate-spin" />
+                  </div>
+                ) : gallery.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                    <ImageIcon className="w-8 h-8 text-neutral-200 mb-3" strokeWidth={1} />
+                    <p className="text-[13px] text-neutral-400">아직 저장된 이미지가 없어요.<br/>이미지를 생성하고 저장해보세요!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {gallery.map((img: any) => (
+                      <div key={img.id} className="group relative aspect-square rounded-lg overflow-hidden bg-neutral-100 cursor-pointer" onClick={() => setGalleryPreview(img.image_url)}>
+                        <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-center opacity-0 group-hover:opacity-100">
+                          <div className="flex gap-1 p-1.5 w-full">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); const a = document.createElement('a'); a.href = img.image_url; a.download = `yours-${img.id}.png`; a.click(); }}
+                              className="flex-1 py-1.5 bg-white/90 rounded text-[10px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer"
+                            >저장</button>
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                const path = img.image_url.split('/generated-images/')[1];
+                                await deleteImage(img.id, path || '');
+                                loadGallery();
+                              }}
+                              className="py-1.5 px-2 bg-red-500/80 rounded text-[10px] font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
+                            >삭제</button>
+                          </div>
+                        </div>
+                        <div className="absolute top-1.5 right-1.5 text-[9px] text-white bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          {new Date(img.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* 갤러리 크게 보기 모달 */}
+            <AnimatePresence>
+              {galleryPreview && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md"
+                  onClick={() => setGalleryPreview(null)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="relative max-w-3xl max-h-[85vh] mx-6"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <img src={galleryPreview} alt="" className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+                    <div className="absolute -top-11 right-0 flex gap-2">
+                      <button onClick={() => { const a = document.createElement('a'); a.href = galleryPreview; a.download = `yours-${Date.now()}.png`; a.click(); }} className="px-3 py-1.5 bg-white rounded-lg text-[11px] font-semibold text-neutral-900 hover:bg-neutral-100 cursor-pointer flex items-center gap-1">
+                        <Download className="w-3 h-3" /> 저장
+                      </button>
+                      <button onClick={() => setGalleryPreview(null)} className="px-3 py-1.5 bg-white/20 rounded-lg text-[11px] font-semibold text-white hover:bg-white/30 cursor-pointer">닫기</button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* 크게 보기 모달 */}
             <AnimatePresence>
