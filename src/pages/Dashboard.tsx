@@ -412,9 +412,9 @@ Now process the following inputs:\n\n` });
         };
 
         return (
-          <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9] md:px-[4%] xl:px-[7%]">
+          <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9]">
             {/* 좌측 패널 */}
-            <div className="w-full md:w-[320px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
+            <div className="w-full md:w-[360px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
               <div className="flex-1 overflow-y-auto py-6 px-5 md:py-4 md:px-5 flex flex-col gap-0">
 
                 {/* 01 의상 */}
@@ -577,7 +577,7 @@ Now process the following inputs:\n\n` });
             </div>
 
             {/* 중앙 — 이미지 프리뷰 */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0">
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0 bg-neutral-100/50">
               {/* 비율 선택 */}
               <div className="flex gap-1.5 mb-3">
                 {[
@@ -590,7 +590,7 @@ Now process the following inputs:\n\n` });
                   <button key={r.value} onClick={() => setImageRatio(r.value)} className={`px-2.5 py-1 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${imageRatio === r.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{r.label}</button>
                 ))}
               </div>
-              <div className="w-full max-w-sm md:max-w-md xl:max-w-lg bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ aspectRatio: imageRatio, boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
+              <div className="w-full max-w-sm md:max-w-lg xl:max-w-xl bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ aspectRatio: imageRatio, boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
                     <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" />
@@ -664,7 +664,7 @@ Now process the following inputs:\n\n` });
             </div>
 
             {/* 우측 — 저장 갤러리 */}
-            <div className="w-[220px] shrink-0 bg-white border-l border-neutral-100 flex flex-col hidden lg:flex">
+            <div className="w-[280px] shrink-0 bg-white border-l border-neutral-100 flex flex-col hidden lg:flex">
               <div className="px-3.5 py-3 border-b border-neutral-100 flex items-center justify-between">
                 <h3 className="text-[13px] font-bold text-neutral-900">내 갤러리</h3>
                 <span className="text-[11px] text-neutral-400">{gallery.length}장</span>
