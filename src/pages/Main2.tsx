@@ -31,15 +31,20 @@ interface ArrowLayout {
 type ArrowMap = Record<string, ArrowLayout>;
 
 /* ─── 기본 레이아웃 ─── */
-const DEFAULT_LAYOUT: LayoutMap = {
-  'left-main':      { x: 80,  y: 160, w: 280, h: 373, rotate: 0 },
-  'left-dress':     { x: 20,  y: 120, w: 90,  h: 90,  rotate: -6 },
-  'left-bag':       { x: 320, y: 260, w: 85,  h: 85,  rotate: 4 },
-  'left-shoes':     { x: 20,  y: 460, w: 85,  h: 85,  rotate: -3 },
-  'center-text':    { x: 500, y: 180, w: 520, h: 320, rotate: 0 },
-  'right-main':     { x: 1100, y: 140, w: 260, h: 347, rotate: 0 },
-  'right-product':  { x: 1050, y: 350, w: 100, h: 125, rotate: 3 },
-};
+// 화면 너비 기반 동적 기본 레이아웃
+function getDefaultLayout(): LayoutMap {
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const cx = vw / 2; // 화면 중앙
+  return {
+    'left-main':      { x: vw * 0.08,  y: 160, w: 280, h: 373, rotate: 0 },
+    'left-dress':     { x: vw * 0.02,  y: 120, w: 90,  h: 90,  rotate: -6 },
+    'left-bag':       { x: vw * 0.24,  y: 260, w: 85,  h: 85,  rotate: 4 },
+    'left-shoes':     { x: vw * 0.02,  y: 460, w: 85,  h: 85,  rotate: -3 },
+    'center-text':    { x: cx - 260,   y: 180, w: 520, h: 320, rotate: 0 },
+    'right-main':     { x: vw * 0.72,  y: 140, w: 260, h: 347, rotate: 0 },
+    'right-product':  { x: vw * 0.68,  y: 350, w: 100, h: 125, rotate: 3 },
+  };
+}
 
 const DEFAULT_ARROWS: ArrowMap = {
   'arrow-dress':  { x: 100, y: 180, w: 80, h: 60, rotate: 20, curve: 0.4 },
@@ -460,8 +465,8 @@ export default function Main2() {
   const [layouts, setLayouts] = useState<LayoutMap>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : { ...DEFAULT_LAYOUT };
-    } catch { return { ...DEFAULT_LAYOUT }; }
+      return saved ? JSON.parse(saved) : { ...getDefaultLayout() };
+    } catch { return { ...getDefaultLayout() }; }
   });
   const [arrows, setArrows] = useState<ArrowMap>(() => {
     try {
@@ -490,7 +495,7 @@ export default function Main2() {
   };
 
   const handleReset = () => {
-    setLayouts({ ...DEFAULT_LAYOUT });
+    setLayouts({ ...getDefaultLayout() });
     setArrows({ ...DEFAULT_ARROWS });
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(ARROW_STORAGE_KEY);
