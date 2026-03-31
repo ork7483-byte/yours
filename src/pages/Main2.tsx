@@ -31,18 +31,18 @@ interface ArrowLayout {
 type ArrowMap = Record<string, ArrowLayout>;
 
 /* ─── 기본 레이아웃 ─── */
-// 화면 너비 기반 동적 기본 레이아웃
+// 1920px 기준 로컬 저장값을 비율로 변환하여 적용
 function getDefaultLayout(): LayoutMap {
-  const vw = typeof window !== 'undefined' ? window.innerWidth : 1440;
-  const cx = vw / 2; // 화면 중앙
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const s = vw / 1920; // 스케일 팩터
   return {
-    'left-main':      { x: vw * 0.08,  y: 160, w: 280, h: 373, rotate: 0 },
-    'left-dress':     { x: vw * 0.02,  y: 120, w: 90,  h: 90,  rotate: -6 },
-    'left-bag':       { x: vw * 0.24,  y: 260, w: 85,  h: 85,  rotate: 4 },
-    'left-shoes':     { x: vw * 0.02,  y: 460, w: 85,  h: 85,  rotate: -3 },
-    'center-text':    { x: cx - 260,   y: 180, w: 520, h: 320, rotate: 0 },
-    'right-main':     { x: vw * 0.72,  y: 140, w: 260, h: 347, rotate: 0 },
-    'right-product':  { x: vw * 0.68,  y: 350, w: 100, h: 125, rotate: 3 },
+    'left-main':      { x: 135 * s,  y: 201 * s, w: 397 * s, h: 563 * s, rotate: 0 },
+    'left-dress':     { x: 38 * s,   y: 115 * s, w: 143 * s, h: 192 * s, rotate: 0 },
+    'left-bag':       { x: 449 * s,  y: 237 * s, w: 171 * s, h: 151 * s, rotate: 0 },
+    'left-shoes':     { x: 41 * s,   y: 647 * s, w: 152 * s, h: 205 * s, rotate: -1 },
+    'center-text':    { x: 637 * s,  y: 298 * s, w: 661 * s, h: 266 * s, rotate: 0 },
+    'right-main':     { x: 1425 * s, y: 233 * s, w: 401 * s, h: 506 * s, rotate: 0 },
+    'right-product':  { x: 1352 * s, y: 154 * s, w: 170 * s, h: 218 * s, rotate: 0 },
   };
 }
 
