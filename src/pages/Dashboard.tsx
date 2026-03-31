@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GoogleGenAI } from '@google/genai';
+import { useAuth } from '../lib/useAuth';
+import { saveGeneratedImage } from '../lib/imageStorage';
 import { 
   BarChart3, 
   Bell, 
@@ -27,7 +29,9 @@ import {
   Languages,
   Music,
   Download,
-  Maximize2
+  Maximize2,
+  Cloud,
+  LogIn
 } from 'lucide-react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 
@@ -43,8 +47,11 @@ export default function Dashboard() {
   const loc = useLocation();
   const tabMap: Record<string, string> = { '/fitting': 'lookbook', '/video': 'video', '/reservation': 'floorcut', '/help': 'cs' };
   const [activeTab, setActiveTab] = useState(tabMap[loc.pathname] || 'lookbook');
+  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showFullPreview, setShowFullPreview] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [presentationMode, setPresentationMode] = useState(false);
 
   // UI States for Demo
@@ -569,10 +576,39 @@ Now process the following inputs:\n\n` });
                             link.download = `junto-ai-${Date.now()}.png`;
                             link.click();
                           }}
-                          className="px-4 py-2 bg-neutral-900/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-white hover:bg-neutral-900 transition-colors cursor-pointer flex items-center gap-1.5"
+                          className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer flex items-center gap-1.5"
                         >
-                          <Download className="w-3.5 h-3.5" /> 저장
+                          <Download className="w-3.5 h-3.5" /> PC 저장
                         </button>
+                        {user ? (
+                          <button
+                            onClick={async () => {
+                              if (!generatedImage || isSaving) return;
+                              setIsSaving(true);
+                              setSaveMsg(null);
+                              const { error } = await saveGeneratedImage(generatedImage, user.id, '피팅 이미지');
+                              setIsSaving(false);
+                              setSaveMsg(error ? `오류: ${error}` : '저장 완료!');
+                              setTimeout(() => setSaveMsg(null), 3000);
+                            }}
+                            disabled={isSaving}
+                            className="px-4 py-2 bg-neutral-900/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-white hover:bg-neutral-900 transition-colors cursor-pointer flex items-center gap-1.5"
+                          >
+                            {isSaving ? '저장 중...' : <><Cloud className="w-3.5 h-3.5" /> 클라우드 저장</>}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={signInWithGoogle}
+                            className="px-4 py-2 bg-neutral-900/90 backdrop-blur-sm rounded-lg text-[12px] font-semibold text-white hover:bg-neutral-900 transition-colors cursor-pointer flex items-center gap-1.5"
+                          >
+                            <Cloud className="w-3.5 h-3.5" /> 로그인 후 저장
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {saveMsg && (
+                      <div className={`absolute top-4 right-4 px-4 py-2 rounded-lg text-[12px] font-semibold backdrop-blur-sm ${saveMsg.includes('오류') ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'}`}>
+                        {saveMsg}
                       </div>
                     )}
                   </>
@@ -863,7 +899,22 @@ Now process the following inputs:\n\n` });
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col font-sans antialiased">
       {/* Top Navigation Bar */}
-      {/* 상단 탭 바 제거됨 — 메인 페이지 네비에서 직접 접근 */}
+      {/* 상단 바: 홈 링크 + 로그인 */}
+      <div className="bg-white border-b border-neutral-100 px-5 md:px-8 py-3 flex items-center justify-between shrink-0 z-10">
+        <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+        <div className="flex items-center gap-3">
+          {authLoading ? null : user ? (
+            <>
+              <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
+              <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
+            </>
+          ) : (
+            <button onClick={signInWithGoogle} className="px-4 py-2 bg-neutral-900 text-white text-[12px] font-semibold rounded-lg hover:bg-neutral-800 cursor-pointer transition-colors flex items-center gap-1.5">
+              <LogIn className="w-3.5 h-3.5" /> Google 로그인
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">

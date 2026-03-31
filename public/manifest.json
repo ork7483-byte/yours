@@ -1,0 +1,22 @@
+{
+  "name": "Yours Mall",
+  "short_name": "Yours",
+  "description": "AI 패션 피팅 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAF9",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

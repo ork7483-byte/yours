@@ -676,12 +676,35 @@ export default function Main2() {
             </div>
           </DraggableBlock>
         </div>
-        {/* 모바일 히어로 텍스트 */}
-        <div className="md:hidden flex items-center justify-center min-h-screen px-6">
-          <h1 className="text-[2rem] font-bold leading-[1.4] tracking-tight text-black text-center animate-[fadeInUp_1s_ease-out_both]">
+        {/* 모바일 히어로 */}
+        <div className="md:hidden flex flex-col items-center justify-center min-h-screen px-5 py-20 gap-8">
+          <h1 className="text-[1.8rem] font-bold leading-[1.4] tracking-tight text-black text-center animate-[fadeInUp_1s_ease-out_both]">
             <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Yours</span>의 새로운 시작,<br/>
             <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Junto AI</span>가 함께 합니다.
           </h1>
+          {/* 모바일 이미지 그리드 */}
+          <div className="w-full grid grid-cols-2 gap-3 animate-[fadeInUp_1s_ease-out_0.3s_both]">
+            <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-lg">
+              <img src="/images/hero.webp" alt="AI 모델컷" className="w-full h-full object-cover" />
+            </div>
+            <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-lg">
+              <img src="/images/hero(2).webp" alt="AI 제품 사진" className="w-full h-full object-cover" />
+            </div>
+          </div>
+          <div className="flex gap-2.5 animate-[fadeInUp_1s_ease-out_0.5s_both]">
+            <div className="w-16 h-16 rounded-lg overflow-hidden shadow-md border border-neutral-100 bg-white p-1">
+              <img src="/images/Hero_.webp" alt="원본 의상" className="w-full h-full object-cover rounded" />
+            </div>
+            <div className="w-16 h-16 rounded-lg overflow-hidden shadow-md border border-neutral-100 bg-white p-1">
+              <img src="/images/jacket.webp" alt="자켓" className="w-full h-full object-cover rounded" />
+            </div>
+            <div className="w-16 h-16 rounded-lg overflow-hidden shadow-md border border-neutral-100 bg-white p-1">
+              <img src="/images/skirts.webp" alt="스커트" className="w-full h-full object-cover rounded" />
+            </div>
+            <div className="w-16 h-16 rounded-lg overflow-hidden shadow-md border border-neutral-100 bg-white p-1">
+              <img src="/images/hero(2)_.webp" alt="원본 제품" className="w-full h-full object-cover rounded" />
+            </div>
+          </div>
         </div>
 
         {/* 우측 메인 이미지 */}
