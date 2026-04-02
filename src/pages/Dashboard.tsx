@@ -372,8 +372,14 @@ export default function Dashboard() {
       if (errMsg.includes("Requested entity was not found") || errMsg.includes("permission denied")) {
         setHasApiKey(false);
         setErrorMsg("API 키 권한이 없거나 유효하지 않습니다. 다시 설정해주세요.");
+      } else if (errMsg.includes("high demand") || errMsg.includes("UNAVAILABLE") || errMsg.includes("503")) {
+        setErrorMsg("현재 서버가 혼잡합니다. 잠시 후 다시 생성하기 버튼을 눌러주세요.");
+      } else if (errMsg.includes("Deadline expired") || errMsg.includes("timeout")) {
+        setErrorMsg("이미지 생성 시간이 초과되었습니다. 다시 시도해주세요.");
+      } else if (errMsg.includes("INVALID_ARGUMENT") || errMsg.includes("Unsupported MIME")) {
+        setErrorMsg("이미지 형식이 올바르지 않습니다. 다른 이미지를 선택해주세요.");
       } else {
-        setErrorMsg(`오류가 발생했습니다: ${errMsg}`);
+        setErrorMsg("일시적인 오류가 발생했습니다. 다시 시도해주세요.");
       }
     } finally {
       setIsGenerating(false);
