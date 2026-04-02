@@ -81,6 +81,8 @@ export default function VideoPage() {
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoResult, setVideoResult] = useState<string | null>(null);
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [videoPollCount, setVideoPollCount] = useState(0);
+  const [videoStatus, setVideoStatus] = useState('');
 
   // Step 3 — voice (optional)
   const [voiceEnabled, setVoiceEnabled] = useState(false);
@@ -151,6 +153,8 @@ export default function VideoPage() {
     setVideoError(null);
     setVideoResult(null);
     setVideoLoading(true);
+    setVideoPollCount(0);
+    setVideoStatus('요청 전송 중...');
 
     try {
       const key = await getApiKey('kie_api_key');
@@ -178,8 +182,14 @@ export default function VideoPage() {
       const taskId: string = data.data?.taskId;
       if (!taskId) throw new Error('taskId를 받지 못했습니다.');
 
+      setVideoStatus('AI가 영상을 구상하고 있습니다...');
       // Poll every 15 seconds, up to 20 attempts (5 minutes)
       for (let i = 0; i < 20; i++) {
+        setVideoPollCount(i + 1);
+        if (i < 3) setVideoStatus('AI가 영상을 구상하고 있습니다...');
+        else if (i < 6) setVideoStatus('프레임을 생성하고 있습니다...');
+        else if (i < 10) setVideoStatus('영상을 렌더링하고 있습니다...');
+        else setVideoStatus('마무리 작업 중...');
         await delay(15000);
         const poll = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`, {
           headers: { Authorization: `Bearer ${key}` },
@@ -362,7 +372,106 @@ export default function VideoPage() {
   // Main layout
   // ─────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#FAFAF9] font-sans antialiased">
+    <div className="min-h-screen bg-[#FAFAF9] font-sans antialiased relative">
+
+      {/* ── 영상 생성 중 풀스크린 오버레이 ── */}
+      <AnimatePresence>
+        {videoLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex bg-black"
+          >
+            {/* 좌측: 생성 중 화면 */}
+            <div className="flex-1 flex flex-col items-center justify-center relative">
+              {/* 원본 이미지 블러 배경 */}
+              {firstSelectedImage && (
+                <img src={firstSelectedImage} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl" />
+              )}
+              <div className="relative z-10 flex flex-col items-center text-center px-8">
+                {/* 원본 이미지 */}
+                {firstSelectedImage && (
+                  <div className="w-48 h-64 rounded-xl overflow-hidden shadow-2xl mb-8 border border-white/10">
+                    <img src={firstSelectedImage} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                {/* 스피너 */}
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 border-[3px] border-white/10 border-t-white rounded-full animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Video className="w-5 h-5 text-white/60" />
+                  </div>
+                </div>
+                {/* 상태 텍스트 */}
+                <p className="text-white text-[18px] font-semibold mb-2">{videoStatus}</p>
+                <p className="text-white/40 text-[13px]">
+                  {videoPollCount > 0 ? `확인 중... (${videoPollCount}/20)` : '요청을 전송하고 있습니다'}
+                </p>
+                {/* 프로그레스 바 */}
+                <div className="w-64 h-1 bg-white/10 rounded-full mt-6 overflow-hidden">
+                  <div
+                    className="h-full bg-white/60 rounded-full transition-all duration-[15000ms] ease-linear"
+                    style={{ width: `${Math.min(95, videoPollCount * 5)}%` }}
+                  />
+                </div>
+                <p className="text-white/30 text-[11px] mt-3">최대 5분 소요 · 페이지를 닫지 마세요</p>
+              </div>
+            </div>
+
+            {/* 우측: 갤러리 */}
+            <div className="w-[280px] bg-white/5 border-l border-white/10 flex flex-col hidden lg:flex">
+              <div className="px-4 py-3 border-b border-white/10">
+                <h3 className="text-[13px] font-bold text-white/80">내 갤러리</h3>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3">
+                <div className="grid grid-cols-2 gap-2">
+                  {gallery.slice(0, 12).map(img => (
+                    <div key={img.id} className="aspect-square rounded-lg overflow-hidden bg-white/5">
+                      <img src={img.image_url} alt="" className="w-full h-full object-cover opacity-70" loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+                {gallery.length === 0 && (
+                  <p className="text-white/30 text-[12px] text-center py-8">갤러리가 비어있습니다</p>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── 영상 결과 풀스크린 ── */}
+      <AnimatePresence>
+        {videoResult && !videoLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
+            onClick={() => setVideoResult(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-3xl w-full mx-6"
+              onClick={e => e.stopPropagation()}
+            >
+              <video src={videoResult} controls autoPlay className="w-full rounded-xl shadow-2xl" />
+              <div className="flex justify-center gap-3 mt-4">
+                <a href={videoResult} download={`video-${Date.now()}.mp4`} className="px-5 py-2.5 bg-white text-neutral-900 rounded-lg text-[13px] font-semibold no-underline hover:bg-neutral-100 transition-colors flex items-center gap-2">
+                  <Download className="w-4 h-4" /> 영상 저장
+                </a>
+                <button onClick={() => setVideoResult(null)} className="px-5 py-2.5 bg-white/10 text-white rounded-lg text-[13px] font-semibold hover:bg-white/20 transition-colors cursor-pointer">
+                  닫기
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 상단바 */}
       <div className="bg-white border-b border-neutral-100 px-6 py-3 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center gap-3">
