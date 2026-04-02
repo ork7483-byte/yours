@@ -164,9 +164,9 @@ export default function VideoPage() {
           model: klingModel,
           input: {
             prompt: videoPrompt || '자연스러운 영상',
-            image_urls: [firstSelectedImage],
-            sound: videoWithSound,
+            image_url: firstSelectedImage,
             duration: '5',
+            ...(klingModel === 'kling-2.6/image-to-video' ? { sound: videoWithSound } : {}),
           },
         }),
       });
