@@ -1013,7 +1013,7 @@ export default function Dashboard2() {
       {/* Top Navigation Bar */}
       {/* 상단 바: 홈 링크 + 로그인 */}
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
-        <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+        <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
         <div className="flex items-center gap-3">
           {/* AI 모델 선택 */}
           <div className="flex items-center gap-2">

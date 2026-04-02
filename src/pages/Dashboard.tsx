@@ -331,18 +331,18 @@ export default function Dashboard() {
 
       const generateConfig: any = {
         responseModalities: ['TEXT', 'IMAGE'],
-        thinkingConfig: { thinkingLevel: 'HIGH' },
       };
       if (aiModel === 'gemini-3-pro-image-preview') {
-        // Pro: imageResolution (숫자) 사용
+        // Pro: imageResolution (숫자), thinkingConfig 미지원
         const proResMap: Record<string, number> = { '1K': 1024, '2K': 2048, '4K': 4096 };
         generateConfig.imageResolution = proResMap[imageResolution] || 1024;
       } else {
-        // Flash: imageConfig.imageSize (문자열) 사용
+        // Flash: imageConfig (문자열) + thinkingConfig 지원
         generateConfig.imageConfig = {
           imageSize: imageResolution,
           aspectRatio: ratioLabel,
         };
+        generateConfig.thinkingConfig = { thinkingLevel: 'HIGH' };
       }
       console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'config:', JSON.stringify(generateConfig));
 
@@ -375,6 +375,7 @@ export default function Dashboard() {
       }
     } catch (error: any) {
       console.error("Generation failed:", error);
+      console.error("Full error detail:", JSON.stringify(error, null, 2));
       const errMsg = error.message || JSON.stringify(error);
       if (errMsg.includes("Requested entity was not found") || errMsg.includes("permission denied")) {
         setHasApiKey(false);
@@ -1026,7 +1027,7 @@ export default function Dashboard() {
       {/* Top Navigation Bar */}
       {/* 상단 바: 홈 링크 + 로그인 */}
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
-        <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Yours <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+        <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
         <div className="flex items-center gap-3">
           {/* AI 모델 선택 */}
           <div className="flex items-center gap-2">
