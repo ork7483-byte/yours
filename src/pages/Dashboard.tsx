@@ -331,13 +331,20 @@ export default function Dashboard() {
 
       const generateConfig: any = {
         responseModalities: ['TEXT', 'IMAGE'],
-        imageConfig: {
-          imageSize: imageResolution,
-          aspectRatio: ratioLabel,
-        },
         thinkingConfig: { thinkingLevel: 'HIGH' },
       };
-      console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'ratio:', ratioLabel);
+      if (aiModel === 'gemini-3-pro-image-preview') {
+        // Pro: imageResolution (숫자) 사용
+        const proResMap: Record<string, number> = { '1K': 1024, '2K': 2048, '4K': 4096 };
+        generateConfig.imageResolution = proResMap[imageResolution] || 1024;
+      } else {
+        // Flash: imageConfig.imageSize (문자열) 사용
+        generateConfig.imageConfig = {
+          imageSize: imageResolution,
+          aspectRatio: ratioLabel,
+        };
+      }
+      console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'config:', JSON.stringify(generateConfig));
 
       const response = await ai.models.generateContent({
         model: aiModel,
