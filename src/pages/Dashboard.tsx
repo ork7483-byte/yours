@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GoogleGenAI } from '@google/genai';
 import { useAuth } from '../lib/useAuth';
 import { saveGeneratedImage, getMyImages, deleteImage } from '../lib/imageStorage';
+import { generateImage } from '../lib/apiClient';
 import { 
   BarChart3, 
   Bell, 
@@ -244,132 +244,67 @@ export default function Dashboard() {
 
     setIsGenerating(true);
     setErrorMsg(null);
-    
+
     try {
-      const apiKey = (typeof process !== 'undefined' ? process.env.API_KEY || process.env.GEMINI_API_KEY : undefined) || import.meta.env.VITE_GEMINI_API_KEY;
-      const ai = new GoogleGenAI({ apiKey });
-      
-      // 모델/포즈/배경 이미지 데이터 결정 (커스텀 업로드 or 예시 프리셋)
+      // 이미지 데이터 수집
       const customModel = customModels.find(m => m.id === lookbookModel);
       const customPose = customPoses.find(p => p.id === lookbookPose);
       const customBg = customBgs.find(b => b.id === lookbookBg);
-
       const modelData = customModel ? { data: customModel.data, mimeType: customModel.mimeType } : selectedModelData;
       const poseData = customPose ? { data: customPose.data, mimeType: customPose.mimeType } : selectedPoseData;
       const bgData = customBg ? { data: customBg.data, mimeType: customBg.mimeType } : selectedBgData;
 
+      // 이미지 라벨 + 바이너리만 서버에 전달 (프롬프트 로직은 서버에만 존재)
       const parts: any[] = [];
-      let stepCounter = 1;
+      let step = 1;
 
-      // ═══════════════════════════════════════════
-      // 공식 가이드 기반 최적화 프롬프트 엔진
-      // ═══════════════════════════════════════════
-
-      const styleMap: Record<string, string> = {
-        studio: 'in a clean white photography studio with soft, even lighting',
-        street: 'on an urban street during golden hour with natural bokeh background',
-        editorial: 'in a high-fashion editorial setting with dramatic cinematic lighting',
-        minimal: 'in a minimalist setting with soft neutral tones and gentle light',
-        outdoor: 'in a beautiful outdoor setting with warm golden sunlight',
-      };
-
-      const lightMap: Record<string, string> = {
-        front: 'with soft front lighting at 45 degrees',
-        side: 'with dramatic side lighting emphasizing fabric texture',
-        back: 'with ethereal backlighting creating a rim light effect',
-        natural: 'with natural ambient window light',
-      };
-
-      // 시스템 프롬프트 — 간결하고 서술적 (공식 가이드: 서술형 > 키워드 나열)
-      const styleDesc = styleMap[shootingStyle] || styleMap.studio;
-      const lightDesc = lightMap[lightingDir] || lightMap.front;
-
-      parts.push({ text: `Generate a photorealistic fashion lookbook photograph ${styleDesc} ${lightDesc}. The image should look like it was shot by a professional fashion photographer for a luxury brand catalog. Each reference image below serves exactly one purpose — clothing for the garment only, face for appearance only, pose for body position only, background for the scene only.\n\n` });
-
-      let instructions = "\nCombine all elements into one seamless photograph where:";
-
-      // 의상
       if (clothingMode === 'separates') {
-        if (uploadedTop && uploadedBottom) {
-          parts.push({ text: `${stepCounter++}. The TOP garment to wear:` });
+        if (uploadedTop) {
+          parts.push({ text: `${step++}. The TOP garment to wear:` });
           parts.push({ inlineData: { data: uploadedTop.data, mimeType: uploadedTop.mimeType } });
-          parts.push({ text: `\n${stepCounter++}. The BOTTOM garment to wear:` });
+        }
+        if (uploadedBottom) {
+          parts.push({ text: `\n${step++}. The BOTTOM garment to wear:` });
           parts.push({ inlineData: { data: uploadedBottom.data, mimeType: uploadedBottom.mimeType } });
-          instructions += "\n- The model wears both garments exactly as shown — same fabric, color, texture, pattern, and all details preserved.";
-        } else if (uploadedTop) {
-          parts.push({ text: `${stepCounter++}. The TOP garment to wear:` });
-          parts.push({ inlineData: { data: uploadedTop.data, mimeType: uploadedTop.mimeType } });
-          instructions += "\n- The model wears this top with a complementary neutral bottom.";
-        } else if (uploadedBottom) {
-          parts.push({ text: `${stepCounter++}. The BOTTOM garment to wear:` });
-          parts.push({ inlineData: { data: uploadedBottom.data, mimeType: uploadedBottom.mimeType } });
-          instructions += "\n- The model wears this bottom with a complementary neutral top.";
         }
       } else if (clothingMode === 'onepiece' && uploadedDress) {
-        parts.push({ text: `${stepCounter++}. The dress/outfit to wear:` });
+        parts.push({ text: `${step++}. The dress/outfit to wear:` });
         parts.push({ inlineData: { data: uploadedDress.data, mimeType: uploadedDress.mimeType } });
-        instructions += "\n- The model wears this outfit exactly as shown — same fabric, silhouette, and all details preserved.";
       }
 
-      // 모델
       if (modelData) {
-        parts.push({ text: `\n${stepCounter++}. Face/appearance reference (use face and body type only, ignore their clothing):` });
+        parts.push({ text: `\n${step++}. Face/appearance reference:` });
         parts.push({ inlineData: { data: modelData.data, mimeType: modelData.mimeType } });
-        instructions += "\n- The model's face and body type match this reference exactly.";
-      } else {
-        instructions += "\n- A professional fashion model with natural beauty.";
       }
-
-      // 포즈
       if (poseData) {
-        parts.push({ text: `\n${stepCounter++}. Pose reference (replicate body position only, ignore face and clothing):` });
+        parts.push({ text: `\n${step++}. Pose reference:` });
         parts.push({ inlineData: { data: poseData.data, mimeType: poseData.mimeType } });
-        instructions += "\n- The model holds this exact pose.";
-      } else {
-        instructions += "\n- The model stands in a natural, confident three-quarter pose.";
       }
-
-      // 배경
       if (bgData) {
-        parts.push({ text: `\n${stepCounter++}. Background/scene reference (use environment only, ignore people):` });
+        parts.push({ text: `\n${step++}. Background reference:` });
         parts.push({ inlineData: { data: bgData.data, mimeType: bgData.mimeType } });
-        instructions += "\n- The background matches this scene.";
       }
-
-      instructions += "\n\nThe clothing must drape naturally on the body with realistic folds and shadows. The final image should be indistinguishable from a real photograph.";
 
       const ratioLabel = imageRatio.replace('/', ':');
-      
-      parts.push({ text: instructions });
 
-      // Flash 2K 고정 설정 (공식 문서 기반)
-      const generateConfig: any = {
-        responseModalities: ['TEXT', 'IMAGE'],
-        imageConfig: {
-          imageSize: imageResolution,
-          aspectRatio: ratioLabel,
-        },
-        thinkingConfig: { thinkingLevel: 'HIGH' },
-      };
-      console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'config:', JSON.stringify(generateConfig));
-
-      const response = await ai.models.generateContent({
-        model: aiModel,
-        contents: {
-          parts: parts,
-        },
-        config: generateConfig,
+      // 서버 API 호출 (핵심 로직은 서버에만 존재)
+      const result = await generateImage({
+        parts,
+        clothingMode,
+        hasTop: !!uploadedTop,
+        hasBottom: !!uploadedBottom,
+        hasDress: !!uploadedDress,
+        hasModel: !!modelData,
+        hasPose: !!poseData,
+        hasBg: !!bgData,
+        shootingStyle,
+        lightingDir,
+        imageRatio: ratioLabel,
+        imageResolution,
       });
 
-      let newImageUrl = null;
-      for (const part of response.candidates?.[0]?.content?.parts || []) {
-        if (part.inlineData) {
-          newImageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-          break;
-        }
-      }
-
-      if (newImageUrl) {
+      if (result.success && result.image) {
+        const newImageUrl = `data:${result.image.mimeType};base64,${result.image.data}`;
         setGeneratedImage(newImageUrl);
         await logApiUsage('success');
         if (user) {
@@ -378,25 +313,12 @@ export default function Dashboard() {
           });
         }
       } else {
-        setErrorMsg("이미지 생성에 실패했습니다. (응답에 이미지 데이터가 없습니다)");
-        await logApiUsage('error', 'no image in response');
+        setErrorMsg(result.error || "이미지 생성에 실패했습니다.");
+        await logApiUsage('error', result.error);
       }
     } catch (error: any) {
-      console.error("Generation failed:", error);
-      const errMsg = error.message || JSON.stringify(error);
-      await logApiUsage('error', errMsg);
-      if (errMsg.includes("Requested entity was not found") || errMsg.includes("permission denied")) {
-        setHasApiKey(false);
-        setErrorMsg("API 키 권한이 없거나 유효하지 않습니다. 다시 설정해주세요.");
-      } else if (errMsg.includes("high demand") || errMsg.includes("UNAVAILABLE") || errMsg.includes("503")) {
-        setErrorMsg("현재 서버가 혼잡합니다. 잠시 후 다시 생성하기 버튼을 눌러주세요.");
-      } else if (errMsg.includes("Deadline expired") || errMsg.includes("timeout")) {
-        setErrorMsg("이미지 생성 시간이 초과되었습니다. 다시 시도해주세요.");
-      } else if (errMsg.includes("INVALID_ARGUMENT") || errMsg.includes("Unsupported MIME")) {
-        setErrorMsg("이미지 형식이 올바르지 않습니다. 다른 이미지를 선택해주세요.");
-      } else {
-        setErrorMsg("일시적인 오류가 발생했습니다. 다시 시도해주세요.");
-      }
+      setErrorMsg("일시적인 오류가 발생했습니다. 다시 시도해주세요.");
+      await logApiUsage('error', error.message);
     } finally {
       setIsGenerating(false);
     }
