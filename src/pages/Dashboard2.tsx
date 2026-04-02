@@ -329,19 +329,15 @@ export default function Dashboard2() {
       
       parts.push({ text: instructions });
 
-      // 테스트: Flash에서도 responseModalities + imageSize 적용
-      const resMap: Record<string, string> = { '1K': '1K', '2K': '2K', '4K': '4K' };
       const generateConfig: any = {
-        aspectRatio: ratioLabel,
         responseModalities: ['TEXT', 'IMAGE'],
-        imageSize: resMap[imageResolution] || '1K',
+        imageConfig: {
+          imageSize: imageResolution,
+          aspectRatio: ratioLabel,
+        },
         thinkingConfig: { thinkingLevel: 'HIGH' },
       };
-      if (aiModel === 'gemini-3-pro-image-preview') {
-        generateConfig.imageResolution = parseInt(resMap[imageResolution]) || 1024;
-      }
-      // 디버그: 콘솔에 설정 출력
-      console.log('[fitting2] model:', aiModel, 'config:', JSON.stringify(generateConfig));
+      console.log('[fitting2] model:', aiModel, 'size:', imageResolution, 'ratio:', ratioLabel);
 
       const response = await ai.models.generateContent({
         model: aiModel,

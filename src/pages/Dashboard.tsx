@@ -329,17 +329,15 @@ export default function Dashboard() {
       
       parts.push({ text: instructions });
 
-      const resMap: Record<string, number> = { '0.5K': 512, '1K': 1024, '2K': 2048, '4K': 4096 };
       const generateConfig: any = {
-        aspectRatio: ratioLabel,
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: {
+          imageSize: imageResolution,
+          aspectRatio: ratioLabel,
+        },
         thinkingConfig: { thinkingLevel: 'HIGH' },
-        imageResolution: resMap[imageResolution] || 1024,
       };
-      if (aiModel === 'gemini-3-pro-image-preview') {
-        generateConfig.responseModalities = ['TEXT', 'IMAGE'];
-      }
-      // 디버그
-      console.log('[fitting1] model:', aiModel, 'resolution:', imageResolution, 'config:', JSON.stringify(generateConfig));
+      console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'ratio:', ratioLabel);
 
       const response = await ai.models.generateContent({
         model: aiModel,
