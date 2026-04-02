@@ -21,6 +21,8 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [images, setImages] = useState<any[]>([]);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
+  const [domainLogs, setDomainLogs] = useState<any[]>([]);
+  const [domainStats, setDomainStats] = useState<Record<string, { allowed: number; blocked: number; last: string }>>({});
 
   useEffect(() => {
     if (user) loadData();
@@ -88,6 +90,25 @@ export default function AdminDashboard() {
       .order('created_at', { ascending: false })
       .limit(100);
     setImages(imgData || []);
+
+    // 도메인 접근 로그 조회
+    const { data: domainData } = await supabase
+      .from('domain_access_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(500);
+    const dLogs = domainData || [];
+    setDomainLogs(dLogs);
+
+    // 도메인별 통계
+    const dStats: Record<string, { allowed: number; blocked: number; last: string }> = {};
+    dLogs.forEach((log: any) => {
+      const o = log.origin || 'unknown';
+      if (!dStats[o]) dStats[o] = { allowed: 0, blocked: 0, last: log.created_at };
+      if (log.status === 'allowed') dStats[o].allowed++;
+      else dStats[o].blocked++;
+    });
+    setDomainStats(dStats);
 
     setIsLoading(false);
   };
@@ -258,6 +279,44 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
+            </div>
+            {/* 도메인 접근 로그 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              {/* 도메인별 통계 */}
+              <div className="bg-white rounded-xl p-5 border border-neutral-100 shadow-sm">
+                <h3 className="text-[14px] font-bold text-neutral-900 mb-4 flex items-center gap-2"><Users className="w-4 h-4 text-purple-500" /> 도메인별 접근 현황</h3>
+                <div className="space-y-3">
+                  {(Object.entries(domainStats) as [string, { allowed: number; blocked: number; last: string }][])
+                    .sort((a, b) => (b[1].allowed + b[1].blocked) - (a[1].allowed + a[1].blocked))
+                    .map(([domain, info]) => (
+                      <div key={domain} className="flex items-center justify-between py-2 border-b border-neutral-50 last:border-0">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-medium text-neutral-900 truncate">{domain || '(빈 origin)'}</p>
+                          <p className="text-[10px] text-neutral-400">마지막: {new Date(info.last).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                        <div className="flex gap-2 shrink-0 ml-3">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">{info.allowed} 허용</span>
+                          {info.blocked > 0 && <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700">{info.blocked} 차단</span>}
+                        </div>
+                      </div>
+                    ))}
+                  {Object.keys(domainStats).length === 0 && <p className="text-[13px] text-neutral-400 text-center py-4">도메인 접근 기록이 없습니다</p>}
+                </div>
+              </div>
+
+              {/* 최근 차단 로그 */}
+              <div className="bg-white rounded-xl p-5 border border-neutral-100 shadow-sm">
+                <h3 className="text-[14px] font-bold text-neutral-900 mb-4 flex items-center gap-2"><AlertCircle className="w-4 h-4 text-red-500" /> 최근 차단된 접근</h3>
+                <div className="space-y-2">
+                  {domainLogs.filter((l: any) => l.status === 'blocked').slice(0, 15).map((log: any) => (
+                    <div key={log.id} className="flex items-center justify-between py-1.5 border-b border-neutral-50">
+                      <span className="text-[11px] text-red-600 font-medium truncate flex-1">{log.origin || '(빈 origin)'}</span>
+                      <span className="text-[10px] text-neutral-400 shrink-0 ml-2">{new Date(log.created_at).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                  ))}
+                  {domainLogs.filter((l: any) => l.status === 'blocked').length === 0 && <p className="text-[13px] text-neutral-400 text-center py-4">차단된 접근이 없습니다 (좋은 소식!)</p>}
+                </div>
+              </div>
             </div>
           </>
         ) : null}

@@ -24,9 +24,29 @@ const LIGHT_MAP = {
   natural: 'with natural ambient window light',
 };
 
+// Supabase 로깅 (도메인 접근 기록)
+async function logDomainAccess(origin, status, licenseKey) {
+  try {
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseKey) return;
+
+    await fetch(`${supabaseUrl}/rest/v1/domain_access_logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+      },
+      body: JSON.stringify({ origin, status, license_key: licenseKey || null }),
+    });
+  } catch {}
+}
+
 export default async function handler(req, res) {
   const origin = req.headers.origin || req.headers.referer || '';
   const isAllowed = ALLOWED_ORIGINS.some(o => origin.startsWith(o));
+  const licenseKey = req.headers['x-license-key'] || null;
 
   if (isAllowed) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -34,6 +54,9 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // 모든 접근 로깅 (허용/차단 모두)
+  await logDomainAccess(origin, isAllowed ? 'allowed' : 'blocked', licenseKey);
 
   if (!isAllowed) {
     console.warn(`[BLOCKED] ${origin}`);
