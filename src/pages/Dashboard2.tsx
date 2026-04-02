@@ -329,17 +329,19 @@ export default function Dashboard2() {
       
       parts.push({ text: instructions });
 
+      // 테스트: Flash에서도 responseModalities + imageSize 적용
+      const resMap: Record<string, string> = { '1K': '1K', '2K': '2K', '4K': '4K' };
       const generateConfig: any = {
-        // 공식 API 파라미터: aspectRatio 강제 적용
         aspectRatio: ratioLabel,
-        // thinking 레벨: 구도/조합 더 고민
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageSize: resMap[imageResolution] || '1K',
         thinkingConfig: { thinkingLevel: 'HIGH' },
       };
       if (aiModel === 'gemini-3-pro-image-preview') {
-        const resMap = { '1K': 1024, '2K': 2048, '4K': 4096 };
-        generateConfig.responseModalities = ['TEXT', 'IMAGE'];
-        generateConfig.imageResolution = resMap[imageResolution];
+        generateConfig.imageResolution = parseInt(resMap[imageResolution]) || 1024;
       }
+      // 디버그: 콘솔에 설정 출력
+      console.log('[fitting2] model:', aiModel, 'config:', JSON.stringify(generateConfig));
 
       const response = await ai.models.generateContent({
         model: aiModel,

@@ -338,6 +338,8 @@ export default function Dashboard() {
       if (aiModel === 'gemini-3-pro-image-preview') {
         generateConfig.responseModalities = ['TEXT', 'IMAGE'];
       }
+      // 디버그
+      console.log('[fitting1] model:', aiModel, 'resolution:', imageResolution, 'config:', JSON.stringify(generateConfig));
 
       const response = await ai.models.generateContent({
         model: aiModel,
