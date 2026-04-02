@@ -329,16 +329,14 @@ export default function Dashboard() {
       
       parts.push({ text: instructions });
 
+      const resMap: Record<string, number> = { '0.5K': 512, '1K': 1024, '2K': 2048, '4K': 4096 };
       const generateConfig: any = {
-        // 공식 API 파라미터: aspectRatio 강제 적용
         aspectRatio: ratioLabel,
-        // thinking 레벨: 구도/조합 더 고민
         thinkingConfig: { thinkingLevel: 'HIGH' },
+        imageResolution: resMap[imageResolution] || 1024,
       };
       if (aiModel === 'gemini-3-pro-image-preview') {
-        const resMap = { '1K': 1024, '2K': 2048, '4K': 4096 };
         generateConfig.responseModalities = ['TEXT', 'IMAGE'];
-        generateConfig.imageResolution = resMap[imageResolution];
       }
 
       const response = await ai.models.generateContent({
@@ -1027,13 +1025,11 @@ export default function Dashboard() {
                 <button key={m.id} onClick={() => setAiModel(m.id)} className={`px-3 py-1 text-[10px] font-semibold tracking-wider rounded-[4px] transition-all duration-200 cursor-pointer ${aiModel === m.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}>{m.label}</button>
               ))}
             </div>
-            {aiModel === 'gemini-3-pro-image-preview' && (
-              <div className="flex gap-1">
-                {(['1K', '2K', '4K'] as const).map(res => (
-                  <button key={res} onClick={() => setImageResolution(res)} className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all cursor-pointer ${imageResolution === res ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-400'}`}>{res}</button>
-                ))}
-              </div>
-            )}
+            <div className="flex gap-1">
+              {(aiModel === 'gemini-3-pro-image-preview' ? ['1K', '2K', '4K'] : ['0.5K', '1K', '2K', '4K']).map(res => (
+                <button key={res} onClick={() => setImageResolution(res)} className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all cursor-pointer ${imageResolution === res ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-400'}`}>{res}</button>
+              ))}
+            </div>
           </div>
           <div className="w-px h-5 bg-neutral-200 hidden md:block" />
           {authLoading ? null : user ? (
