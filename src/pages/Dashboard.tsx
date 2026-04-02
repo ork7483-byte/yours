@@ -102,8 +102,8 @@ export default function Dashboard() {
     } catch {}
   };
 
-  const [aiModel, setAiModel] = useState('gemini-3.1-flash-image-preview');
-  const [imageResolution, setImageResolution] = useState<'1K' | '2K' | '4K'>('1K');
+  const aiModel = 'gemini-3.1-flash-image-preview';
+  const imageResolution = '2K';
   const [modalPreview, setModalPreview] = useState<{ img: string; type: 'model' | 'pose' | 'bg'; id: string } | null>(null);
   const [detailLangs, setDetailLangs] = useState(['cn']);
   const [videoVibe, setVideoVibe] = useState('trendy');
@@ -329,18 +329,15 @@ export default function Dashboard() {
       
       parts.push({ text: instructions });
 
-      // 공식 문서: 두 모델 모두 동일한 imageConfig 구조 사용
+      // Flash 2K 고정 설정 (공식 문서 기반)
       const generateConfig: any = {
         responseModalities: ['TEXT', 'IMAGE'],
         imageConfig: {
-          imageSize: imageResolution,   // "1K", "2K", "4K" (대문자 K 필수)
-          aspectRatio: ratioLabel,       // "2:3" 등
+          imageSize: imageResolution,
+          aspectRatio: ratioLabel,
         },
+        thinkingConfig: { thinkingLevel: 'HIGH' },
       };
-      // thinkingConfig는 Flash만 지원
-      if (aiModel !== 'gemini-3-pro-image-preview') {
-        generateConfig.thinkingConfig = { thinkingLevel: 'HIGH' };
-      }
       console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'config:', JSON.stringify(generateConfig));
 
       const response = await ai.models.generateContent({
@@ -1026,23 +1023,7 @@ export default function Dashboard() {
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
         <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
         <div className="flex items-center gap-3">
-          {/* AI 모델 선택 */}
-          <div className="flex items-center gap-2">
-            <div className="flex bg-neutral-100 p-0.5 rounded-md">
-              {[
-                { id: 'gemini-3.1-flash-image-preview', label: 'Flash' },
-                { id: 'gemini-3-pro-image-preview', label: 'Pro' },
-              ].map(m => (
-                <button key={m.id} onClick={() => setAiModel(m.id)} className={`px-3 py-1 text-[10px] font-semibold tracking-wider rounded-[4px] transition-all duration-200 cursor-pointer ${aiModel === m.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}>{m.label}</button>
-              ))}
-            </div>
-            <div className="flex gap-1">
-              {(['1K', '2K', '4K']).map(res => (
-                <button key={res} onClick={() => setImageResolution(res)} className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all cursor-pointer ${imageResolution === res ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-400'}`}>{res}</button>
-              ))}
-            </div>
-          </div>
-          <div className="w-px h-5 bg-neutral-200 hidden md:block" />
+
           {authLoading ? null : user ? (
             <>
               <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
