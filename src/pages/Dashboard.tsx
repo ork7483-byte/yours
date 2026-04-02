@@ -1026,7 +1026,7 @@ export default function Dashboard() {
               ))}
             </div>
             <div className="flex gap-1">
-              {(aiModel === 'gemini-3-pro-image-preview' ? ['1K', '2K', '4K'] : ['0.5K', '1K', '2K', '4K']).map(res => (
+              {(['1K', '2K', '4K']).map(res => (
                 <button key={res} onClick={() => setImageResolution(res)} className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all cursor-pointer ${imageResolution === res ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-400'}`}>{res}</button>
               ))}
             </div>
