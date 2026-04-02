@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../lib/useAuth';
 import { saveGeneratedImage, getMyImages, deleteImage } from '../lib/imageStorage';
-import { generateImage } from '../lib/apiClient';
+import { generateImageViaServer } from '../lib/apiClient';
 import { 
   BarChart3, 
   Bell, 
@@ -289,9 +289,8 @@ export default function Dashboard() {
 
       const ratioLabel = imageRatio.replace('/', ':');
 
-      // 서버 API 호출 (핵심 로직은 서버에만 존재)
-      const result = await generateImage({
-        parts,
+      // 서버에서 프롬프트+설정 받기 → 클라이언트에서 이미지와 합쳐서 Gemini 호출
+      const result = await generateImageViaServer({
         clothingMode,
         hasTop: !!uploadedTop,
         hasBottom: !!uploadedBottom,
@@ -303,10 +302,10 @@ export default function Dashboard() {
         lightingDir,
         imageRatio: ratioLabel,
         imageResolution,
-      });
+      }, parts);
 
-      if (result.success && result.image) {
-        const newImageUrl = `data:${result.image.mimeType};base64,${result.image.data}`;
+      if (result.success && result.imageUrl) {
+        const newImageUrl = result.imageUrl;
         setGeneratedImage(newImageUrl);
         await logApiUsage('success');
         if (user) {
