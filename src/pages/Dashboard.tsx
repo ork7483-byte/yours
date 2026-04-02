@@ -329,19 +329,16 @@ export default function Dashboard() {
       
       parts.push({ text: instructions });
 
+      // 공식 문서: 두 모델 모두 동일한 imageConfig 구조 사용
       const generateConfig: any = {
         responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: {
+          imageSize: imageResolution,   // "1K", "2K", "4K" (대문자 K 필수)
+          aspectRatio: ratioLabel,       // "2:3" 등
+        },
       };
-      if (aiModel === 'gemini-3-pro-image-preview') {
-        // Pro: imageResolution (숫자), thinkingConfig 미지원
-        const proResMap: Record<string, number> = { '1K': 1024, '2K': 2048, '4K': 4096 };
-        generateConfig.imageResolution = proResMap[imageResolution] || 1024;
-      } else {
-        // Flash: imageConfig (문자열) + thinkingConfig 지원
-        generateConfig.imageConfig = {
-          imageSize: imageResolution,
-          aspectRatio: ratioLabel,
-        };
+      // thinkingConfig는 Flash만 지원
+      if (aiModel !== 'gemini-3-pro-image-preview') {
         generateConfig.thinkingConfig = { thinkingLevel: 'HIGH' };
       }
       console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'config:', JSON.stringify(generateConfig));
