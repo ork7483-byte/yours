@@ -439,7 +439,7 @@ export default function Dashboard() {
           <div className="flex flex-col md:flex-row h-full min-h-screen bg-[#FAFAF9]">
             {/* 좌측 패널 */}
             <div className="w-full md:w-[360px] shrink-0 bg-white flex flex-col border-b md:border-b-0 md:border-r border-neutral-100">
-              <div className="flex-1 overflow-y-auto py-6 px-5 md:py-3 md:px-5 flex flex-col gap-0">
+              <div className="overflow-y-auto py-6 px-5 md:py-3 md:px-5 flex flex-col gap-0">
 
                 {/* 01 의상 */}
                 <div className="mb-1.5 bg-white rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
