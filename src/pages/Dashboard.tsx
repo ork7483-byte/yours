@@ -709,7 +709,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <div className="absolute top-1.5 right-1.5 text-[9px] text-white bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                          {new Date(img.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                          {new Date(img.created_at).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
                     ))}
