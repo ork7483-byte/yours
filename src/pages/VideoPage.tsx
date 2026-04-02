@@ -186,23 +186,28 @@ export default function VideoPage() {
         });
         if (!poll.ok) continue;
         const pData = await poll.json();
-        const status: string = pData.data?.status || pData.status || '';
+        console.log(`[Kie.ai] poll #${i+1}:`, JSON.stringify(pData));
+        // Kie.ai 공식 문서: state 필드 (waiting/queuing/generating/success/fail)
+        const state: string = pData.data?.state || pData.state || pData.data?.status || pData.status || '';
 
-        if (status === 'success') {
+        if (state === 'success') {
           let videoUrl: string | null = null;
           try {
-            const resultJson = pData.data?.resultJson;
+            // 공식 문서: resultJson 필드에 {"resultUrls":["url"]} 형태
+            const resultJson = pData.data?.resultJson || pData.resultJson;
             if (resultJson) {
               const parsed = typeof resultJson === 'string' ? JSON.parse(resultJson) : resultJson;
-              videoUrl = parsed?.resultUrls?.[0] || null;
+              videoUrl = parsed?.resultUrls?.[0] || parsed?.result_urls?.[0] || null;
             }
+            // 대안: 직접 video_url 필드
+            if (!videoUrl) videoUrl = pData.data?.video_url || pData.video_url || null;
           } catch (_) { /* ignore parse errors */ }
-          if (!videoUrl) throw new Error('영상 URL을 받지 못했습니다.');
+          if (!videoUrl) throw new Error('영상이 생성됐지만 URL을 파싱하지 못했습니다. 관리자에게 문의해주세요.');
           setVideoResult(videoUrl);
           setVideoLoading(false);
           return;
         }
-        if (status === 'fail') {
+        if (state === 'fail' || state === 'failed' || state === 'error') {
           throw new Error(pData.data?.errorMessage || '영상 생성에 실패했습니다.');
         }
         // waiting | queuing | generating — keep polling
