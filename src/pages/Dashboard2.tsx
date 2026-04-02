@@ -249,130 +249,92 @@ export default function Dashboard2() {
       let stepCounter = 1;
 
       // ═══════════════════════════════════════════
-      // LEVEL 1 고도화 프롬프트 엔진
+      // 공식 가이드 기반 최적화 프롬프트 엔진
       // ═══════════════════════════════════════════
 
-      // 촬영 스타일 매핑
       const styleMap: Record<string, string> = {
-        studio: 'Clean white studio with professional 3-point lighting setup. Seamless white backdrop. Even, diffused lighting eliminating harsh shadows.',
-        street: 'Urban street fashion editorial. Golden hour natural light. Shallow depth of field with bokeh background. Authentic urban environment.',
-        editorial: 'High-end fashion magazine editorial. Dramatic cinematic lighting with strong contrast. Bold composition. Vogue/Harper\'s Bazaar aesthetic.',
-        minimal: 'Minimalist Scandinavian aesthetic. Soft neutral tones. Clean lines. Gentle directional light. Muji/COS brand style.',
-        outdoor: 'Natural outdoor setting. Beautiful golden hour sunlight. Lush greenery or scenic landscape. Lifestyle fashion photography.',
+        studio: 'in a clean white photography studio with soft, even lighting',
+        street: 'on an urban street during golden hour with natural bokeh background',
+        editorial: 'in a high-fashion editorial setting with dramatic cinematic lighting',
+        minimal: 'in a minimalist setting with soft neutral tones and gentle light',
+        outdoor: 'in a beautiful outdoor setting with warm golden sunlight',
       };
 
-      // 조명 방향 매핑
       const lightMap: Record<string, string> = {
-        front: 'Front-facing key light at 45 degrees above. Soft fill light opposite. Even illumination on the garment to show full detail.',
-        side: 'Strong side lighting (Rembrandt style). Creates dramatic shadows and depth. Emphasizes fabric texture and draping.',
-        back: 'Backlit/rim lighting creating a glowing silhouette effect. Hair light creating halo. Fill light on face. Ethereal mood.',
-        natural: 'Natural ambient light only. Window light or golden hour. Soft, warm, organic feel. No artificial lighting.',
+        front: 'with soft front lighting at 45 degrees',
+        side: 'with dramatic side lighting emphasizing fabric texture',
+        back: 'with ethereal backlighting creating a rim light effect',
+        natural: 'with natural ambient window light',
       };
 
-      // 시스템 프롬프트 — 역할 + 전문성 + 금지사항
-      parts.push({ text: `You are a world-class fashion photographer with 20 years of experience shooting for Vogue, Harper's Bazaar, and major luxury brands. You have an extraordinary eye for fabric draping, natural body proportions, and photorealistic lighting.
+      // 시스템 프롬프트 — 간결하고 서술적 (공식 가이드: 서술형 > 키워드 나열)
+      const styleDesc = styleMap[shootingStyle] || styleMap.studio;
+      const lightDesc = lightMap[lightingDir] || lightMap.front;
 
-YOUR EXPERTISE:
-- You understand how different fabrics (silk, cotton, denim, leather, wool, chiffon) behave on the human body — how they fold, drape, stretch, and catch light differently.
-- You know that clothing must follow the body's contours naturally — no floating fabric, no impossible wrinkles, no rigid-looking draping.
-- You understand that seams, buttons, zippers, logos, and labels must be preserved exactly as shown in the reference garment.
-- You create images where the viewer cannot tell it was AI-generated.
+      parts.push({ text: `Generate a photorealistic fashion lookbook photograph ${styleDesc} ${lightDesc}. The image should look like it was shot by a professional fashion photographer for a luxury brand catalog. Each reference image below serves exactly one purpose — clothing for the garment only, face for appearance only, pose for body position only, background for the scene only.\n\n` });
 
-ABSOLUTE RULES — VIOLATION OF ANY RULE MEANS FAILURE:
-1. CLOTHING images → Extract ONLY the garment. The fabric texture, color, pattern, stitching, and brand details must be pixel-perfect reproductions.
-2. FACE/MODEL images → Use ONLY the face, skin tone, hair, and body proportions. COMPLETELY IGNORE their clothing.
-3. POSE images → Replicate ONLY the body position (arm angles, leg positions, torso angle, head tilt). COMPLETELY IGNORE the person's identity, clothing, and surroundings.
-4. BACKGROUND images → Use ONLY the environment/scene. COMPLETELY IGNORE any people in it.
-5. NEVER blend elements across categories. Each reference serves exactly ONE purpose.
+      let instructions = "\nCombine all elements into one seamless photograph where:";
 
-NEGATIVE CONSTRAINTS — NEVER produce these:
-- Distorted hands, extra fingers, missing fingers, or unnatural hand poses
-- Text, watermarks, logos, or signatures that weren't in the original garment
-- Uncanny valley faces — eyes must be symmetrical, natural skin texture, realistic hair
-- Floating clothing that doesn't touch/wrap the body naturally
-- Mismatched shadows — all shadows must be consistent with a single light source
-- Blurry or low-resolution patches within an otherwise sharp image
-- Plastic-looking skin or overly smooth "AI skin" without pores and natural texture
-
-Now process the following inputs:\n\n` });
-
-      let instructions = "\n\n═══ FINAL GENERATION INSTRUCTIONS ═══\n";
-
-      // 의상 — 더 구체적인 지시
+      // 의상
       if (clothingMode === 'separates') {
         if (uploadedTop && uploadedBottom) {
-          parts.push({ text: `${stepCounter++}. [TOP GARMENT] — The following image shows the UPPER BODY garment. Study its exact fabric type, weave pattern, color shade, collar shape, sleeve style, button/zipper details, and any brand markings:` });
+          parts.push({ text: `${stepCounter++}. The TOP garment to wear:` });
           parts.push({ inlineData: { data: uploadedTop.data, mimeType: uploadedTop.mimeType } });
-          parts.push({ text: `\n${stepCounter++}. [BOTTOM GARMENT] — The following image shows the LOWER BODY garment. Study its exact fabric, cut (slim/straight/wide), waistline, pocket details, hem style, and any unique design elements:` });
+          parts.push({ text: `\n${stepCounter++}. The BOTTOM garment to wear:` });
           parts.push({ inlineData: { data: uploadedBottom.data, mimeType: uploadedBottom.mimeType } });
-          instructions += "- CLOTHING: Dress the model in BOTH garments. The top must tuck/drape naturally at the waistline. Fabric weight must affect how each piece hangs. Preserve every detail: texture, color (exact shade), pattern repeat, stitching, labels.\n";
+          instructions += "\n- The model wears both garments exactly as shown — same fabric, color, texture, pattern, and all details preserved.";
         } else if (uploadedTop) {
-          parts.push({ text: `${stepCounter++}. [TOP GARMENT] — Study its exact fabric type, weave, color shade, collar, sleeves, and all details:` });
+          parts.push({ text: `${stepCounter++}. The TOP garment to wear:` });
           parts.push({ inlineData: { data: uploadedTop.data, mimeType: uploadedTop.mimeType } });
-          instructions += "- CLOTHING: Dress the model in this top. Pair with a simple, complementary bottom (neutral color) that doesn't compete visually. Preserve every garment detail.\n";
+          instructions += "\n- The model wears this top with a complementary neutral bottom.";
         } else if (uploadedBottom) {
-          parts.push({ text: `${stepCounter++}. [BOTTOM GARMENT] — Study its exact fabric, cut, waistline, and all details:` });
+          parts.push({ text: `${stepCounter++}. The BOTTOM garment to wear:` });
           parts.push({ inlineData: { data: uploadedBottom.data, mimeType: uploadedBottom.mimeType } });
-          instructions += "- CLOTHING: Dress the model in this bottom. Pair with a simple, complementary top (neutral color) that doesn't compete visually. Preserve every garment detail.\n";
+          instructions += "\n- The model wears this bottom with a complementary neutral top.";
         }
       } else if (clothingMode === 'onepiece' && uploadedDress) {
-        parts.push({ text: `${stepCounter++}. [ONE-PIECE GARMENT] — Study this complete outfit's fabric, silhouette, neckline, hemline, and every design detail:` });
+        parts.push({ text: `${stepCounter++}. The dress/outfit to wear:` });
         parts.push({ inlineData: { data: uploadedDress.data, mimeType: uploadedDress.mimeType } });
-        instructions += "- CLOTHING: Dress the model in this one-piece. It must follow the body's contour naturally. Preserve the exact silhouette, hemline, and all details.\n";
+        instructions += "\n- The model wears this outfit exactly as shown — same fabric, silhouette, and all details preserved.";
       }
 
-      // 모델 — 더 구체적
+      // 모델
       if (modelData) {
-        parts.push({ text: `\n${stepCounter++}. [FACE/MODEL REFERENCE] — Study this person's face shape, eye shape/color, eyebrow arch, nose bridge, lip shape, skin tone, skin texture (freckles/moles if any), hair color/style/length, and body proportions:` });
+        parts.push({ text: `\n${stepCounter++}. Face/appearance reference (use face and body type only, ignore their clothing):` });
         parts.push({ inlineData: { data: modelData.data, mimeType: modelData.mimeType } });
-        instructions += "- MODEL: Replicate this person's facial features and body type with photographic accuracy. Skin must have natural texture (pores, subtle imperfections). COMPLETELY IGNORE their clothing.\n";
+        instructions += "\n- The model's face and body type match this reference exactly.";
       } else {
-        instructions += "- MODEL: Use a professional East Asian female fashion model, early 20s, with natural beauty and confident expression.\n";
+        instructions += "\n- A professional fashion model with natural beauty.";
       }
 
-      // 포즈 — 관절 각도까지 지시
+      // 포즈
       if (poseData) {
-        parts.push({ text: `\n${stepCounter++}. [POSE REFERENCE] — Study the exact body mechanics: spine angle, shoulder rotation, arm positions (elbow angles), hand placement, hip angle, leg positions (knee angles), foot placement, head tilt, and weight distribution:` });
+        parts.push({ text: `\n${stepCounter++}. Pose reference (replicate body position only, ignore face and clothing):` });
         parts.push({ inlineData: { data: poseData.data, mimeType: poseData.mimeType } });
-        instructions += "- POSE: Match the exact body mechanics from the reference. Weight distribution, balance point, and muscle tension must look natural. COMPLETELY IGNORE the reference person's face and clothing.\n";
+        instructions += "\n- The model holds this exact pose.";
       } else {
-        instructions += "- POSE: Three-quarter stance facing slightly left, weight on back leg, one hand naturally at side, other hand lightly touching hip. Relaxed shoulders, slight chin tilt. Confident but approachable.\n";
+        instructions += "\n- The model stands in a natural, confident three-quarter pose.";
       }
 
       // 배경
       if (bgData) {
-        parts.push({ text: `\n${stepCounter++}. [BACKGROUND REFERENCE] — Study the scene's environment, depth, lighting direction, color temperature, and atmosphere:` });
+        parts.push({ text: `\n${stepCounter++}. Background/scene reference (use environment only, ignore people):` });
         parts.push({ inlineData: { data: bgData.data, mimeType: bgData.mimeType } });
-        instructions += "- BACKGROUND: Recreate this exact environment. Match the depth of field, atmospheric perspective, and ambient light color. IGNORE any people.\n";
-      } else {
-        instructions += `- BACKGROUND: ${styleMap[shootingStyle] || styleMap.studio}\n`;
+        instructions += "\n- The background matches this scene.";
       }
 
-      // 촬영 스타일 + 조명 + 기술 지시
-      const ratioLabel = imageRatio.replace('/', ':');
-      instructions += `
-═══ TECHNICAL SPECIFICATIONS ═══
-- ASPECT RATIO: ${ratioLabel} (compose the frame accordingly — ${parseInt(imageRatio) > 1 ? 'landscape orientation' : imageRatio === '1/1' ? 'square frame' : 'portrait orientation'})
-- RESOLUTION: 8K photorealistic quality. Every fabric thread, skin pore, and hair strand must be sharp.
-- SHOOTING STYLE: ${styleMap[shootingStyle] || styleMap.studio}
-- LIGHTING: ${lightMap[lightingDir] || lightMap.front}
-- CAMERA: Shot on Canon EOS R5 with 85mm f/1.4 portrait lens. Shallow depth of field with subject tack-sharp.
-- COLOR SCIENCE: Natural, true-to-life colors. No oversaturation. Accurate white balance for the chosen lighting.
-- POST-PROCESSING: Subtle fashion retouching. Skin smoothing at 20% (preserve texture). Light contrast boost. No heavy filters.
+      instructions += "\n\nThe clothing must drape naturally on the body with realistic folds and shadows. The final image should be indistinguishable from a real photograph.";
 
-═══ QUALITY CHECKLIST (verify before output) ═══
-✓ Clothing fabric is identical to reference (texture, color, pattern)
-✓ No distorted/extra/missing fingers
-✓ Face is natural with realistic skin texture
-✓ All shadows are consistent (single light direction)
-✓ Clothing drapes naturally following body contours
-✓ Brand logos/labels preserved exactly
-✓ No floating or disconnected clothing elements
-✓ Background is coherent with no artifacts`;
+      const ratioLabel = imageRatio.replace('/', ':');
       
       parts.push({ text: instructions });
 
-      const generateConfig: any = {};
+      const generateConfig: any = {
+        // 공식 API 파라미터: aspectRatio 강제 적용
+        aspectRatio: ratioLabel,
+        // thinking 레벨: 구도/조합 더 고민
+        thinkingConfig: { thinkingLevel: 'HIGH' },
+      };
       if (aiModel === 'gemini-3-pro-image-preview') {
         const resMap = { '1K': 1024, '2K': 2048, '4K': 4096 };
         generateConfig.responseModalities = ['TEXT', 'IMAGE'];
