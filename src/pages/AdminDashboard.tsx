@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/useAuth';
-import { BarChart3, Users, Image as ImageIcon, Clock, AlertCircle, ArrowLeft, Download, X } from 'lucide-react';
+import { API_KEYS, getAllApiKeys, setApiKey } from '../lib/apiSettings';
+import { BarChart3, Users, Image as ImageIcon, Clock, AlertCircle, ArrowLeft, Download, X, Key } from 'lucide-react';
 
 interface UsageStat {
   total: number;
@@ -23,10 +24,34 @@ export default function AdminDashboard() {
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [domainLogs, setDomainLogs] = useState<any[]>([]);
   const [domainStats, setDomainStats] = useState<Record<string, { allowed: number; blocked: number; last: string }>>({});
+  const [apiKeyValues, setApiKeyValues] = useState<Record<string, string>>({});
+  const [apiKeySaving, setApiKeySaving] = useState<Record<string, boolean>>({});
+  const [apiKeyToast, setApiKeyToast] = useState<{ id: string; type: 'success' | 'error'; msg: string } | null>(null);
 
   useEffect(() => {
     if (user) loadData();
   }, [user, period]);
+
+  useEffect(() => {
+    if (user) loadApiKeys();
+  }, [user]);
+
+  const loadApiKeys = async () => {
+    const all = await getAllApiKeys();
+    const vals: Record<string, string> = {};
+    Object.values(API_KEYS).forEach(k => {
+      vals[k.id] = all[k.id]?.value || '';
+    });
+    setApiKeyValues(vals);
+  };
+
+  const handleSaveApiKey = async (keyId: string, label: string) => {
+    setApiKeySaving(prev => ({ ...prev, [keyId]: true }));
+    const ok = await setApiKey(keyId, apiKeyValues[keyId] || '', label);
+    setApiKeySaving(prev => ({ ...prev, [keyId]: false }));
+    setApiKeyToast({ id: keyId, type: ok ? 'success' : 'error', msg: ok ? '저장되었습니다' : '저장 실패' });
+    setTimeout(() => setApiKeyToast(null), 2500);
+  };
 
   const loadData = async () => {
     setIsLoading(true);
@@ -316,6 +341,41 @@ export default function AdminDashboard() {
                   ))}
                   {domainLogs.filter((l: any) => l.status === 'blocked').length === 0 && <p className="text-[13px] text-neutral-400 text-center py-4">차단된 접근이 없습니다 (좋은 소식!)</p>}
                 </div>
+              </div>
+            </div>
+
+            {/* API 키 관리 */}
+            <div className="bg-white rounded-xl p-5 border border-neutral-100 shadow-sm mt-6">
+              <h3 className="text-[14px] font-bold text-neutral-900 mb-5 flex items-center gap-2">
+                <Key className="w-4 h-4 text-violet-500" /> API 키 관리
+              </h3>
+              <div className="space-y-4">
+                {Object.values(API_KEYS).map(k => (
+                  <div key={k.id} className="flex items-center gap-3">
+                    <label className="w-52 shrink-0 text-[12px] font-medium text-neutral-600">{k.label}</label>
+                    <div className="flex-1 relative">
+                      <input
+                        type="password"
+                        placeholder={k.placeholder}
+                        value={apiKeyValues[k.id] || ''}
+                        onChange={e => setApiKeyValues(prev => ({ ...prev, [k.id]: e.target.value }))}
+                        className="w-full px-3 py-2 text-[12px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 focus:bg-white transition-colors font-mono"
+                      />
+                      {apiKeyToast?.id === k.id && (
+                        <span className={`absolute right-[90px] top-1/2 -translate-y-1/2 text-[11px] font-semibold ${apiKeyToast.type === 'success' ? 'text-emerald-600' : 'text-red-500'}`}>
+                          {apiKeyToast.msg}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleSaveApiKey(k.id, k.label)}
+                      disabled={apiKeySaving[k.id]}
+                      className="shrink-0 px-4 py-2 bg-neutral-900 text-white text-[12px] font-semibold rounded-lg hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      {apiKeySaving[k.id] ? '저장중...' : '저장'}
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </>
