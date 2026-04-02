@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/useAuth';
-import { BarChart3, Users, Image as ImageIcon, Clock, AlertCircle, ArrowLeft } from 'lucide-react';
+import { BarChart3, Users, Image as ImageIcon, Clock, AlertCircle, ArrowLeft, Download, X } from 'lucide-react';
 
 interface UsageStat {
   total: number;
@@ -19,6 +19,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<UsageStat | null>(null);
   const [period, setPeriod] = useState<'today' | 'week' | 'month' | 'all'>('week');
   const [isLoading, setIsLoading] = useState(true);
+  const [images, setImages] = useState<any[]>([]);
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) loadData();
@@ -78,6 +80,15 @@ export default function AdminDashboard() {
     });
 
     setStats(stat);
+
+    // 생성 이미지 조회
+    const { data: imgData } = await supabase
+      .from('generated_images')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    setImages(imgData || []);
+
     setIsLoading(false);
   };
 
@@ -225,9 +236,49 @@ export default function AdminDashboard() {
                 {logs.length === 0 && <p className="text-[13px] text-neutral-400 text-center py-8">API 호출 기록이 없습니다</p>}
               </div>
             </div>
+
+            {/* 생성 이미지 갤러리 */}
+            <div className="bg-white rounded-xl p-5 border border-neutral-100 shadow-sm mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[14px] font-bold text-neutral-900 flex items-center gap-2"><ImageIcon className="w-4 h-4 text-purple-500" /> 생성 이미지</h3>
+                <span className="text-[11px] text-neutral-400">{images.length}장</span>
+              </div>
+              {images.length === 0 ? (
+                <p className="text-[13px] text-neutral-400 text-center py-8">생성된 이미지가 없습니다</p>
+              ) : (
+                <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-2">
+                  {images.map((img: any) => (
+                    <div key={img.id} className="group relative aspect-[3/4] rounded-lg overflow-hidden bg-neutral-100 cursor-pointer" onClick={() => setPreviewImg(img.image_url)}>
+                      <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex flex-col items-start justify-end p-1.5 opacity-0 group-hover:opacity-100">
+                        <span className="text-[9px] text-white font-medium bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">{img.user_id?.slice(0, 8) || '?'}</span>
+                        <span className="text-[9px] text-white/80 mt-0.5">{new Date(img.created_at).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </>
         ) : null}
       </div>
+
+      {/* 이미지 프리뷰 모달 */}
+      {previewImg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md" onClick={() => setPreviewImg(null)}>
+          <div className="relative max-w-3xl max-h-[85vh] mx-6" onClick={(e) => e.stopPropagation()}>
+            <img src={previewImg} alt="" className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+            <div className="absolute -top-11 right-0 flex gap-2">
+              <button onClick={() => { const a = document.createElement('a'); a.href = previewImg; a.download = `admin-${Date.now()}.png`; a.click(); }} className="px-3 py-1.5 bg-white rounded-lg text-[11px] font-semibold text-neutral-900 hover:bg-neutral-100 cursor-pointer flex items-center gap-1">
+                <Download className="w-3 h-3" /> 저장
+              </button>
+              <button onClick={() => setPreviewImg(null)} className="px-3 py-1.5 bg-white/20 rounded-lg text-[11px] font-semibold text-white hover:bg-white/30 cursor-pointer flex items-center gap-1">
+                <X className="w-3 h-3" /> 닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
