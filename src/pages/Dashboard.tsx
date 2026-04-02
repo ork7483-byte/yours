@@ -60,6 +60,8 @@ export default function Dashboard() {
   const [gallery, setGallery] = useState<any[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryPreview, setGalleryPreview] = useState<string | null>(null);
+  const [galleryPage, setGalleryPage] = useState(0);
+  const GALLERY_PER_PAGE = 8;
   const [presentationMode, setPresentationMode] = useState(false);
 
   // UI States for Demo
@@ -524,7 +526,7 @@ export default function Dashboard() {
             </div>
 
             {/* 중앙 — 이미지 프리뷰 */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0 bg-neutral-100/50">
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:px-6 md:py-5 relative min-h-0 bg-neutral-100/50 overflow-hidden">
               {/* 비율 선택 */}
               <div className="flex items-center gap-2.5 mb-3 bg-white rounded-xl px-4 py-2.5 border border-neutral-100 shadow-sm">
                 <span className="text-[12px] font-semibold text-neutral-600 shrink-0">비율 :</span>
@@ -631,33 +633,43 @@ export default function Dashboard() {
                     <p className="text-[13px] text-neutral-400">아직 저장된 이미지가 없어요.<br/>이미지를 생성하고 저장해보세요!</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {gallery.map((img: any) => (
-                      <div key={img.id} className="group relative aspect-square rounded-lg overflow-hidden bg-neutral-100 cursor-pointer" onClick={() => setGalleryPreview(img.image_url)}>
-                        <img src={img.image_url} alt="" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-center opacity-0 group-hover:opacity-100">
-                          <div className="flex gap-1 p-1.5 w-full">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); const a = document.createElement('a'); a.href = img.image_url; a.download = `yours-${img.id}.png`; a.click(); }}
-                              className="flex-1 py-1.5 bg-white/90 rounded text-[10px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer"
-                            >저장</button>
-                            <button
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                const path = img.image_url.split('/generated-images/')[1];
-                                await deleteImage(img.id, path || '');
-                                loadGallery();
-                              }}
-                              className="py-1.5 px-2 bg-red-500/80 rounded text-[10px] font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
-                            >삭제</button>
+                  <>
+                    <div className="grid grid-cols-2 gap-1.5 flex-1">
+                      {gallery.slice(galleryPage * GALLERY_PER_PAGE, (galleryPage + 1) * GALLERY_PER_PAGE).map((img: any) => (
+                        <div key={img.id} className="group relative aspect-square rounded-lg overflow-hidden bg-neutral-100 cursor-pointer" onClick={() => setGalleryPreview(img.image_url)}>
+                          <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-center opacity-0 group-hover:opacity-100">
+                            <div className="flex gap-1 p-1.5 w-full">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); const a = document.createElement('a'); a.href = img.image_url; a.download = `yours-${img.id}.png`; a.click(); }}
+                                className="flex-1 py-1.5 bg-white/90 rounded text-[10px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer"
+                              >저장</button>
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  const path = img.image_url.split('/generated-images/')[1];
+                                  await deleteImage(img.id, path || '');
+                                  loadGallery();
+                                }}
+                                className="py-1.5 px-2 bg-red-500/80 rounded text-[10px] font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
+                              >삭제</button>
+                            </div>
+                          </div>
+                          <div className="absolute top-1.5 right-1.5 text-[9px] text-white bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                            {new Date(img.created_at).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
-                        <div className="absolute top-1.5 right-1.5 text-[9px] text-white bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                          {new Date(img.created_at).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </div>
+                      ))}
+                    </div>
+                    {/* 페이지네이션 */}
+                    {Math.ceil(gallery.length / GALLERY_PER_PAGE) > 1 && (
+                      <div className="flex items-center justify-center gap-1 pt-2 border-t border-neutral-100 mt-2">
+                        {Array.from({ length: Math.ceil(gallery.length / GALLERY_PER_PAGE) }).map((_, i) => (
+                          <button key={i} onClick={() => setGalleryPage(i)} className={`w-6 h-6 rounded text-[10px] font-semibold transition-all cursor-pointer ${galleryPage === i ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-100'}`}>{i + 1}</button>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
