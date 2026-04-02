@@ -170,12 +170,11 @@ export default function VideoPage() {
           },
         }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `Kie.ai API 오류 (${res.status})`);
-      }
       const data = await res.json();
-      if (data.code !== 200) throw new Error(data.message || 'Kie.ai API 오류');
+      console.log('[Kie.ai] createTask response:', JSON.stringify(data));
+      if (!res.ok || (data.code && data.code !== 200)) {
+        throw new Error(data.message || data.msg || data.error || `Kie.ai API 오류 (${res.status})`);
+      }
       const taskId: string = data.data?.taskId;
       if (!taskId) throw new Error('taskId를 받지 못했습니다.');
 
