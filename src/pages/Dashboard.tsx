@@ -1030,8 +1030,8 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <div className="flex bg-neutral-100 p-0.5 rounded-md">
               {[
-                { id: 'gemini-3.1-flash-image-preview', label: '나노바나나2' },
-                { id: 'gemini-3-pro-image-preview', label: '나노바나나 Pro' },
+                { id: 'gemini-3.1-flash-image-preview', label: 'Flash' },
+                { id: 'gemini-3-pro-image-preview', label: 'Pro' },
               ].map(m => (
                 <button key={m.id} onClick={() => setAiModel(m.id)} className={`px-3 py-1 text-[10px] font-semibold tracking-wider rounded-[4px] transition-all duration-200 cursor-pointer ${aiModel === m.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}>{m.label}</button>
               ))}
