@@ -107,6 +107,7 @@ export default function Dashboard() {
   const aiModel = 'gemini-3.1-flash-image-preview';
   const imageResolution = '2K';
   const [modalPreview, setModalPreview] = useState<{ img: string; type: 'model' | 'pose' | 'bg'; id: string } | null>(null);
+  const [clothingModal, setClothingModal] = useState<{ img: string; clothType: 'top' | 'bottom' | 'dress' } | null>(null);
   const [detailLangs, setDetailLangs] = useState(['cn']);
   const [videoVibe, setVideoVibe] = useState('trendy');
   const [videoVoice, setVideoVoice] = useState('cn_f');
@@ -401,7 +402,7 @@ export default function Dashboard() {
                       <p className="text-[11px] text-neutral-400 mb-2 font-medium uppercase tracking-wider">상의</p>
                       <div className="flex gap-2 overflow-x-auto pb-1 mb-2 scroll-hide">
                         {topImages.map((img, i) => (
-                          <button key={`top${i}`} onClick={() => selectPresetImage('top', img)} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedTop?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                          <button key={`top${i}`} onClick={() => setClothingModal({ img, clothType: 'top' })} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedTop?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="상의 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
@@ -413,7 +414,7 @@ export default function Dashboard() {
                       <p className="text-[11px] text-neutral-400 mb-2 font-medium uppercase tracking-wider">하의</p>
                       <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                         {bottomImages.map((img, i) => (
-                          <button key={`bot${i}`} onClick={() => selectPresetImage('bottom', img)} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedBottom?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                          <button key={`bot${i}`} onClick={() => setClothingModal({ img, clothType: 'bottom' })} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedBottom?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="하의 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
@@ -428,7 +429,7 @@ export default function Dashboard() {
                     <div>
                       <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                         {onepieceImages.map((img, i) => (
-                          <button key={`dress${i}`} onClick={() => selectPresetImage('dress', img)} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedDress?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                          <button key={`dress${i}`} onClick={() => setClothingModal({ img, clothType: 'dress' })} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedDress?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="원피스 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
@@ -738,6 +739,45 @@ export default function Dashboard() {
                       >
                         닫기
                       </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* 의상 미리보기 모달 */}
+            <AnimatePresence>
+              {clothingModal && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                  onClick={() => setClothingModal(null)}
+                  role="dialog"
+                  aria-modal="true"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.92, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.92, y: 10 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-[360px] w-full mx-8"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="aspect-square bg-neutral-100 overflow-hidden">
+                      <img src={clothingModal.img} alt="의상 미리보기" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-5 flex gap-3">
+                      <button onClick={() => setClothingModal(null)} className="flex-1 py-3 rounded-lg border border-neutral-200 text-[13px] font-medium text-neutral-500 hover:bg-neutral-50 transition-colors cursor-pointer">닫기</button>
+                      <button
+                        onClick={() => {
+                          selectPresetImage(clothingModal.clothType, clothingModal.img);
+                          setClothingModal(null);
+                        }}
+                        className="flex-1 py-3 rounded-lg text-[13px] font-semibold bg-neutral-900 text-white hover:bg-neutral-800 active:scale-[0.98] transition-all cursor-pointer"
+                      >선택하기</button>
                     </div>
                   </motion.div>
                 </motion.div>
