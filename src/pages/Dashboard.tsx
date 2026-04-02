@@ -61,7 +61,7 @@ export default function Dashboard() {
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryPreview, setGalleryPreview] = useState<string | null>(null);
   const [galleryPage, setGalleryPage] = useState(0);
-  const GALLERY_PER_PAGE = 8;
+  const GALLERY_PER_PAGE = 10;
   const [presentationMode, setPresentationMode] = useState(false);
 
   // UI States for Demo
