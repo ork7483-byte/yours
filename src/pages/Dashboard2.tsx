@@ -228,6 +228,63 @@ export default function Dashboard2() {
     e.target.value = '';
   };
 
+  // API 사용 로그 기록
+  const logApiUsage = async (status: string, errorMessage?: string) => {
+    if (!user) return;
+    try {
+      const { supabase } = await import('../lib/supabase');
+      await supabase.from('api_usage_logs').insert({
+        user_id: user.id,
+        user_email: user.email || '',
+        model: 'gemini-3.1-flash-image-preview',
+        image_size: imageResolution,
+        aspect_ratio: imageRatio.replace('/', ':'),
+        status,
+        error_message: errorMessage || null,
+      });
+    } catch {}
+  };
+
+  // 멀티턴 편집: 생성된 이미지에 추가 수정 요청
+  const handleEdit = async () => {
+    if (!editPrompt.trim() || !chatSession || !generatedImage) return;
+    setIsEditing(true);
+    setErrorMsg(null);
+    try {
+      const response = await chatSession.sendMessage({ message: editPrompt });
+      let newImageUrl = null;
+      for (const part of response.candidates?.[0]?.content?.parts || []) {
+        if (part.inlineData) {
+          newImageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+          break;
+        }
+      }
+      if (newImageUrl) {
+        setEditHistory(prev => [...prev, generatedImage!]);
+        setGeneratedImage(newImageUrl);
+        setEditPrompt('');
+        await logApiUsage('success');
+        if (user) {
+          saveGeneratedImage(newImageUrl, user.id, `편집: ${editPrompt.slice(0, 30)}`).then(({ error }) => {
+            if (!error) loadGallery();
+          });
+        }
+      } else {
+        setErrorMsg("편집 결과에 이미지가 없습니다. 다른 지시를 시도해주세요.");
+      }
+    } catch (error: any) {
+      const errMsg = error.message || '';
+      if (errMsg.includes("UNAVAILABLE") || errMsg.includes("503")) {
+        setErrorMsg("서버가 혼잡합니다. 잠시 후 다시 시도해주세요.");
+      } else {
+        setErrorMsg("편집 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
+      await logApiUsage('error', errMsg);
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (clothingMode === 'separates' && !uploadedTop && !uploadedBottom) {
       setErrorMsg("상의 또는 하의 이미지를 최소 1장 첨부해주세요.");
@@ -240,7 +297,10 @@ export default function Dashboard2() {
 
     setIsGenerating(true);
     setErrorMsg(null);
-    
+    setEditHistory([]);
+    setChatSession(null);
+    setThoughtImages([]);
+
     try {
       const apiKey = (typeof process !== 'undefined' ? process.env.API_KEY || process.env.GEMINI_API_KEY : undefined) || import.meta.env.VITE_GEMINI_API_KEY;
       const ai = new GoogleGenAI({ apiKey });
@@ -338,46 +398,69 @@ export default function Dashboard2() {
       
       parts.push({ text: instructions });
 
-      // 공식 문서: 두 모델 모두 동일한 imageConfig 구조 사용
+      // 공식 문서 기반 config (Flash 2K 고정)
       const generateConfig: any = {
         responseModalities: ['TEXT', 'IMAGE'],
         imageConfig: {
-          imageSize: imageResolution,   // "1K", "2K", "4K" (대문자 K 필수)
-          aspectRatio: ratioLabel,       // "2:3" 등
+          imageSize: imageResolution,
+          aspectRatio: ratioLabel,
+        },
+        thinkingConfig: {
+          thinkingLevel: 'HIGH',
+          includeThoughts: showThoughts,
         },
       };
-      // thinkingConfig는 Flash만 지원
-      if (aiModel !== 'gemini-3-pro-image-preview') {
-        generateConfig.thinkingConfig = { thinkingLevel: 'HIGH' };
-      }
-      console.log('[fitting1] model:', aiModel, 'size:', imageResolution, 'config:', JSON.stringify(generateConfig));
 
-      const response = await ai.models.generateContent({
-        model: aiModel,
-        contents: {
-          parts: parts,
-        },
+      // Google 검색 그라운딩 (공식 문서: tools 배열)
+      if (useGoogleSearch) {
+        generateConfig.tools = [{
+          googleSearch: {
+            searchTypes: {
+              webSearch: {},
+              imageSearch: {},
+            },
+          },
+        }];
+      }
+
+      console.log('[fitting2] config:', JSON.stringify(generateConfig));
+
+      // 멀티턴 채팅 세션 생성 (공식 문서: ai.chats.create)
+      const chat = ai.chats.create({
+        model: 'gemini-3.1-flash-image-preview',
         config: generateConfig,
       });
+      setChatSession(chat);
 
+      // 첫 메시지 전송
+      const response = await chat.sendMessage({ message: parts });
+
+      // 결과 파싱: 이미지 + Thinking 이미지 분리
       let newImageUrl = null;
+      const thoughts: string[] = [];
       for (const part of response.candidates?.[0]?.content?.parts || []) {
         if (part.inlineData) {
-          newImageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-          break;
+          const url = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+          if (part.thought) {
+            thoughts.push(url);
+          } else {
+            if (!newImageUrl) newImageUrl = url;
+          }
         }
       }
+      setThoughtImages(thoughts);
 
       if (newImageUrl) {
         setGeneratedImage(newImageUrl);
-        // 자동 클라우드 저장
+        await logApiUsage('success');
         if (user) {
-          saveGeneratedImage(newImageUrl, user.id, `피팅 ${ratioLabel}`).then(({ error }) => {
+          saveGeneratedImage(newImageUrl, user.id, `피팅2 ${ratioLabel}`).then(({ error }) => {
             if (!error) loadGallery();
           });
         }
       } else {
-        setErrorMsg("이미지 생성에 실패했습니다. (응답에 이미지 데이터가 없습니다)");
+        setErrorMsg("이미지 생성에 실패했습니다.");
+        await logApiUsage('error', 'no image in response');
       }
     } catch (error: any) {
       console.error("Generation failed:", error);
@@ -648,10 +731,34 @@ export default function Dashboard2() {
                   </div>
                 </div>
               </div>
+              {/* 고급 설정 토글 */}
+              <div className="flex items-center gap-4 mb-3 bg-white rounded-xl px-4 py-2 border border-neutral-100 shadow-sm">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={useGoogleSearch} onChange={(e) => setUseGoogleSearch(e.target.checked)} className="w-4 h-4 accent-neutral-900 cursor-pointer" />
+                  <span className="text-[11px] font-semibold text-neutral-600">Google 검색 참고</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={showThoughts} onChange={(e) => setShowThoughts(e.target.checked)} className="w-4 h-4 accent-neutral-900 cursor-pointer" />
+                  <span className="text-[11px] font-semibold text-neutral-600">사고 과정 보기</span>
+                </label>
+              </div>
+
+              {/* Thinking 시각화 */}
+              {thoughtImages.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] text-neutral-400 mb-1.5 font-semibold">AI 사고 과정:</p>
+                  <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
+                    {thoughtImages.map((img, i) => (
+                      <img key={i} src={img} alt={`사고 ${i+1}`} className="h-20 rounded-md border border-neutral-200 shrink-0" />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="w-full max-w-sm md:max-w-lg xl:max-w-xl bg-neutral-200/40 rounded-lg overflow-hidden relative group" style={{ aspectRatio: imageRatio, boxShadow: '0 25px 60px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03)' }}>
                 {generatedImage ? (
                   <>
-                    <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 cursor-pointer ${isGenerating ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" onClick={() => !isGenerating && setShowFullPreview(true)} />
+                    <img src={generatedImage} alt="AI 생성 이미지" className={`w-full h-full object-cover transition-all duration-500 cursor-pointer ${isGenerating || isEditing ? 'opacity-40 blur-sm scale-[1.02]' : 'opacity-100'}`} referrerPolicy="no-referrer" onClick={() => !isGenerating && !isEditing && setShowFullPreview(true)} />
                     {/* 다운로드 버튼 — 우상단 */}
                     {!isGenerating && (
                       <button
@@ -674,13 +781,45 @@ export default function Dashboard2() {
                     <p className="text-[14px] font-normal text-neutral-500">의상을 첨부하고 생성하기를 눌러주세요</p>
                   </div>
                 )}
-                {isGenerating && (
+                {(isGenerating || isEditing) && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-[2px]">
                     <div className="w-8 h-8 border-[1.5px] border-neutral-900 border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-neutral-900 font-medium text-sm tracking-wide">이미지 생성 중...</p>
+                    <p className="text-neutral-900 font-medium text-sm tracking-wide">{isEditing ? '이미지 수정 중...' : '이미지 생성 중...'}</p>
                   </div>
                 )}
               </div>
+
+              {/* 멀티턴 편집 입력 — 생성 완료 후 표시 */}
+              {generatedImage && !isGenerating && chatSession && (
+                <div className="mt-3 w-full max-w-sm md:max-w-lg xl:max-w-xl">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={editPrompt}
+                      onChange={(e) => setEditPrompt(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && !isEditing && handleEdit()}
+                      placeholder="수정 요청: 배경을 거리로 바꿔줘, 포즈를 자연스럽게..."
+                      className="flex-1 px-4 py-2.5 text-[13px] border border-neutral-200 rounded-lg bg-white outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-colors"
+                      disabled={isEditing}
+                    />
+                    <button
+                      onClick={handleEdit}
+                      disabled={isEditing || !editPrompt.trim()}
+                      className={`px-4 py-2.5 rounded-lg text-[13px] font-semibold transition-all cursor-pointer shrink-0 ${isEditing || !editPrompt.trim() ? 'bg-neutral-200 text-neutral-400' : 'bg-neutral-900 text-white hover:bg-neutral-800'}`}
+                    >
+                      {isEditing ? '수정 중...' : '수정'}
+                    </button>
+                  </div>
+                  {editHistory.length > 0 && (
+                    <div className="mt-2 flex gap-1.5 overflow-x-auto scroll-hide">
+                      <span className="text-[10px] text-neutral-400 shrink-0 self-center">이전:</span>
+                      {editHistory.map((img, i) => (
+                        <img key={i} src={img} alt={`v${i+1}`} className="h-12 rounded border border-neutral-200 shrink-0 cursor-pointer hover:border-neutral-400" onClick={() => setGalleryPreview(img)} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
 

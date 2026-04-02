@@ -219,6 +219,19 @@ export default function Dashboard() {
     e.target.value = '';
   };
 
+  const logApiUsage = async (status: string, errorMessage?: string) => {
+    if (!user) return;
+    try {
+      const { supabase } = await import('../lib/supabase');
+      await supabase.from('api_usage_logs').insert({
+        user_id: user.id, user_email: user.email || '',
+        model: aiModel, image_size: imageResolution,
+        aspect_ratio: imageRatio.replace('/', ':'),
+        status, error_message: errorMessage || null,
+      });
+    } catch {}
+  };
+
   const handleGenerate = async () => {
     if (clothingMode === 'separates' && !uploadedTop && !uploadedBottom) {
       setErrorMsg("상의 또는 하의 이미지를 최소 1장 첨부해주세요.");
@@ -358,7 +371,7 @@ export default function Dashboard() {
 
       if (newImageUrl) {
         setGeneratedImage(newImageUrl);
-        // 자동 클라우드 저장
+        await logApiUsage('success');
         if (user) {
           saveGeneratedImage(newImageUrl, user.id, `피팅 ${ratioLabel}`).then(({ error }) => {
             if (!error) loadGallery();
@@ -366,11 +379,12 @@ export default function Dashboard() {
         }
       } else {
         setErrorMsg("이미지 생성에 실패했습니다. (응답에 이미지 데이터가 없습니다)");
+        await logApiUsage('error', 'no image in response');
       }
     } catch (error: any) {
       console.error("Generation failed:", error);
-      console.error("Full error detail:", JSON.stringify(error, null, 2));
       const errMsg = error.message || JSON.stringify(error);
+      await logApiUsage('error', errMsg);
       if (errMsg.includes("Requested entity was not found") || errMsg.includes("permission denied")) {
         setHasApiKey(false);
         setErrorMsg("API 키 권한이 없거나 유효하지 않습니다. 다시 설정해주세요.");
