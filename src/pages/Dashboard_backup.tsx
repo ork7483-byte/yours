@@ -45,9 +45,9 @@ const modelImages = Object.keys(import.meta.glob('/public/images/fitting/models/
 const poseImages = Object.keys(import.meta.glob('/public/images/fitting/poses/*.{jpg,jpeg,png,webp}', { eager: false })).map(p => p.replace('/public', ''));
 const bgImages = Object.keys(import.meta.glob('/public/images/fitting/backgrounds/*.{jpg,jpeg,png,webp}', { eager: false })).map(p => p.replace('/public', ''));
 
-export default function Dashboard() {
+export default function Dashboard2() {
   const loc = useLocation();
-  const tabMap: Record<string, string> = { '/fitting': 'lookbook', '/video': 'video', '/reservation': 'floorcut', '/help': 'cs' };
+  const tabMap: Record<string, string> = { '/fitting2': 'lookbook' };
   const [activeTab, setActiveTab] = useState(tabMap[loc.pathname] || 'lookbook');
   const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
