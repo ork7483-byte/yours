@@ -26,8 +26,8 @@ export default function LoginPage() {
                 U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
               </h1>
             </Link>
-            <p className="text-[16px] text-neutral-400 text-center leading-relaxed">
-              AI로 만드는<br />패션 콘텐츠의 새로운 기준
+            <p className="text-[25px] text-neutral-400 text-center whitespace-nowrap">
+              AI로 만드는 패션 콘텐츠의 새로운 기준
             </p>
           </div>
           <button
