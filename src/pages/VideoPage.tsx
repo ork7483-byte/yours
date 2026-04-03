@@ -411,7 +411,10 @@ export default function VideoPage() {
             {videoModel === 'grok-imagine/image-to-video' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[15px] font-bold text-neutral-900 mb-2">오디오 스타일</label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <label className="text-[15px] font-bold text-neutral-900">오디오 스타일</label>
+                    <span className="text-[13px] text-amber-500 font-medium">이미지에 어울리는 무드를 골라주세요</span>
+                  </div>
                   {/* 1차: 카테고리 */}
                   <div className="flex gap-1.5 flex-wrap mb-2">
                     {[
