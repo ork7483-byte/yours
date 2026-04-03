@@ -547,9 +547,9 @@ export default function VideoPage() {
         <div className={`flex-1 flex flex-col items-center px-8 pb-8 overflow-y-auto ${videoLoading || videoResult ? 'justify-start pt-4' : 'justify-center'}`}>
           {videoLoading ? (
             /* Inline loading state — 큰 화면 */
-            <div className="w-full max-w-lg flex flex-col items-center text-center bg-white rounded-2xl border border-neutral-100 shadow-sm p-10">
+            <div className="w-full max-w-2xl flex flex-col items-center text-center bg-white rounded-2xl border border-neutral-100 shadow-sm p-12">
               {firstSelectedImage && (
-                <div className="w-56 h-72 rounded-xl overflow-hidden shadow-lg mb-8 border border-neutral-100">
+                <div className="w-64 h-80 rounded-xl overflow-hidden shadow-lg mb-8 border border-neutral-100">
                   <img src={firstSelectedImage} alt="" className="w-full h-full object-cover" />
                 </div>
               )}
