@@ -19,12 +19,17 @@ export default function LoginPage() {
 
       {/* ── 좌측: 로고 + 로그인 ── */}
       <div className="w-full lg:flex-1 flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-10">
-          <Link to="/" className="no-underline">
-            <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer text-center">
-              U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
-            </h1>
-          </Link>
+        <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-4">
+            <Link to="/" className="no-underline">
+              <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer text-center">
+                U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
+              </h1>
+            </Link>
+            <p className="text-[16px] text-neutral-400 text-center leading-relaxed">
+              AI로 만드는<br />패션 콘텐츠의 새로운 기준
+            </p>
+          </div>
           <button
             onClick={() => signInWithGoogle(redirectTo)}
             className="flex items-center justify-center gap-3 px-8 py-3.5 bg-white border border-neutral-200 rounded-xl text-[15px] font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
