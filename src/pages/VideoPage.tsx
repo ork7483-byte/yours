@@ -66,6 +66,9 @@ export default function VideoPage() {
   const [grokDuration, setGrokDuration] = useState('6');
   const [grokResolution, setGrokResolution] = useState<'480p' | '720p'>('720p');
   const [videoPrompt, setVideoPrompt] = useState('');
+  const [dialogueEnabled, setDialogueEnabled] = useState(false);
+  const [dialogueText, setDialogueText] = useState('');
+  const [dialogueLang, setDialogueLang] = useState<'ko' | 'zh' | 'en'>('ko');
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoResult, setVideoResult] = useState<string | null>(null);
   const [videoError, setVideoError] = useState<string | null>(null);
@@ -135,7 +138,10 @@ export default function VideoPage() {
             model: 'grok-imagine/image-to-video',
             input: {
               image_urls: [firstSelectedImage],
-              prompt: videoPrompt || 'natural fashion video with gentle movement',
+              prompt: (videoPrompt || 'natural fashion video with gentle movement') + (dialogueEnabled && dialogueText ? (() => {
+                const langMap = { ko: 'in Korean', zh: 'in Chinese', en: 'in English' };
+                return `, the model speaks ${langMap[dialogueLang]}: "${dialogueText}"`;
+              })() : ''),
               mode: grokMode,
               duration: grokDuration,
               resolution: grokResolution,
@@ -258,7 +264,7 @@ export default function VideoPage() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── Left Panel (320px) ── */}
-        <div className="w-[320px] shrink-0 bg-white border-r border-neutral-100 flex flex-col overflow-y-auto">
+        <div className="w-[420px] shrink-0 bg-white border-r border-neutral-100 flex flex-col overflow-y-auto">
           <div className="p-4 space-y-5">
 
             {/* Image selection */}
@@ -387,37 +393,83 @@ export default function VideoPage() {
               />
             </div>
 
-            {/* Grok 오디오 프리셋 칩 — Grok 선택 시에만 표시 */}
+            {/* Grok 전용: 오디오 스타일 + 대사 — Grok 선택 시에만 표시 */}
             {videoModel === 'grok-imagine/image-to-video' && (
-              <div>
-                <label className="block text-[11px] font-medium text-neutral-500 mb-1.5">오디오 스타일</label>
-                <div className="flex gap-1.5 flex-wrap">
-                  {[
-                    { label: '🔇 무음', value: ', no audio, completely silent video' },
-                    { label: '🎵 잔잔한 BGM', value: ', with calm soft piano background music' },
-                    { label: '🎧 트렌디 BGM', value: ', with trendy fashion runway electronic background music' },
-                    { label: '👠 발걸음+천소리', value: ', with realistic footstep sounds and fabric rustling sound effects' },
-                    { label: '🌿 자연 효과음', value: ', with ambient nature sounds, wind and birds' },
-                    { label: '🎤 대사 포함', value: ', model speaks: "Check out our new collection"' },
-                  ].map(chip => {
-                    const isActive = videoPrompt.includes(chip.value);
-                    return (
-                      <button
-                        key={chip.label}
-                        type="button"
-                        onClick={() => {
-                          if (isActive) {
-                            setVideoPrompt(prev => prev.replace(chip.value, ''));
-                          } else {
-                            setVideoPrompt(prev => prev + chip.value);
-                          }
-                        }}
-                        className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer ${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
-                      >
-                        {chip.label}
-                      </button>
-                    );
-                  })}
+              <div className="space-y-3">
+                {/* 오디오 스타일 탭 */}
+                <div>
+                  <label className="block text-[11px] font-medium text-neutral-500 mb-1.5">오디오 스타일</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {[
+                      { label: '🔇 무음', value: ', no audio, completely silent video' },
+                      { label: '🎵 잔잔한 BGM', value: ', with calm soft piano background music' },
+                      { label: '🎧 트렌디 BGM', value: ', with trendy fashion runway electronic background music' },
+                      { label: '👠 발걸음+천소리', value: ', with realistic footstep sounds and fabric rustling sound effects' },
+                      { label: '🌿 자연 효과음', value: ', with ambient nature sounds, wind and birds' },
+                    ].map(chip => {
+                      const isActive = videoPrompt.includes(chip.value);
+                      return (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => {
+                            if (isActive) {
+                              setVideoPrompt(prev => prev.replace(chip.value, ''));
+                            } else {
+                              setVideoPrompt(prev => prev + chip.value);
+                            }
+                          }}
+                          className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer ${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 대사 포함 탭 */}
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <ToggleSwitch checked={dialogueEnabled} onChange={(v) => { setDialogueEnabled(v); if (!v) setDialogueText(''); }} />
+                    <label className="text-[11px] font-medium text-neutral-500">🎤 대사 포함</label>
+                    <span className="text-[10px] text-amber-500 font-medium">립싱크 자동</span>
+                  </div>
+                  {dialogueEnabled && (
+                    <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] text-neutral-400 font-medium">대사 입력 (한글로 작성)</label>
+                        <div className="flex gap-1">
+                          {[
+                            { value: 'ko' as const, label: '🇰🇷 한국어' },
+                            { value: 'zh' as const, label: '🇨🇳 중국어' },
+                            { value: 'en' as const, label: '🇺🇸 영어' },
+                          ].map(lang => (
+                            <button
+                              key={lang.value}
+                              type="button"
+                              onClick={() => setDialogueLang(lang.value)}
+                              className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${dialogueLang === lang.value ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
+                            >
+                              {lang.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="예: 이번 시즌 신상품을 소개합니다"
+                        value={dialogueText}
+                        onChange={e => setDialogueText(e.target.value)}
+                        className="w-full px-2.5 py-2 text-[12px] bg-white border border-neutral-200 rounded-md outline-none focus:border-neutral-400 transition-colors"
+                      />
+                      <p className="text-[9px] text-neutral-400">
+                        {dialogueLang === 'ko' && '한국어로 대사를 말합니다 · 립싱크 자동'}
+                        {dialogueLang === 'zh' && '한글로 입력하면 중국어로 변환하여 더빙합니다 · 립싱크 자동'}
+                        {dialogueLang === 'en' && '한글로 입력하면 영어로 변환하여 더빙합니다 · 립싱크 자동'}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -511,7 +563,7 @@ export default function VideoPage() {
         </div>
 
         {/* ── Right Panel: Gallery (280px, lg+) ── */}
-        <div className="hidden lg:flex w-[280px] shrink-0 bg-white border-l border-neutral-100 flex-col">
+        <div className="hidden lg:flex w-[420px] shrink-0 bg-white border-l border-neutral-100 flex-col">
           {/* Tab header */}
           <div className="px-4 pt-3 pb-0 border-b border-neutral-100">
             <div className="flex gap-1">
