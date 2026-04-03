@@ -19,26 +19,24 @@ export default function LoginPage() {
     <div className="min-h-screen flex">
 
       {/* ── 좌측: 로그인 ── */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-8 bg-white">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between px-12 py-12 bg-white">
 
-          {/* 타이틀 (크게) */}
-          <div className="mb-20">
-            <h1 className="text-[36px] font-bold text-neutral-900 tracking-tight leading-tight">
-              U:US <span className="font-light text-neutral-300">×</span> Junto AI
-            </h1>
-            <p className="text-[15px] text-neutral-400 mt-2">촬영 없이, AI로 완성하는 패션 콘텐츠</p>
-          </div>
+        {/* 상단: 타이틀 */}
+        <div>
+          <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1]">
+            U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
+          </h1>
+          <p className="text-[15px] text-neutral-400 mt-3 tracking-wide">AI 패션 플랫폼</p>
+        </div>
 
-          {/* Sign in */}
-          <div className="mb-8">
-            <h2 className="text-[24px] font-bold text-neutral-900">Sign in</h2>
-          </div>
+        {/* 중앙: 로그인 */}
+        <div className="max-w-md">
+          <h2 className="text-[28px] font-bold text-neutral-900 mb-2">Sign in</h2>
+          <p className="text-[14px] text-neutral-400 mb-8">AI 패션 플랫폼에 오신 것을 환영합니다</p>
 
-          {/* 구글 로그인 */}
           <button
             onClick={() => signInWithGoogle(redirectTo)}
-            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 bg-white border border-neutral-200 rounded-xl text-[15px] font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-3 px-5 py-4 bg-white border border-neutral-200 rounded-xl text-[15px] font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -48,16 +46,16 @@ export default function LoginPage() {
             </svg>
             Sign in with Google
           </button>
-
-          {/* 하단 */}
-          <div className="mt-auto pt-32">
-            <p className="text-[12px] text-neutral-300 leading-relaxed">
-              계속 진행하면 <span className="underline cursor-pointer">이용약관</span> 및 <span className="underline cursor-pointer">개인정보 처리방침</span>에 동의하는 것으로 간주합니다.
-            </p>
-            <p className="text-[12px] text-neutral-300 mt-3">©2026 U:US Mall, all rights reserved</p>
-          </div>
-
         </div>
+
+        {/* 하단: 법적 고지 */}
+        <div>
+          <p className="text-[12px] text-neutral-300 leading-relaxed">
+            계속 진행하면 <span className="underline cursor-pointer">이용약관</span> 및 <span className="underline cursor-pointer">개인정보 처리방침</span>에 동의하는 것으로 간주합니다.
+          </p>
+          <p className="text-[12px] text-neutral-300 mt-2">©2026 U:US Mall, all rights reserved</p>
+        </div>
+
       </div>
 
       {/* ── 우측: 영상 / 이미지 ── */}
@@ -83,7 +81,7 @@ export default function LoginPage() {
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-10">
           <p className="text-[14px] font-medium text-white/70 mb-3">Trusted by fashion brands</p>
           <p className="text-[24px] font-bold text-white leading-snug">
-            사진 한 장이면<br />모델컷, 영상까지
+            AI로 만드는<br />패션 콘텐츠의 새로운 기준
           </p>
         </div>
       </div>
