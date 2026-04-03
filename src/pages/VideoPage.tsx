@@ -624,12 +624,6 @@ export default function VideoPage() {
                 >
                   <Download className="w-4 h-4" /> 영상 저장
                 </a>
-                <Link
-                  to={`/video/dub?videoUrl=${encodeURIComponent(videoResult)}`}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-neutral-900 text-white text-[13px] font-semibold rounded-lg hover:bg-neutral-700 transition-colors no-underline"
-                >
-                  다음: 더빙 추가 <ChevronRight className="w-4 h-4" />
-                </Link>
               </div>
             </div>
           ) : (
