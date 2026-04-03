@@ -49,6 +49,8 @@ export default function VideoPage() {
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryTab, setGalleryTab] = useState<'images' | 'videos'>(GALLERY_TAB as 'images');
+  const [galleryPage, setGalleryPage] = useState(0);
+  const GALLERY_PER_PAGE = 10;
   const [generatedVideos, setGeneratedVideos] = useState<string[]>([]);
 
   // Image selection
@@ -90,11 +92,7 @@ export default function VideoPage() {
   // ── helpers ──────────────────────────────────
   function toggleImageSelect(url: string) {
     setSelectedImages(prev =>
-      prev.includes(url)
-        ? prev.filter(u => u !== url)
-        : prev.length < 5
-          ? [...prev, url]
-          : prev,
+      prev.includes(url) ? [] : [url]
     );
   }
 
@@ -539,27 +537,36 @@ export default function VideoPage() {
               ) : allImages.length === 0 ? (
                 <p className="text-[12px] text-neutral-400 text-center py-10">갤러리가 비어있습니다</p>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {allImages.map(img => {
-                    const isSelected = selectedImages.includes(img.image_url);
-                    return (
-                      <div key={img.id} className="relative aspect-square">
-                        <button
-                          type="button"
-                          onClick={() => toggleImageSelect(img.image_url)}
-                          className={`w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? 'border-neutral-900' : 'border-transparent hover:border-neutral-300'}`}
-                        >
-                          <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
-                        </button>
-                        {isSelected && (
-                          <div className="absolute top-1 right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center pointer-events-none">
-                            <Check className="w-3 h-3 text-white" />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                <>
+                  <div className="grid grid-cols-2 gap-1.5 flex-1">
+                    {allImages.slice(galleryPage * GALLERY_PER_PAGE, (galleryPage + 1) * GALLERY_PER_PAGE).map(img => {
+                      const isSelected = selectedImages.includes(img.image_url);
+                      return (
+                        <div key={img.id} className="relative aspect-square">
+                          <button
+                            type="button"
+                            onClick={() => toggleImageSelect(img.image_url)}
+                            className={`w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? 'border-neutral-900' : 'border-transparent hover:border-neutral-300'}`}
+                          >
+                            <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                          </button>
+                          {isSelected && (
+                            <div className="absolute top-1 right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center pointer-events-none">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {Math.ceil(allImages.length / GALLERY_PER_PAGE) > 1 && (
+                    <div className="flex items-center justify-center gap-1 pt-2 border-t border-neutral-100 mt-2">
+                      {Array.from({ length: Math.ceil(allImages.length / GALLERY_PER_PAGE) }).map((_, i) => (
+                        <button key={i} onClick={() => setGalleryPage(i)} className={`w-6 h-6 rounded text-[10px] font-semibold transition-all cursor-pointer ${galleryPage === i ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-100'}`}>{i + 1}</button>
+                      ))}
+                    </div>
+                  )}
+                </>
               )
             ) : (
               generatedVideos.length === 0 ? (
