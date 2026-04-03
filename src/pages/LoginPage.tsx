@@ -2,7 +2,6 @@ import React from 'react';
 import { useAuth } from '../lib/useAuth';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 
-// 우측 미디어 설정
 const MEDIA_URL = '/videos/login-bg.webm';
 const IS_VIDEO = true;
 
@@ -18,27 +17,17 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
 
-      {/* ── 좌측: 로그인 ── */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between px-12 py-12 bg-white">
-
-        {/* 상단: 타이틀 */}
-        <div>
+      {/* ── 좌측 ── */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-10">
           <Link to="/" className="no-underline">
-            <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer">
+            <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer text-center">
               U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
             </h1>
           </Link>
-          <p className="text-[15px] text-neutral-400 mt-3 tracking-wide">AI 패션 플랫폼</p>
-        </div>
-
-        {/* 중앙: 로그인 */}
-        <div className="max-w-md">
-          <h2 className="text-[28px] font-bold text-neutral-900 mb-2">Sign in</h2>
-          <p className="text-[14px] text-neutral-400 mb-8">AI 패션 플랫폼에 오신 것을 환영합니다</p>
-
           <button
             onClick={() => signInWithGoogle(redirectTo)}
-            className="w-full flex items-center justify-center gap-3 px-5 py-4 bg-white border border-neutral-200 rounded-xl text-[15px] font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
+            className="flex items-center justify-center gap-3 px-8 py-3.5 bg-white border border-neutral-200 rounded-xl text-[15px] font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -49,18 +38,9 @@ export default function LoginPage() {
             Sign in with Google
           </button>
         </div>
-
-        {/* 하단: 법적 고지 */}
-        <div>
-          <p className="text-[12px] text-neutral-300 leading-relaxed">
-            계속 진행하면 <span className="underline cursor-pointer">이용약관</span> 및 <span className="underline cursor-pointer">개인정보 처리방침</span>에 동의하는 것으로 간주합니다.
-          </p>
-          <p className="text-[12px] text-neutral-300 mt-2">©2026 U:US Mall, all rights reserved</p>
-        </div>
-
       </div>
 
-      {/* ── 우측: 영상 / 이미지 ── */}
+      {/* ── 우측: 영상 ── */}
       <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-black items-center justify-center">
         {IS_VIDEO ? (
           <video
@@ -78,8 +58,6 @@ export default function LoginPage() {
             className="h-full object-contain"
           />
         )}
-
-        {/* 하단 오버레이 */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-10">
           <p className="text-[14px] font-medium text-white/70 mb-3">Trusted by fashion brands</p>
           <p className="text-[24px] font-bold text-white leading-snug">
