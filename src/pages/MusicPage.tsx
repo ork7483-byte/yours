@@ -11,6 +11,20 @@ import {
 // ─────────────────────────────────────────────
 type MusicProvider = 'suno' | 'royalty';
 
+// 패션 모델컷 영상에 최적화된 BGM 무드 프리셋
+const FASHION_MOODS = [
+  { id: 'runway', emoji: '🖤', label: '런웨이', desc: '세련된 하이패션', prompt: 'sleek minimal electronic runway music, fashion show beat, modern and sophisticated, 120bpm, 30 seconds' },
+  { id: 'elegant', emoji: '✨', label: '엘레강스', desc: '고급스러운 무드', prompt: 'elegant orchestral fashion film music, luxury brand commercial, graceful strings and piano, cinematic, 30 seconds' },
+  { id: 'street', emoji: '🔥', label: '스트릿', desc: '힙하고 트렌디', prompt: 'trendy street fashion music, hip-hop influenced beat, urban cool vibe, confident swagger, 30 seconds' },
+  { id: 'romantic', emoji: '🌸', label: '로맨틱', desc: '부드럽고 여성스러운', prompt: 'soft romantic fashion music, gentle piano and strings, feminine and dreamy, lookbook mood, 30 seconds' },
+  { id: 'minimal', emoji: '🤍', label: '미니멀', desc: '깔끔하고 모던', prompt: 'minimal ambient fashion music, clean modern sound, soft electronic textures, quiet confidence, 30 seconds' },
+  { id: 'energetic', emoji: '⚡', label: '에너제틱', desc: '활기차고 역동적', prompt: 'upbeat energetic fashion music, dynamic pop beat, youthful and vibrant, summer lookbook vibe, 30 seconds' },
+  { id: 'cinematic', emoji: '🎬', label: '시네마틱', desc: '영화 같은 무드', prompt: 'cinematic fashion film score, dramatic and emotional, epic brand campaign music, inspiring, 30 seconds' },
+  { id: 'chill', emoji: '☕', label: '칠 바이브', desc: '편안하고 자연스러운', prompt: 'chill lofi fashion music, relaxed acoustic vibes, warm and cozy lookbook mood, laid-back groove, 30 seconds' },
+  { id: 'night', emoji: '🌙', label: '나이트', desc: '어둡고 미스테리한', prompt: 'dark moody fashion music, nighttime urban atmosphere, mysterious and seductive, deep bass, 30 seconds' },
+  { id: 'resort', emoji: '🌊', label: '리조트', desc: '휴양지 느낌', prompt: 'breezy resort fashion music, tropical chill vibes, summer vacation mood, light and airy, 30 seconds' },
+];
+
 const ROYALTY_BGM = [
   { id: 'bgm1', label: '잔잔한 피아노', url: '' },
   { id: 'bgm2', label: '경쾌한 팝', url: '' },
@@ -202,16 +216,37 @@ export default function MusicPage() {
           <div className="space-y-3">
             {musicProvider === 'suno' ? (
               <>
+                {/* 무드 카드 선택 */}
                 <div>
-                  <label className="block text-[12px] font-medium text-neutral-600 mb-1">음악 설명 / 장르</label>
-                  <input
-                    type="text"
-                    placeholder="예: upbeat fashion music, cinematic, 30 seconds"
-                    value={sunoPrompt}
-                    onChange={e => setSunoPrompt(e.target.value)}
-                    className="w-full px-3 py-2 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 focus:bg-white transition-colors"
-                  />
+                  <label className="block text-[12px] font-medium text-neutral-600 mb-2">무드 선택</label>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                    {FASHION_MOODS.map(mood => (
+                      <button
+                        key={mood.id}
+                        type="button"
+                        onClick={() => setSunoPrompt(mood.prompt)}
+                        className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all cursor-pointer ${sunoPrompt === mood.prompt ? 'border-neutral-900 bg-neutral-900 text-white shadow-md' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400 hover:shadow-sm'}`}
+                      >
+                        <span className="text-xl mb-1">{mood.emoji}</span>
+                        <span className="text-[12px] font-bold">{mood.label}</span>
+                        <span className={`text-[10px] mt-0.5 ${sunoPrompt === mood.prompt ? 'text-neutral-300' : 'text-neutral-400'}`}>{mood.desc}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* 선택된 무드 표시 + 커스텀 수정 */}
+                {sunoPrompt && (
+                  <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+                    <label className="block text-[10px] text-neutral-400 mb-1 font-medium">선택된 프롬프트 (수정 가능)</label>
+                    <input
+                      type="text"
+                      value={sunoPrompt}
+                      onChange={e => setSunoPrompt(e.target.value)}
+                      className="w-full px-2 py-1.5 text-[12px] bg-white border border-neutral-200 rounded-md outline-none focus:border-neutral-400 transition-colors"
+                    />
+                  </div>
+                )}
 
                 <button
                   onClick={generateMusic}
