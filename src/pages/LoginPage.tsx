@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useAuth } from '../lib/useAuth';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
@@ -6,13 +6,70 @@ import { Link, Navigate, useSearchParams } from 'react-router-dom';
 const MEDIA_URL = '/videos/login-bg.webm';
 const IS_VIDEO = true;
 
+// 인앱 브라우저 감지
+function isInAppBrowser(): boolean {
+  const ua = navigator.userAgent || '';
+  return /KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line|wv|WebView/i.test(ua);
+}
+
 export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/fitting';
+  const [inApp, setInApp] = useState(false);
+
+  useEffect(() => {
+    if (isInAppBrowser()) {
+      // 안드로이드: intent로 Chrome 열기, iOS: Safari로 열기
+      const currentUrl = window.location.href;
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (isAndroid) {
+        // Chrome intent로 외부 브라우저 열기
+        window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+        // intent 실패 시 폴백
+        setTimeout(() => setInApp(true), 1500);
+      } else if (isIOS) {
+        // iOS는 x-safari-https로 시도
+        window.location.href = currentUrl.replace(/^https?:\/\//, 'x-safari-https://');
+        setTimeout(() => setInApp(true), 1500);
+      } else {
+        setInApp(true);
+      }
+    }
+  }, []);
 
   if (!loading && user) {
     return <Navigate to={redirectTo} replace />;
+  }
+
+  // 인앱 브라우저 폴백 UI
+  if (inApp) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white px-6">
+        <div className="max-w-sm text-center">
+          <h1 className="text-[28px] font-extrabold text-neutral-900 mb-3">
+            U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
+          </h1>
+          <p className="text-[14px] text-neutral-500 mb-6 leading-relaxed">
+            원활한 로그인을 위해<br />Chrome 또는 Safari에서 열어주세요
+          </p>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              alert('링크가 복사되었습니다!\nChrome 또는 Safari에서 붙여넣기 하세요.');
+            }}
+            className="w-full px-6 py-3.5 bg-neutral-900 text-white text-[15px] font-semibold rounded-xl cursor-pointer transition-colors hover:bg-neutral-700"
+          >
+            링크 복사하기
+          </button>
+          <p className="text-[12px] text-neutral-300 mt-4">
+            복사한 링크를 Chrome 또는 Safari 주소창에 붙여넣기 하세요
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -51,7 +108,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ── 우측: 영상 (세로 비율에 맞게 좁게) ── */}
+      {/* ── 우측: 영상 ── */}
       <div className="hidden lg:block w-[38%] h-screen relative overflow-hidden">
         {IS_VIDEO ? (
           <video
