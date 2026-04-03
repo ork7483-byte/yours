@@ -75,8 +75,11 @@ export default function VideoPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Step 2 — video generation (Kie.ai)
-  const [klingModel, setKlingModel] = useState('kling/v2-5-turbo-image-to-video-pro');
+  const [videoModel, setVideoModel] = useState('kling/v2-5-turbo-image-to-video-pro');
   const [videoWithSound, setVideoWithSound] = useState(false);
+  const [grokMode, setGrokMode] = useState<'normal' | 'fun'>('normal');
+  const [grokDuration, setGrokDuration] = useState('6');
+  const [grokResolution, setGrokResolution] = useState<'480p' | '720p'>('720p');
   const [videoPrompt, setVideoPrompt] = useState('');
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoResult, setVideoResult] = useState<string | null>(null);
@@ -160,19 +163,34 @@ export default function VideoPage() {
       const key = await getApiKey('kie_api_key');
       if (!key) throw new Error('Kie.ai API 키가 설정되지 않았습니다. 관리자 대시보드에서 키를 입력해주세요.');
 
-      // POST — create task
+      // POST — create task (Kling 또는 Grok Imagine)
+      const isGrok = videoModel === 'grok-imagine/image-to-video';
+      const requestBody = isGrok
+        ? {
+            model: 'grok-imagine/image-to-video',
+            input: {
+              image_urls: [firstSelectedImage],
+              prompt: videoPrompt || 'natural fashion video with gentle movement',
+              mode: grokMode,
+              duration: grokDuration,
+              resolution: grokResolution,
+            },
+          }
+        : {
+            model: videoModel,
+            input: {
+              prompt: videoPrompt || '자연스러운 영상',
+              image_url: firstSelectedImage,
+              duration: '5',
+              ...(videoModel === 'kling-2.6/image-to-video' ? { sound: videoWithSound } : {}),
+            },
+          };
+
+      console.log('[Kie.ai] request:', JSON.stringify(requestBody));
       const res = await fetch('https://api.kie.ai/api/v1/jobs/createTask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({
-          model: klingModel,
-          input: {
-            prompt: videoPrompt || '자연스러운 영상',
-            image_url: firstSelectedImage,
-            duration: '5',
-            ...(klingModel === 'kling-2.6/image-to-video' ? { sound: videoWithSound } : {}),
-          },
-        }),
+        body: JSON.stringify(requestBody),
       });
       const data = await res.json();
       console.log('[Kie.ai] createTask response:', JSON.stringify(data));
@@ -542,23 +560,57 @@ export default function VideoPage() {
             {/* Model selector */}
             <div>
               <label className="block text-[12px] font-medium text-neutral-600 mb-2">모델 선택</label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {[
-                  { value: 'kling/v2-5-turbo-image-to-video-pro', label: 'Kling 2.5 Turbo', price: '500원' },
-                  { value: 'kling-2.6/image-to-video', label: 'Kling 2.6', price: '1,000원' },
+                  { value: 'kling/v2-5-turbo-image-to-video-pro', label: 'Kling 2.5 Turbo', price: '500원', badge: '' },
+                  { value: 'kling-2.6/image-to-video', label: 'Kling 2.6', price: '1,000원', badge: '' },
+                  { value: 'grok-imagine/image-to-video', label: 'Grok Imagine', price: '~380원/5초', badge: '영상+오디오 올인원' },
                 ].map(opt => (
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setKlingModel(opt.value)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all cursor-pointer ${klingModel === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'}`}
+                    onClick={() => setVideoModel(opt.value)}
+                    className={`flex flex-col items-start px-4 py-2.5 rounded-xl border text-[12px] font-semibold transition-all cursor-pointer ${videoModel === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'}`}
                   >
-                    {opt.label}
-                    <span className={`text-[11px] font-medium ${klingModel === opt.value ? 'text-amber-300' : 'text-amber-500'}`}>{opt.price}</span>
+                    <div className="flex items-center gap-2">
+                      {opt.label}
+                      <span className={`text-[11px] font-medium ${videoModel === opt.value ? 'text-amber-300' : 'text-amber-500'}`}>{opt.price}</span>
+                    </div>
+                    {opt.badge && <span className={`text-[9px] mt-0.5 ${videoModel === opt.value ? 'text-emerald-300' : 'text-emerald-500'}`}>{opt.badge}</span>}
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Grok 전용 설정 */}
+            {videoModel === 'grok-imagine/image-to-video' && (
+              <div className="flex gap-4 items-center flex-wrap bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-neutral-500 font-medium">길이:</span>
+                  <select value={grokDuration} onChange={e => setGrokDuration(e.target.value)} className="px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                    <option value="6">6초</option>
+                    <option value="10">10초</option>
+                    <option value="15">15초</option>
+                    <option value="20">20초</option>
+                    <option value="30">30초</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-neutral-500 font-medium">해상도:</span>
+                  <select value={grokResolution} onChange={e => setGrokResolution(e.target.value as '480p' | '720p')} className="px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                    <option value="480p">480p</option>
+                    <option value="720p">720p</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-neutral-500 font-medium">모드:</span>
+                  <select value={grokMode} onChange={e => setGrokMode(e.target.value as 'normal' | 'fun')} className="px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                    <option value="normal">Normal</option>
+                    <option value="fun">Fun</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-[12px] font-medium text-neutral-600 mb-1">영상 프롬프트 (선택)</label>
