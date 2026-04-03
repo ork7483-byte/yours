@@ -136,7 +136,12 @@ export default function Dashboard() {
     if (!user) return;
     setGalleryLoading(true);
     const { images } = await getMyImages(user.id);
-    setGallery(images);
+    setGallery(images.filter((item: any) =>
+      !item.prompt_summary?.startsWith('영상') &&
+      !item.image_url?.includes('.mp4') &&
+      !item.image_url?.includes('.webm') &&
+      !item.image_url?.includes('video_')
+    ));
     setGalleryLoading(false);
   };
 
