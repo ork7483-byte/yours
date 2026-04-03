@@ -651,8 +651,20 @@ export default function VideoPage() {
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   {generatedVideos.map((url, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100 aspect-square cursor-pointer" onClick={() => setVideoResult(url)}>
+                    <div key={i} className="relative rounded-lg overflow-hidden border border-neutral-100 aspect-square cursor-pointer group" onClick={() => setVideoResult(url)}>
                       <video src={url} className="w-full h-full object-cover pointer-events-none" muted />
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (!confirm('이 영상을 삭제하시겠습니까?')) return;
+                          await supabase.from('generated_images').delete().match({ image_url: url });
+                          setGeneratedVideos(prev => prev.filter(v => v !== url));
+                          if (videoResult === url) setVideoResult(null);
+                        }}
+                        className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      >
+                        <X className="w-3 h-3 text-white" />
+                      </button>
                     </div>
                   ))}
                 </div>
