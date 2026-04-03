@@ -609,7 +609,7 @@ export default function Main2() {
                   </button>
                 ) : (
                   <Link to="/login" className="px-4 py-2 text-[13px] font-semibold text-white bg-neutral-900 rounded-full hover:bg-neutral-700 cursor-pointer transition-colors no-underline whitespace-nowrap" style={{ pointerEvents: 'auto' }}>
-                    로그인 / 회원가입
+                    로그인/회원가입
                   </Link>
                 )}
               </div>
