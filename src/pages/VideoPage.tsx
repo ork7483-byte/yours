@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../lib/useAuth';
 import { supabase } from '../lib/supabase';
 import { getApiKey } from '../lib/apiSettings';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
-  Video, Music, Mic, Image as ImageIcon, Upload, Play, Download,
+  Video, Image as ImageIcon, Upload, Play, Download,
   LogIn, Check, ChevronRight, X,
 } from 'lucide-react';
 
@@ -18,29 +18,8 @@ interface GalleryImage {
   created_at: string;
 }
 
-type VoiceProvider = 'elevenlabs' | 'google';
-type MusicProvider = 'suno' | 'royalty';
-
-const ROYALTY_BGM = [
-  { id: 'bgm1', label: '잔잔한 피아노', url: '' },
-  { id: 'bgm2', label: '경쾌한 팝', url: '' },
-  { id: 'bgm3', label: '시네마틱 오케스트라', url: '' },
-  { id: 'bgm4', label: '어쿠스틱 기타', url: '' },
-  { id: 'bgm5', label: '로파이 힙합', url: '' },
-];
-
-const ELEVENLABS_VOICES = [
-  { id: 'EXAVITQu4vr4xnSDxMaL', label: 'Sarah (여성, 미국)' },
-  { id: 'TX3LPaxmHKxFdv7VOQHJ', label: 'Liam (남성, 미국)' },
-  { id: 'XB0fDUnXU5powFXDhCwa', label: 'Charlotte (여성, 영국)' },
-];
-
-const GOOGLE_TTS_VOICES = [
-  { code: 'ko-KR', name: 'ko-KR-Neural2-A', label: '한국어 (여성)' },
-  { code: 'ko-KR', name: 'ko-KR-Neural2-C', label: '한국어 (남성)' },
-  { code: 'en-US', name: 'en-US-Neural2-A', label: '영어 (여성, 미국)' },
-  { code: 'en-US', name: 'en-US-Neural2-D', label: '영어 (남성, 미국)' },
-];
+const GALLERY_TAB = 'images';
+const VIDEO_TAB = 'videos';
 
 // ─────────────────────────────────────────────
 // Toggle Switch sub-component
@@ -64,17 +43,21 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
 // ─────────────────────────────────────────────
 export default function VideoPage() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  // Step 1 — image selection
+  // Gallery
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [galleryTab, setGalleryTab] = useState<'images' | 'videos'>(GALLERY_TAB as 'images');
+  const [generatedVideos, setGeneratedVideos] = useState<string[]>([]);
+
+  // Image selection
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  // Step 1 — image preview modal
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Step 2 — video generation (Kie.ai)
+  // Video generation (Kie.ai)
   const [videoModel, setVideoModel] = useState('kling/v2-5-turbo-image-to-video-pro');
   const [videoWithSound, setVideoWithSound] = useState(false);
   const [grokMode, setGrokMode] = useState<'normal' | 'fun'>('normal');
@@ -87,35 +70,20 @@ export default function VideoPage() {
   const [videoPollCount, setVideoPollCount] = useState(0);
   const [videoStatus, setVideoStatus] = useState('');
 
-  // Step 3 — voice (optional)
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [voiceProvider, setVoiceProvider] = useState<VoiceProvider>('elevenlabs');
-  const [voiceText, setVoiceText] = useState('');
-  const [elVoiceId, setElVoiceId] = useState(ELEVENLABS_VOICES[0].id);
-  const [googleVoice, setGoogleVoice] = useState(GOOGLE_TTS_VOICES[0]);
-  const [voiceLoading, setVoiceLoading] = useState(false);
-  const [voiceResult, setVoiceResult] = useState<string | null>(null);
-  const [voiceError, setVoiceError] = useState<string | null>(null);
-
-  // Step 4 — music (optional)
-  const [musicEnabled, setMusicEnabled] = useState(false);
-  const [musicProvider, setMusicProvider] = useState<MusicProvider>('suno');
-  const [sunoPrompt, setSunoPrompt] = useState('');
-  const [musicLoading, setMusicLoading] = useState(false);
-  const [musicResult, setMusicResult] = useState<string | null>(null);
-  const [musicError, setMusicError] = useState<string | null>(null);
-  const [selectedBgm, setSelectedBgm] = useState<string | null>(null);
-
   // Load gallery on mount
   useEffect(() => {
     if (user) {
+      setGalleryLoading(true);
       supabase
         .from('generated_images')
         .select('id, image_url, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50)
-        .then(({ data }) => setGallery(data || []));
+        .then(({ data }) => {
+          setGallery(data || []);
+          setGalleryLoading(false);
+        });
     }
   }, [user]);
 
@@ -150,7 +118,7 @@ export default function VideoPage() {
 
   const firstSelectedImage = selectedImages[0];
 
-  // ── Step 2: Video Generation (Kie.ai) ────────
+  // ── Video Generation (Kie.ai) ────────
   async function generateVideo() {
     if (!firstSelectedImage) { setVideoError('이미지를 먼저 선택해주세요.'); return; }
     setVideoError(null);
@@ -163,7 +131,6 @@ export default function VideoPage() {
       const key = await getApiKey('kie_api_key');
       if (!key) throw new Error('Kie.ai API 키가 설정되지 않았습니다. 관리자 대시보드에서 키를 입력해주세요.');
 
-      // POST — create task (Kling 또는 Grok Imagine)
       const isGrok = videoModel === 'grok-imagine/image-to-video';
       const requestBody = isGrok
         ? {
@@ -201,7 +168,6 @@ export default function VideoPage() {
       if (!taskId) throw new Error('taskId를 받지 못했습니다.');
 
       setVideoStatus('AI가 영상을 구상하고 있습니다...');
-      // Poll every 15 seconds, up to 20 attempts (5 minutes)
       for (let i = 0; i < 20; i++) {
         setVideoPollCount(i + 1);
         if (i < 3) setVideoStatus('AI가 영상을 구상하고 있습니다...');
@@ -215,147 +181,33 @@ export default function VideoPage() {
         if (!poll.ok) continue;
         const pData = await poll.json();
         console.log(`[Kie.ai] poll #${i+1}:`, JSON.stringify(pData));
-        // Kie.ai 공식 문서: state 필드 (waiting/queuing/generating/success/fail)
         const state: string = pData.data?.state || pData.state || pData.data?.status || pData.status || '';
 
         if (state === 'success') {
           let videoUrl: string | null = null;
           try {
-            // 공식 문서: resultJson 필드에 {"resultUrls":["url"]} 형태
             const resultJson = pData.data?.resultJson || pData.resultJson;
             if (resultJson) {
               const parsed = typeof resultJson === 'string' ? JSON.parse(resultJson) : resultJson;
               videoUrl = parsed?.resultUrls?.[0] || parsed?.result_urls?.[0] || null;
             }
-            // 대안: 직접 video_url 필드
             if (!videoUrl) videoUrl = pData.data?.video_url || pData.video_url || null;
           } catch (_) { /* ignore parse errors */ }
           if (!videoUrl) throw new Error('영상이 생성됐지만 URL을 파싱하지 못했습니다. 관리자에게 문의해주세요.');
           setVideoResult(videoUrl);
+          setGeneratedVideos(prev => [videoUrl as string, ...prev]);
           setVideoLoading(false);
           return;
         }
         if (state === 'fail' || state === 'failed' || state === 'error') {
           throw new Error(pData.data?.errorMessage || '영상 생성에 실패했습니다.');
         }
-        // waiting | queuing | generating — keep polling
       }
       throw new Error('영상 생성 시간 초과 (5분). 다시 시도해주세요.');
 
     } catch (e: any) {
       setVideoError(e.message || '알 수 없는 오류가 발생했습니다.');
       setVideoLoading(false);
-    }
-  }
-
-  // ── Step 3: Voice ─────────────────────────────
-  async function generateVoice() {
-    if (!voiceText.trim()) { setVoiceError('텍스트를 입력해주세요.'); return; }
-    setVoiceError(null);
-    setVoiceResult(null);
-    setVoiceLoading(true);
-
-    try {
-      if (voiceProvider === 'elevenlabs') {
-        const key = await getApiKey('elevenlabs_key');
-        if (!key) throw new Error('ElevenLabs API 키가 설정되지 않았습니다. 관리자 대시보드에서 키를 입력해주세요.');
-
-        const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${elVoiceId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'xi-api-key': key },
-          body: JSON.stringify({
-            text: voiceText,
-            model_id: 'eleven_multilingual_v2',
-            voice_settings: { stability: 0.5, similarity_boost: 0.75 },
-          }),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.detail?.message || `ElevenLabs 오류 (${res.status})`);
-        }
-        const blob = await res.blob();
-        setVoiceResult(URL.createObjectURL(blob));
-
-      } else {
-        // Google Cloud TTS
-        const key = await getApiKey('google_tts_key');
-        if (!key) throw new Error('Google Cloud TTS API 키가 설정되지 않았습니다. 관리자 대시보드에서 키를 입력해주세요.');
-
-        const res = await fetch(
-          `https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              input: { text: voiceText },
-              voice: { languageCode: googleVoice.code, name: googleVoice.name },
-              audioConfig: { audioEncoding: 'MP3' },
-            }),
-          },
-        );
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error?.message || `Google TTS 오류 (${res.status})`);
-        }
-        const data = await res.json();
-        const audioBytes = atob(data.audioContent);
-        const buffer = new Uint8Array(audioBytes.length);
-        for (let i = 0; i < audioBytes.length; i++) buffer[i] = audioBytes.charCodeAt(i);
-        const blob = new Blob([buffer], { type: 'audio/mp3' });
-        setVoiceResult(URL.createObjectURL(blob));
-      }
-    } catch (e: any) {
-      setVoiceError(e.message || '알 수 없는 오류가 발생했습니다.');
-    } finally {
-      setVoiceLoading(false);
-    }
-  }
-
-  // ── Step 4: Music ─────────────────────────────
-  async function generateMusic() {
-    if (!sunoPrompt.trim()) { setMusicError('음악 설명을 입력해주세요.'); return; }
-    setMusicError(null);
-    setMusicResult(null);
-    setMusicLoading(true);
-
-    try {
-      const key = await getApiKey('suno_key');
-      if (!key) throw new Error('Suno API 키가 설정되지 않았습니다. 관리자 대시보드에서 키를 입력해주세요.');
-
-      const res = await fetch('https://api.sunoapi.org/v1/audios/generations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({ prompt: sunoPrompt, duration: 30 }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `Suno API 오류 (${res.status})`);
-      }
-      const data = await res.json();
-      const taskId: string = data.id || data.task_id;
-      if (!taskId) throw new Error('task_id를 받지 못했습니다.');
-
-      for (let i = 0; i < 24; i++) {
-        await delay(10000);
-        const poll = await fetch(`https://api.sunoapi.org/v1/audios/generations/${taskId}`, {
-          headers: { Authorization: `Bearer ${key}` },
-        });
-        if (!poll.ok) continue;
-        const pData = await poll.json();
-        const status = pData.status;
-        if (status === 'completed' || status === 'success') {
-          const audioUrl = pData.audio_url || pData.url;
-          if (!audioUrl) throw new Error('음악 URL을 받지 못했습니다.');
-          setMusicResult(audioUrl);
-          setMusicLoading(false);
-          return;
-        }
-        if (status === 'failed' || status === 'error') throw new Error('음악 생성에 실패했습니다.');
-      }
-      throw new Error('음악 생성 시간 초과 (4분). 다시 시도해주세요.');
-    } catch (e: any) {
-      setMusicError(e.message || '알 수 없는 오류가 발생했습니다.');
-      setMusicLoading(false);
     }
   }
 
@@ -390,105 +242,7 @@ export default function VideoPage() {
   // Main layout
   // ─────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#FAFAF9] font-sans antialiased relative">
-
-      {/* ── 영상 생성 중 풀스크린 오버레이 ── */}
-      <AnimatePresence>
-        {videoLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex bg-black"
-          >
-            {/* 좌측: 생성 중 화면 */}
-            <div className="flex-1 flex flex-col items-center justify-center relative">
-              {/* 원본 이미지 블러 배경 */}
-              {firstSelectedImage && (
-                <img src={firstSelectedImage} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl" />
-              )}
-              <div className="relative z-10 flex flex-col items-center text-center px-8">
-                {/* 원본 이미지 */}
-                {firstSelectedImage && (
-                  <div className="w-48 h-64 rounded-xl overflow-hidden shadow-2xl mb-8 border border-white/10">
-                    <img src={firstSelectedImage} alt="" className="w-full h-full object-cover" />
-                  </div>
-                )}
-                {/* 스피너 */}
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 border-[3px] border-white/10 border-t-white rounded-full animate-spin" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Video className="w-5 h-5 text-white/60" />
-                  </div>
-                </div>
-                {/* 상태 텍스트 */}
-                <p className="text-white text-[18px] font-semibold mb-2">{videoStatus}</p>
-                <p className="text-white/40 text-[13px]">
-                  {videoPollCount > 0 ? `확인 중... (${videoPollCount}/20)` : '요청을 전송하고 있습니다'}
-                </p>
-                {/* 프로그레스 바 */}
-                <div className="w-64 h-1 bg-white/10 rounded-full mt-6 overflow-hidden">
-                  <div
-                    className="h-full bg-white/60 rounded-full transition-all duration-[15000ms] ease-linear"
-                    style={{ width: `${Math.min(95, videoPollCount * 5)}%` }}
-                  />
-                </div>
-                <p className="text-white/30 text-[11px] mt-3">최대 5분 소요 · 페이지를 닫지 마세요</p>
-              </div>
-            </div>
-
-            {/* 우측: 갤러리 */}
-            <div className="w-[280px] bg-white/5 border-l border-white/10 flex flex-col hidden lg:flex">
-              <div className="px-4 py-3 border-b border-white/10">
-                <h3 className="text-[13px] font-bold text-white/80">내 갤러리</h3>
-              </div>
-              <div className="flex-1 overflow-y-auto p-3">
-                <div className="grid grid-cols-2 gap-2">
-                  {gallery.slice(0, 12).map(img => (
-                    <div key={img.id} className="aspect-square rounded-lg overflow-hidden bg-white/5">
-                      <img src={img.image_url} alt="" className="w-full h-full object-cover opacity-70" loading="lazy" />
-                    </div>
-                  ))}
-                </div>
-                {gallery.length === 0 && (
-                  <p className="text-white/30 text-[12px] text-center py-8">갤러리가 비어있습니다</p>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── 영상 결과 풀스크린 ── */}
-      <AnimatePresence>
-        {videoResult && !videoLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
-            onClick={() => setVideoResult(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-3xl w-full mx-6"
-              onClick={e => e.stopPropagation()}
-            >
-              <video src={videoResult} controls autoPlay className="w-full rounded-xl shadow-2xl" />
-              <div className="flex justify-center gap-3 mt-4">
-                <a href={videoResult} download={`video-${Date.now()}.mp4`} className="px-5 py-2.5 bg-white text-neutral-900 rounded-lg text-[13px] font-semibold no-underline hover:bg-neutral-100 transition-colors flex items-center gap-2">
-                  <Download className="w-4 h-4" /> 영상 저장
-                </a>
-                <button onClick={() => setVideoResult(null)} className="px-5 py-2.5 bg-white/10 text-white rounded-lg text-[13px] font-semibold hover:bg-white/20 transition-colors cursor-pointer">
-                  닫기
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="min-h-screen bg-[#FAFAF9] font-sans antialiased flex flex-col">
 
       {/* 상단바 */}
       <div className="bg-white border-b border-neutral-100 px-6 py-3 flex items-center justify-between sticky top-0 z-20">
@@ -502,65 +256,67 @@ export default function VideoPage() {
         <span className="text-[12px] text-neutral-400">{user.email}</span>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+      {/* Body: left + center + right */}
+      <div className="flex flex-1 overflow-hidden">
 
-        {/* ── STEP 1: 이미지 선택 ── */}
-        <Section icon={<ImageIcon className="w-4 h-4 text-blue-500" />} title="Step 1 — 이미지 선택" subtitle={`최대 5개 선택 (현재 ${selectedImages.length}개)`}>
-          <div className="flex items-center gap-2 mb-4">
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer"
-            >
-              <Upload className="w-3 h-3" /> 이미지 업로드
-            </button>
-            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
-            {selectedImages.length > 0 && (
-              <span className="text-[11px] text-neutral-400">{selectedImages.length}개 선택됨</span>
-            )}
-          </div>
+        {/* ── Left Panel (320px) ── */}
+        <div className="w-[320px] shrink-0 bg-white border-r border-neutral-100 flex flex-col overflow-y-auto">
+          <div className="p-4 space-y-5">
 
-          {allImages.length === 0 ? (
-            <p className="text-[13px] text-neutral-400 text-center py-8">
-              생성된 이미지가 없습니다. 먼저 이미지를 생성하거나 업로드해주세요.
-            </p>
-          ) : (
-            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-              {allImages.map(img => {
-                const isSelected = selectedImages.includes(img.image_url);
-                return (
-                  <div key={img.id} className="relative aspect-square">
-                    {/* click to open preview modal */}
-                    <div
-                      onClick={() => setPreviewUrl(img.image_url)}
-                      className="w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-neutral-300 transition-all"
-                    >
-                      <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                    {/* select overlay (bottom-right checkbox) */}
-                    <button
-                      type="button"
-                      onClick={e => { e.stopPropagation(); toggleImageSelect(img.image_url); }}
-                      className={`absolute top-1 right-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${isSelected ? 'bg-neutral-900 border-neutral-900' : 'bg-white/80 border-neutral-300 hover:border-neutral-600'}`}
-                    >
-                      {isSelected && <Check className="w-3 h-3 text-white" />}
-                    </button>
-                    {isSelected && (
-                      <div className="absolute inset-0 rounded-lg ring-2 ring-neutral-900 pointer-events-none" />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </Section>
-
-        {/* ── STEP 2: 영상 생성 (Kie.ai) ── */}
-        <Section icon={<Video className="w-4 h-4 text-violet-500" />} title="Step 2 — AI 영상 생성">
-          <div className="space-y-3">
-            {/* Model selector */}
+            {/* Image selection */}
             <div>
-              <label className="block text-[12px] font-medium text-neutral-600 mb-2">모델 선택</label>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[13px] font-bold text-neutral-900">이미지 선택</h2>
+                <span className="text-[11px] text-neutral-400">{selectedImages.length}/5</span>
+              </div>
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[12px] font-semibold text-neutral-600 border border-dashed border-neutral-300 rounded-lg hover:bg-neutral-50 hover:border-neutral-400 transition-colors cursor-pointer mb-3"
+              >
+                <Upload className="w-3 h-3" /> 이미지 업로드
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
+
+              {allImages.length === 0 ? (
+                <p className="text-[12px] text-neutral-400 text-center py-6 bg-neutral-50 rounded-lg border border-neutral-100">
+                  생성된 이미지가 없습니다
+                </p>
+              ) : (
+                <div className="grid grid-cols-4 gap-1.5 max-h-[260px] overflow-y-auto">
+                  {allImages.map(img => {
+                    const isSelected = selectedImages.includes(img.image_url);
+                    return (
+                      <div key={img.id} className="relative aspect-square">
+                        <div
+                          onClick={() => setPreviewUrl(img.image_url)}
+                          className="w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-neutral-300 transition-all"
+                        >
+                          <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={e => { e.stopPropagation(); toggleImageSelect(img.image_url); }}
+                          className={`absolute top-0.5 right-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${isSelected ? 'bg-neutral-900 border-neutral-900' : 'bg-white/80 border-neutral-300 hover:border-neutral-600'}`}
+                        >
+                          {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                        </button>
+                        {isSelected && (
+                          <div className="absolute inset-0 rounded-lg ring-2 ring-neutral-900 pointer-events-none" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-neutral-100" />
+
+            {/* Model selection */}
+            <div>
+              <label className="block text-[12px] font-bold text-neutral-900 mb-2">모델 선택</label>
+              <div className="space-y-1.5">
                 {[
                   { value: 'kling/v2-5-turbo-image-to-video-pro', label: 'Kling 2.5 Turbo', price: '500원', badge: '' },
                   { value: 'kling-2.6/image-to-video', label: 'Kling 2.6', price: '1,000원', badge: '' },
@@ -570,24 +326,24 @@ export default function VideoPage() {
                     key={opt.value}
                     type="button"
                     onClick={() => setVideoModel(opt.value)}
-                    className={`flex flex-col items-start px-4 py-2.5 rounded-xl border text-[12px] font-semibold transition-all cursor-pointer ${videoModel === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'}`}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-[12px] font-semibold transition-all cursor-pointer ${videoModel === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'}`}
                   >
-                    <div className="flex items-center gap-2">
-                      {opt.label}
+                    <span>{opt.label}</span>
+                    <div className="flex flex-col items-end">
                       <span className={`text-[11px] font-medium ${videoModel === opt.value ? 'text-amber-300' : 'text-amber-500'}`}>{opt.price}</span>
+                      {opt.badge && <span className={`text-[9px] ${videoModel === opt.value ? 'text-emerald-300' : 'text-emerald-500'}`}>{opt.badge}</span>}
                     </div>
-                    {opt.badge && <span className={`text-[9px] mt-0.5 ${videoModel === opt.value ? 'text-emerald-300' : 'text-emerald-500'}`}>{opt.badge}</span>}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Grok 전용 설정 */}
+            {/* Grok settings */}
             {videoModel === 'grok-imagine/image-to-video' && (
-              <div className="flex gap-4 items-center flex-wrap bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+              <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-neutral-500 font-medium">길이:</span>
-                  <select value={grokDuration} onChange={e => setGrokDuration(e.target.value)} className="px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                  <span className="text-[11px] text-neutral-500 font-medium w-10">길이</span>
+                  <select value={grokDuration} onChange={e => setGrokDuration(e.target.value)} className="flex-1 px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
                     <option value="6">6초</option>
                     <option value="10">10초</option>
                     <option value="15">15초</option>
@@ -596,15 +352,15 @@ export default function VideoPage() {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-neutral-500 font-medium">해상도:</span>
-                  <select value={grokResolution} onChange={e => setGrokResolution(e.target.value as '480p' | '720p')} className="px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                  <span className="text-[11px] text-neutral-500 font-medium w-10">해상도</span>
+                  <select value={grokResolution} onChange={e => setGrokResolution(e.target.value as '480p' | '720p')} className="flex-1 px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
                     <option value="480p">480p</option>
                     <option value="720p">720p</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-neutral-500 font-medium">모드:</span>
-                  <select value={grokMode} onChange={e => setGrokMode(e.target.value as 'normal' | 'fun')} className="px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                  <span className="text-[11px] text-neutral-500 font-medium w-10">모드</span>
+                  <select value={grokMode} onChange={e => setGrokMode(e.target.value as 'normal' | 'fun')} className="flex-1 px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
                     <option value="normal">Normal</option>
                     <option value="fun">Fun</option>
                   </select>
@@ -612,8 +368,18 @@ export default function VideoPage() {
               </div>
             )}
 
+            {/* Audio toggle (Kling 2.6 only) */}
+            {videoModel === 'kling-2.6/image-to-video' && (
+              <div className="flex items-center gap-3">
+                <ToggleSwitch checked={videoWithSound} onChange={setVideoWithSound} />
+                <span className="text-[12px] text-neutral-600">영상 오디오 포함</span>
+                <span className="text-[11px] text-amber-500 font-medium">+300원</span>
+              </div>
+            )}
+
+            {/* Prompt */}
             <div>
-              <label className="block text-[12px] font-medium text-neutral-600 mb-1">영상 프롬프트 (선택)</label>
+              <label className="block text-[12px] font-bold text-neutral-900 mb-1">프롬프트 <span className="font-normal text-neutral-400">(선택)</span></label>
               <input
                 type="text"
                 placeholder="예: 옷이 자연스럽게 흔들리는 영상"
@@ -623,27 +389,22 @@ export default function VideoPage() {
               />
             </div>
 
-            {/* 오디오 토글 */}
-            <div className="flex items-center gap-3">
-              <ToggleSwitch checked={videoWithSound} onChange={setVideoWithSound} />
-              <span className="text-[13px] text-neutral-600">영상 오디오 포함</span>
-              <span className="text-[11px] text-amber-500 font-medium">+300원</span>
-            </div>
-
+            {/* Selected image preview */}
             {firstSelectedImage && (
-              <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-100">
-                <img src={firstSelectedImage} alt="" className="w-12 h-12 object-cover rounded-md" />
-                <p className="text-[12px] text-neutral-500">이 이미지로 영상을 생성합니다</p>
+              <div className="flex items-center gap-3 p-2.5 bg-neutral-50 rounded-lg border border-neutral-100">
+                <img src={firstSelectedImage} alt="" className="w-10 h-10 object-cover rounded-md shrink-0" />
+                <p className="text-[11px] text-neutral-500 leading-snug">이 이미지로 영상을 생성합니다</p>
               </div>
             )}
 
+            {/* Generate button */}
             <button
               onClick={generateVideo}
               disabled={videoLoading || !firstSelectedImage}
-              className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
             >
               {videoLoading ? (
-                <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 영상 생성 중… (최대 5분)</>
+                <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 생성 중…</>
               ) : (
                 <><Play className="w-4 h-4" /> 영상 생성</>
               )}
@@ -651,195 +412,135 @@ export default function VideoPage() {
 
             {videoError && <p className="text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{videoError}</p>}
 
-            {videoResult && (
-              <div className="space-y-2">
-                <video src={videoResult} controls className="w-full max-w-md rounded-xl border border-neutral-100" />
-                <a href={videoResult} download={`video-${Date.now()}.mp4`} className="inline-flex items-center gap-1.5 text-[12px] text-neutral-600 hover:text-neutral-900 no-underline">
-                  <Download className="w-3 h-3" /> 영상 저장
-                </a>
+          </div>
+        </div>
+
+        {/* ── Center: Video Preview ── */}
+        <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+          {videoLoading ? (
+            /* Inline loading state */
+            <div className="flex flex-col items-center text-center">
+              {firstSelectedImage && (
+                <div className="w-40 h-52 rounded-xl overflow-hidden shadow-lg mb-6 border border-neutral-100">
+                  <img src={firstSelectedImage} alt="" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="relative mb-5">
+                <div className="w-14 h-14 border-[3px] border-neutral-200 border-t-neutral-900 rounded-full animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Video className="w-4 h-4 text-neutral-400" />
+                </div>
               </div>
+              <p className="text-[15px] font-semibold text-neutral-900 mb-1">{videoStatus}</p>
+              <p className="text-[12px] text-neutral-400 mb-4">
+                {videoPollCount > 0 ? `확인 중… (${videoPollCount}/20)` : '요청을 전송하고 있습니다'}
+              </p>
+              <div className="w-56 h-1 bg-neutral-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-neutral-900 rounded-full transition-all duration-[15000ms] ease-linear"
+                  style={{ width: `${Math.min(95, videoPollCount * 5)}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-neutral-400 mt-3">최대 5분 소요 · 페이지를 닫지 마세요</p>
+            </div>
+          ) : videoResult ? (
+            /* Video result */
+            <div className="w-full max-w-xl flex flex-col gap-4">
+              <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
+                <video src={videoResult} controls autoPlay className="w-full" />
+              </div>
+              <div className="flex items-center gap-3">
+                <a
+                  href={videoResult}
+                  download={`video-${Date.now()}.mp4`}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-neutral-200 text-neutral-700 text-[13px] font-semibold rounded-lg hover:bg-neutral-50 transition-colors no-underline"
+                >
+                  <Download className="w-4 h-4" /> 영상 저장
+                </a>
+                <Link
+                  to={`/video/dub?videoUrl=${encodeURIComponent(videoResult)}`}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-neutral-900 text-white text-[13px] font-semibold rounded-lg hover:bg-neutral-700 transition-colors no-underline"
+                >
+                  다음: 더빙 추가 <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          ) : (
+            /* Empty state */
+            <div className="flex flex-col items-center text-center">
+              <div className="w-20 h-20 bg-neutral-100 rounded-2xl flex items-center justify-center mb-4">
+                <Video className="w-8 h-8 text-neutral-300" />
+              </div>
+              <p className="text-[15px] font-semibold text-neutral-900 mb-1">영상 미리보기</p>
+              <p className="text-[13px] text-neutral-400">왼쪽에서 이미지를 선택하고<br />영상 생성 버튼을 누르세요</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Right Panel: Gallery (280px, lg+) ── */}
+        <div className="hidden lg:flex w-[280px] shrink-0 bg-white border-l border-neutral-100 flex-col">
+          {/* Tab header */}
+          <div className="px-4 pt-3 pb-0 border-b border-neutral-100">
+            <div className="flex gap-1">
+              {(['images', 'videos'] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setGalleryTab(tab)}
+                  className={`px-3 py-2 text-[12px] font-semibold transition-colors cursor-pointer border-b-2 ${galleryTab === tab ? 'border-neutral-900 text-neutral-900' : 'border-transparent text-neutral-400 hover:text-neutral-600'}`}
+                >
+                  {tab === 'images' ? '이미지' : '영상'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab content */}
+          <div className="flex-1 overflow-y-auto p-3">
+            {galleryTab === 'images' ? (
+              galleryLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <div className="w-5 h-5 border-2 border-neutral-200 border-t-neutral-600 rounded-full animate-spin" />
+                </div>
+              ) : allImages.length === 0 ? (
+                <p className="text-[12px] text-neutral-400 text-center py-10">갤러리가 비어있습니다</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {allImages.map(img => {
+                    const isSelected = selectedImages.includes(img.image_url);
+                    return (
+                      <div key={img.id} className="relative aspect-square">
+                        <button
+                          type="button"
+                          onClick={() => toggleImageSelect(img.image_url)}
+                          className={`w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? 'border-neutral-900' : 'border-transparent hover:border-neutral-300'}`}
+                        >
+                          <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                        </button>
+                        {isSelected && (
+                          <div className="absolute top-1 right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center pointer-events-none">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )
+            ) : (
+              generatedVideos.length === 0 ? (
+                <p className="text-[12px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
+              ) : (
+                <div className="space-y-2">
+                  {generatedVideos.map((url, i) => (
+                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100">
+                      <video src={url} className="w-full" controls />
+                    </div>
+                  ))}
+                </div>
+              )
             )}
           </div>
-        </Section>
-
-        {/* ── STEP 3: AI 성우 (선택) ── */}
-        <Section icon={<Mic className="w-4 h-4 text-emerald-500" />} title="Step 3 — AI 성우 (음성 생성)">
-          {/* 활성화 토글 */}
-          <div className="flex items-center gap-3 mb-4">
-            <ToggleSwitch checked={voiceEnabled} onChange={setVoiceEnabled} />
-            <span className="text-[13px] text-neutral-600">AI 성우 사용</span>
-            <span className="text-[11px] text-amber-500 font-medium">+500원</span>
-          </div>
-
-          {!voiceEnabled ? (
-            <div className="opacity-50 pointer-events-none">
-              <p className="text-[12px] text-neutral-400 bg-neutral-50 border border-neutral-100 rounded-lg px-4 py-3">
-                AI 성우를 켜면 ElevenLabs 또는 Google Cloud TTS로 음성을 생성할 수 있습니다.
-              </p>
-            </div>
-          ) : (
-            <>
-              <TabBar
-                options={[
-                  { value: 'elevenlabs', label: 'ElevenLabs' },
-                  { value: 'google', label: 'Google Cloud TTS' },
-                ]}
-                value={voiceProvider}
-                onChange={v => setVoiceProvider(v as VoiceProvider)}
-              />
-
-              <div className="mt-4 space-y-3">
-                <div>
-                  <label className="block text-[12px] font-medium text-neutral-600 mb-1">읽을 텍스트</label>
-                  <textarea
-                    rows={3}
-                    placeholder="음성으로 변환할 텍스트를 입력하세요"
-                    value={voiceText}
-                    onChange={e => setVoiceText(e.target.value)}
-                    className="w-full px-3 py-2 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 focus:bg-white transition-colors resize-none"
-                  />
-                </div>
-
-                {voiceProvider === 'elevenlabs' ? (
-                  <div>
-                    <label className="block text-[12px] font-medium text-neutral-600 mb-1">음성 선택</label>
-                    <select
-                      value={elVoiceId}
-                      onChange={e => setElVoiceId(e.target.value)}
-                      className="px-3 py-2 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 cursor-pointer"
-                    >
-                      {ELEVENLABS_VOICES.map(v => (
-                        <option key={v.id} value={v.id}>{v.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  <div>
-                    <label className="block text-[12px] font-medium text-neutral-600 mb-1">언어/음성 선택</label>
-                    <select
-                      value={googleVoice.name}
-                      onChange={e => setGoogleVoice(GOOGLE_TTS_VOICES.find(v => v.name === e.target.value) || GOOGLE_TTS_VOICES[0])}
-                      className="px-3 py-2 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 cursor-pointer"
-                    >
-                      {GOOGLE_TTS_VOICES.map(v => (
-                        <option key={v.name} value={v.name}>{v.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <button
-                  onClick={generateVoice}
-                  disabled={voiceLoading || !voiceText.trim()}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
-                >
-                  {voiceLoading ? (
-                    <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 생성 중…</>
-                  ) : (
-                    <><Mic className="w-4 h-4" /> 음성 생성</>
-                  )}
-                </button>
-
-                {voiceError && <p className="text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{voiceError}</p>}
-
-                {voiceResult && (
-                  <div className="space-y-2">
-                    <audio src={voiceResult} controls className="w-full max-w-md" />
-                    <a href={voiceResult} download={`voice-${Date.now()}.mp3`} className="inline-flex items-center gap-1.5 text-[12px] text-neutral-600 hover:text-neutral-900 no-underline">
-                      <Download className="w-3 h-3" /> 음성 저장
-                    </a>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </Section>
-
-        {/* ── STEP 4: 배경음악 (선택) ── */}
-        <Section icon={<Music className="w-4 h-4 text-amber-500" />} title="Step 4 — 배경음악 (BGM)">
-          {/* 활성화 토글 */}
-          <div className="flex items-center gap-3 mb-4">
-            <ToggleSwitch checked={musicEnabled} onChange={setMusicEnabled} />
-            <span className="text-[13px] text-neutral-600">배경음악 사용</span>
-            <span className="text-[11px] text-amber-500 font-medium">+500원</span>
-          </div>
-
-          {!musicEnabled ? (
-            <div className="opacity-50 pointer-events-none">
-              <p className="text-[12px] text-neutral-400 bg-neutral-50 border border-neutral-100 rounded-lg px-4 py-3">
-                배경음악을 켜면 Suno AI로 음악을 생성하거나 로열티프리 BGM을 선택할 수 있습니다.
-              </p>
-            </div>
-          ) : (
-            <>
-              <TabBar
-                options={[
-                  { value: 'suno', label: 'Suno AI (생성)' },
-                  { value: 'royalty', label: '로열티프리 BGM' },
-                ]}
-                value={musicProvider}
-                onChange={v => setMusicProvider(v as MusicProvider)}
-              />
-
-              <div className="mt-4 space-y-3">
-                {musicProvider === 'suno' ? (
-                  <>
-                    <div>
-                      <label className="block text-[12px] font-medium text-neutral-600 mb-1">음악 설명 / 장르</label>
-                      <input
-                        type="text"
-                        placeholder="예: upbeat fashion music, cinematic, 30 seconds"
-                        value={sunoPrompt}
-                        onChange={e => setSunoPrompt(e.target.value)}
-                        className="w-full px-3 py-2 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 focus:bg-white transition-colors"
-                      />
-                    </div>
-
-                    <button
-                      onClick={generateMusic}
-                      disabled={musicLoading || !sunoPrompt.trim()}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
-                    >
-                      {musicLoading ? (
-                        <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 생성 중…</>
-                      ) : (
-                        <><Music className="w-4 h-4" /> 음악 생성</>
-                      )}
-                    </button>
-
-                    {musicError && <p className="text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{musicError}</p>}
-
-                    {musicResult && (
-                      <div className="space-y-2">
-                        <audio src={musicResult} controls className="w-full max-w-md" />
-                        <a href={musicResult} download={`music-${Date.now()}.mp3`} className="inline-flex items-center gap-1.5 text-[12px] text-neutral-600 hover:text-neutral-900 no-underline">
-                          <Download className="w-3 h-3" /> 음악 저장
-                        </a>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="space-y-2">
-                    {ROYALTY_BGM.map(bgm => (
-                      <div
-                        key={bgm.id}
-                        onClick={() => setSelectedBgm(bgm.id)}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all ${selectedBgm === bgm.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300 bg-white'}`}
-                      >
-                        {selectedBgm === bgm.id
-                          ? <Check className="w-4 h-4 text-neutral-900" />
-                          : <div className="w-4 h-4 rounded-full border-2 border-neutral-300" />}
-                        <span className="text-[13px] font-medium text-neutral-700">{bgm.label}</span>
-                        {bgm.url && <audio src={bgm.url} controls className="ml-auto h-7" />}
-                        {!bgm.url && <span className="ml-auto text-[11px] text-neutral-400">파일 준비 중</span>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </Section>
+        </div>
 
       </div>
 
@@ -883,51 +584,6 @@ export default function VideoPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────────
-function Section({
-  icon, title, subtitle, children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-white rounded-xl p-5 border border-neutral-100 shadow-sm">
-      <div className="flex items-center gap-2 mb-4">
-        {icon}
-        <h2 className="text-[15px] font-bold text-neutral-900">{title}</h2>
-        {subtitle && <span className="text-[11px] text-neutral-400 ml-1">{subtitle}</span>}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function TabBar({
-  options, value, onChange,
-}: {
-  options: { value: string; label: string }[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="flex gap-1.5 bg-neutral-100 p-1 rounded-xl w-fit">
-      {options.map(o => (
-        <button
-          key={o.value}
-          onClick={() => onChange(o.value)}
-          className={`px-4 py-1.5 rounded-lg text-[12px] font-semibold transition-all cursor-pointer ${value === o.value ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'}`}
-        >
-          {o.label}
-        </button>
-      ))}
     </div>
   );
 }
