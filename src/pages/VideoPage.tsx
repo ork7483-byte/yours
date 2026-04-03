@@ -324,7 +324,7 @@ export default function VideoPage() {
               </div>
               <button
                 onClick={() => fileRef.current?.click()}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[13px] font-semibold text-neutral-600 border border-dashed border-neutral-300 rounded-lg hover:bg-neutral-50 hover:border-neutral-400 transition-colors cursor-pointer mb-3"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-[14px] font-semibold text-neutral-600 border border-dashed border-neutral-300 rounded-lg hover:bg-neutral-50 hover:border-neutral-400 transition-colors cursor-pointer mb-3"
               >
                 <Upload className="w-3 h-3" /> 이미지 업로드
               </button>
@@ -332,7 +332,7 @@ export default function VideoPage() {
 
               {/* AI 피팅 갤러리 라벨 */}
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[13px] font-medium text-neutral-500">AI 피팅에서 생성한 이미지</span>
+                <span className="text-[13px] text-neutral-600">AI 피팅에서 생성한 이미지</span>
                 <span className="text-[13px] text-neutral-400">{gallery.length}장</span>
               </div>
 
@@ -466,7 +466,7 @@ export default function VideoPage() {
                             setVideoPrompt(', no audio, completely silent video');
                           }
                         }}
-                        className={`px-3 py-1.5 text-[13px] font-semibold rounded-lg transition-all cursor-pointer ${audioCategory === cat.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                        className={`px-4 py-2 text-[14px] font-semibold rounded-lg transition-all cursor-pointer ${audioCategory === cat.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
                       >
                         {cat.label}
                       </button>
@@ -509,7 +509,7 @@ export default function VideoPage() {
                           key={sub.label}
                           type="button"
                           onClick={() => { setAudioSub(sub.value); setVideoPrompt(sub.value); }}
-                          className={`px-2.5 py-1.5 text-[13px] font-medium rounded-lg transition-all cursor-pointer ${audioSub === sub.value ? 'bg-neutral-700 text-white' : 'bg-neutral-50 text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
+                          className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all cursor-pointer ${audioSub === sub.value ? 'bg-neutral-700 text-white' : 'bg-neutral-50 text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
                         >
                           {sub.label}
                         </button>
@@ -541,7 +541,7 @@ export default function VideoPage() {
                               key={lang.value}
                               type="button"
                               onClick={() => setDialogueLang(lang.value)}
-                              className={`px-2 py-1 text-[13px] font-semibold rounded-md transition-all cursor-pointer ${dialogueLang === lang.value ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
+                              className={`px-3 py-1.5 text-[13px] font-semibold rounded-md transition-all cursor-pointer ${dialogueLang === lang.value ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
                             >
                               {lang.label}
                             </button>
@@ -553,7 +553,7 @@ export default function VideoPage() {
                         placeholder="예: 이번 시즌 신상품을 소개합니다"
                         value={dialogueText}
                         onChange={e => setDialogueText(e.target.value)}
-                        className="w-full px-2.5 py-2 text-[13px] bg-white border border-neutral-200 rounded-md outline-none focus:border-neutral-400 transition-colors"
+                        className="w-full px-3 py-2.5 text-[14px] bg-white border border-neutral-200 rounded-md outline-none focus:border-neutral-400 transition-colors"
                       />
                       <p className="text-[13px] text-neutral-400">
                         {dialogueLang === 'ko' && '한국어로 대사를 말합니다 · 립싱크 자동'}
@@ -578,7 +578,7 @@ export default function VideoPage() {
             <button
               onClick={generateVideo}
               disabled={videoLoading || !firstSelectedImage}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[15px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-neutral-900 text-white text-[15px] font-bold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
             >
               {videoLoading ? (
                 <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 생성 중…</>
@@ -630,7 +630,7 @@ export default function VideoPage() {
                 <a
                   href={videoResult}
                   download={`video-${Date.now()}.mp4`}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-neutral-200 text-neutral-700 text-[13px] font-semibold rounded-lg hover:bg-neutral-50 transition-colors no-underline"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-neutral-200 text-neutral-700 text-[14px] font-semibold rounded-lg hover:bg-neutral-50 transition-colors no-underline"
                 >
                   <Download className="w-4 h-4" /> 영상 저장
                 </a>
@@ -639,7 +639,7 @@ export default function VideoPage() {
           ) : (
             /* Empty state */
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-neutral-100 rounded-2xl flex items-center justify-center mb-5">
+              <div className="w-20 h-20 bg-neutral-100 rounded-2xl flex items-center justify-center mb-5">
                 <Video className="w-10 h-10 text-neutral-300" />
               </div>
               <p className="text-[20px] font-bold text-neutral-900 mb-2">영상 미리보기</p>
@@ -660,7 +660,7 @@ export default function VideoPage() {
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto p-3">
             {generatedVideos.length === 0 ? (
-                <p className="text-[13px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
+                <p className="text-[14px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   {generatedVideos.map((vid, i) => (
@@ -669,7 +669,7 @@ export default function VideoPage() {
                         <video src={vid.url} className="w-full h-full object-cover pointer-events-none" />
                       </div>
                       <div className="px-2 py-1.5 bg-white">
-                        <p className="text-[11px] text-neutral-400">{new Date(vid.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                        <p className="text-[12px] text-neutral-400">{new Date(vid.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                       </div>
                       <button
                         onClick={async (e) => {

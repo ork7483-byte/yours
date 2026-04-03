@@ -393,10 +393,10 @@ export default function Dashboard() {
               <div className="overflow-y-auto py-6 px-5 md:py-3 md:px-5 flex flex-col gap-0">
 
                 {/* 01 의상 */}
-                <div className="mb-1.5 bg-white rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
+                <div className="mb-1.5 bg-white border-l-[3px] border-l-pink-400 rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">01</span>
-                    <h3 className="text-[13px] font-bold text-neutral-900">의상</h3>
+                    <span className="text-[13px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-bold">01</span>
+                    <h3 className="text-[15px] font-bold text-neutral-900">의상</h3>
                     <div className="flex bg-white p-0.5 rounded-lg ml-auto shadow-sm border border-neutral-100" role="tablist">
                       <button role="tab" aria-selected={clothingMode === 'separates'} onClick={() => setClothingMode('separates')} className={`px-3.5 py-2 text-[11px] font-medium rounded-md transition-colors duration-200 cursor-pointer min-h-[36px] flex items-center ${clothingMode === 'separates' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:text-neutral-600'}`}>상/하의</button>
                       <button role="tab" aria-selected={clothingMode === 'onepiece'} onClick={() => setClothingMode('onepiece')} className={`px-3.5 py-2 text-[11px] font-medium rounded-md transition-colors duration-200 cursor-pointer min-h-[36px] flex items-center ${clothingMode === 'onepiece' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:text-neutral-600'}`}>원피스</button>
@@ -407,11 +407,11 @@ export default function Dashboard() {
                       <p className="text-[11px] text-neutral-400 mb-2 font-medium uppercase tracking-wider">상의</p>
                       <div className="flex gap-2 overflow-x-auto pb-1 mb-2 scroll-hide">
                         {topImages.map((img, i) => (
-                          <button key={`top${i}`} onClick={() => setClothingModal({ img, clothType: 'top' })} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedTop?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                          <button key={`top${i}`} onClick={() => setClothingModal({ img, clothType: 'top' })} className={`w-[64px] h-[64px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedTop?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="상의 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
-                        <button aria-label="상의 업로드" onClick={() => document.getElementById('top-upload')?.click()} className="w-[58px] h-[58px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
+                        <button aria-label="상의 업로드" onClick={() => document.getElementById('top-upload')?.click()} className="w-[64px] h-[64px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
                           {uploadedTop && !uploadedTop.url.startsWith('/images') ? <img src={uploadedTop.url} alt="상의" className="w-full h-full object-cover rounded-lg" /> : <Upload className="w-4 h-4 text-neutral-300" />}
                         </button>
                         <input id="top-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleClothingUpload('top', e)} />
@@ -419,102 +419,102 @@ export default function Dashboard() {
                       <p className="text-[11px] text-neutral-400 mb-2 font-medium uppercase tracking-wider">하의</p>
                       <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                         {bottomImages.map((img, i) => (
-                          <button key={`bot${i}`} onClick={() => setClothingModal({ img, clothType: 'bottom' })} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedBottom?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                          <button key={`bot${i}`} onClick={() => setClothingModal({ img, clothType: 'bottom' })} className={`w-[64px] h-[64px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedBottom?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="하의 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
-                        <button aria-label="하의 업로드" onClick={() => document.getElementById('bottom-upload')?.click()} className="w-[58px] h-[58px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
+                        <button aria-label="하의 업로드" onClick={() => document.getElementById('bottom-upload')?.click()} className="w-[64px] h-[64px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
                           {uploadedBottom && !uploadedBottom.url.startsWith('/images') ? <img src={uploadedBottom.url} alt="하의" className="w-full h-full object-cover rounded-lg" /> : <Upload className="w-4 h-4 text-neutral-300" />}
                         </button>
                         <input id="bottom-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleClothingUpload('bottom', e)} />
                       </div>
-                      <button onClick={() => document.getElementById('bottom-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-pink-300 text-pink-600 bg-pink-50/40 hover:bg-pink-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
+                      <button onClick={() => document.getElementById('bottom-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1 border border-dashed border-pink-300 text-pink-600 bg-white hover:bg-pink-50 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                     </div>
                   ) : (
                     <div>
                       <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                         {onepieceImages.map((img, i) => (
-                          <button key={`dress${i}`} onClick={() => setClothingModal({ img, clothType: 'dress' })} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedDress?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                          <button key={`dress${i}`} onClick={() => setClothingModal({ img, clothType: 'dress' })} className={`w-[64px] h-[64px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 hover:shadow-sm ${uploadedDress?.url === img ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                             <img src={img} alt="원피스 예시" className="w-full h-full object-cover" />
                           </button>
                         ))}
-                        <button aria-label="원피스 업로드" onClick={() => document.getElementById('dress-upload')?.click()} className="w-[58px] h-[58px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
+                        <button aria-label="원피스 업로드" onClick={() => document.getElementById('dress-upload')?.click()} className="w-[64px] h-[64px] shrink-0 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg cursor-pointer hover:border-neutral-400 transition-all duration-200 flex items-center justify-center">
                           {uploadedDress && !uploadedDress.url.startsWith('/images') ? <img src={uploadedDress.url} alt="원피스" className="w-full h-full object-cover rounded-lg" /> : <Upload className="w-4 h-4 text-neutral-300" />}
                         </button>
                         <input id="dress-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleClothingUpload('dress', e)} />
                       </div>
-                      <button onClick={() => document.getElementById('dress-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-pink-300 text-pink-600 bg-pink-50/40 hover:bg-pink-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
+                      <button onClick={() => document.getElementById('dress-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1 border border-dashed border-pink-300 text-pink-600 bg-white hover:bg-pink-50 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                     </div>
                   )}
                 </div>
 
                 {/* 02 모델 */}
-                <div className="mb-1.5 bg-white rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
+                <div className="mb-1.5 bg-white border-l-[3px] border-l-blue-400 rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">02</span>
-                    <h3 className="text-[13px] font-bold text-neutral-900">모델</h3>
+                    <span className="text-[13px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-bold">02</span>
+                    <h3 className="text-[15px] font-bold text-neutral-900">모델</h3>
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                       {[
                         ...modelImages.map((img, i) => ({ id: `model${i}`, img })),
                         ...customModels
                       ].map(m => (
-                        <button key={m.id} aria-label={`모델 ${m.id} 미리보기`} onClick={() => handleThumbClick(m.img, 'model', m.id)} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookModel === m.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                        <button key={m.id} aria-label={`모델 ${m.id} 미리보기`} onClick={() => handleThumbClick(m.img, 'model', m.id)} className={`w-[64px] h-[64px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookModel === m.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={m.img} alt={`모델 ${m.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 모델 업로드" onClick={() => document.getElementById('model-upload')?.click()} className="w-[58px] h-[58px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
+                      <button aria-label="커스텀 모델 업로드" onClick={() => document.getElementById('model-upload')?.click()} className="w-[64px] h-[64px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="model-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('model', e)} />
                     </div>
-                    <button onClick={() => document.getElementById('model-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-blue-300 text-blue-600 bg-blue-50/40 hover:bg-blue-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
+                    <button onClick={() => document.getElementById('model-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1 border border-dashed border-blue-300 text-blue-600 bg-white hover:bg-blue-50 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
                 {/* 03 포즈 */}
-                <div className="mb-1.5 bg-white rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
+                <div className="mb-1.5 bg-white border-l-[3px] border-l-amber-400 rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">03</span>
-                    <h3 className="text-[13px] font-bold text-neutral-900">포즈</h3>
+                    <span className="text-[13px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-bold">03</span>
+                    <h3 className="text-[15px] font-bold text-neutral-900">포즈</h3>
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                       {[
                         ...poseImages.map((img, i) => ({ id: `pose${i}`, img })),
                         ...customPoses
                       ].map(p => (
-                        <button key={p.id} aria-label={`포즈 ${p.id} 미리보기`} onClick={() => handleThumbClick(p.img, 'pose', p.id)} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookPose === p.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                        <button key={p.id} aria-label={`포즈 ${p.id} 미리보기`} onClick={() => handleThumbClick(p.img, 'pose', p.id)} className={`w-[64px] h-[64px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookPose === p.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={p.img} alt={`포즈 ${p.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 포즈 업로드" onClick={() => document.getElementById('pose-upload')?.click()} className="w-[58px] h-[58px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
+                      <button aria-label="커스텀 포즈 업로드" onClick={() => document.getElementById('pose-upload')?.click()} className="w-[64px] h-[64px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="pose-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('pose', e)} />
                     </div>
-                    <button onClick={() => document.getElementById('pose-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-amber-300 text-amber-600 bg-amber-50/40 hover:bg-amber-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
+                    <button onClick={() => document.getElementById('pose-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1 border border-dashed border-amber-300 text-amber-600 bg-white hover:bg-amber-50 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
                 {/* 04 배경 */}
-                <div className="mb-1.5 bg-white rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
+                <div className="mb-1.5 bg-white border-l-[3px] border-l-emerald-400 rounded-xl p-2.5 pl-3.5 border border-neutral-200/80 shadow-sm">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[10px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-semibold">04</span>
-                    <h3 className="text-[13px] font-bold text-neutral-900">배경</h3>
+                    <span className="text-[13px] text-neutral-600 tracking-[0.15em] tabular-nums select-none font-bold">04</span>
+                    <h3 className="text-[15px] font-bold text-neutral-900">배경</h3>
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 scroll-hide">
                       {[
                         ...bgImages.map((img, i) => ({ id: `bg${i}`, img })),
                         ...customBgs
                       ].map(b => (
-                        <button key={b.id} aria-label={`배경 ${b.id} 미리보기`} onClick={() => handleThumbClick(b.img, 'bg', b.id)} className={`w-[58px] h-[58px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookBg === b.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
+                        <button key={b.id} aria-label={`배경 ${b.id} 미리보기`} onClick={() => handleThumbClick(b.img, 'bg', b.id)} className={`w-[64px] h-[64px] shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 focus:outline-none ${lookbookBg === b.id ? 'border-neutral-900 shadow-md ring-2 ring-neutral-900/10' : 'border-neutral-200/60 hover:shadow-md'}`}>
                           <img src={b.img} alt={`배경 ${b.id}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </button>
                       ))}
-                      <button aria-label="커스텀 배경 업로드" onClick={() => document.getElementById('bg-upload')?.click()} className="w-[58px] h-[58px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
+                      <button aria-label="커스텀 배경 업로드" onClick={() => document.getElementById('bg-upload')?.click()} className="w-[64px] h-[64px] shrink-0 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 transition-all duration-200 focus:outline-none">
                         <span className="text-neutral-400 text-lg font-light">+</span>
                       </button>
                       <input id="bg-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleCustomUpload('bg', e)} />
                     </div>
-                    <button onClick={() => document.getElementById('bg-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 border border-dashed border-emerald-300 text-emerald-600 bg-emerald-50/40 hover:bg-emerald-100 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
+                    <button onClick={() => document.getElementById('bg-upload')?.click()} className="mt-1 w-full py-1 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1 border border-dashed border-emerald-300 text-emerald-600 bg-white hover:bg-emerald-50 transition-all cursor-pointer"><Upload className="w-3 h-3" /> 내 이미지 첨부</button>
                 </div>
 
               </div>
@@ -524,7 +524,7 @@ export default function Dashboard() {
                 {errorMsg && (
                   <div role="alert" className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-xs font-medium text-center">{errorMsg}</div>
                 )}
-                <button onClick={handleGenerate} disabled={isGenerating} aria-label="이미지 생성하기" className={`w-full py-2.5 rounded-lg font-semibold text-[13px] tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer ${isGenerating ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed' : 'bg-neutral-900 text-white hover:bg-neutral-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2'}`}>
+                <button onClick={handleGenerate} disabled={isGenerating} aria-label="이미지 생성하기" className={`w-full py-3.5 rounded-lg font-bold text-[15px] tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer ${isGenerating ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed' : 'bg-neutral-900 text-white hover:bg-neutral-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2'}`}>
                   {isGenerating ? <span className="animate-pulse">생성 중...</span> : <><Wand2 className="w-4 h-4" /> 생성하기</>}
                 </button>
               </div>
@@ -561,7 +561,7 @@ export default function Dashboard() {
                       { label: '미니멀', value: 'minimal' },
                       { label: '아웃도어', value: 'outdoor' },
                     ].map(s => (
-                      <button key={s.value} onClick={() => setShootingStyle(s.value)} className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${shootingStyle === s.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{s.label}</button>
+                      <button key={s.value} onClick={() => setShootingStyle(s.value)} className={`px-2.5 py-1 text-[13px] font-semibold rounded-md transition-all cursor-pointer ${shootingStyle === s.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{s.label}</button>
                     ))}
                   </div>
                 </div>
@@ -574,7 +574,7 @@ export default function Dashboard() {
                       { label: '역광', value: 'back' },
                       { label: '자연', value: 'natural' },
                     ].map(l => (
-                      <button key={l.value} onClick={() => setLightingDir(l.value)} className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${lightingDir === l.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{l.label}</button>
+                      <button key={l.value} onClick={() => setLightingDir(l.value)} className={`px-2.5 py-1 text-[13px] font-semibold rounded-md transition-all cursor-pointer ${lightingDir === l.value ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400 hover:text-neutral-600'}`}>{l.label}</button>
                     ))}
                   </div>
                 </div>
@@ -601,8 +601,8 @@ export default function Dashboard() {
                   </>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400/60">
-                    <ImageIcon className="w-12 h-12 mb-3 opacity-50" strokeWidth={1} />
-                    <p className="text-[14px] font-normal text-neutral-500">의상을 첨부하고 생성하기를 눌러주세요</p>
+                    <ImageIcon className="w-16 h-16 mb-3 opacity-50" strokeWidth={1} />
+                    <p className="text-[16px] font-normal text-neutral-500">의상을 첨부하고 생성하기를 눌러주세요</p>
                   </div>
                 )}
                 {isGenerating && (
@@ -618,8 +618,8 @@ export default function Dashboard() {
             {/* 우측 — 저장 갤러리 */}
             <div className="w-[280px] shrink-0 bg-white border-l border-neutral-100 flex flex-col hidden lg:flex">
               <div className="px-3.5 py-3 border-b border-neutral-100 flex items-center justify-between">
-                <h3 className="text-[13px] font-bold text-neutral-900">내 갤러리</h3>
-                <span className="text-[11px] text-neutral-400">{gallery.length}장</span>
+                <h3 className="text-[15px] font-bold text-neutral-900">내 갤러리</h3>
+                <span className="text-[13px] text-neutral-400">{gallery.length}장</span>
               </div>
               <div className="flex-1 overflow-y-auto p-2.5">
                 {galleryLoading ? (
@@ -641,7 +641,7 @@ export default function Dashboard() {
                             <div className="flex gap-1 p-1.5 w-full">
                               <button
                                 onClick={(e) => { e.stopPropagation(); const a = document.createElement('a'); a.href = img.image_url; a.download = `yours-${img.id}.png`; a.click(); }}
-                                className="flex-1 py-1.5 bg-white/90 rounded text-[10px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer"
+                                className="flex-1 py-1.5 bg-white/90 rounded text-[12px] font-semibold text-neutral-900 hover:bg-white transition-colors cursor-pointer"
                               >저장</button>
                               <button
                                 onClick={async (e) => {
@@ -650,7 +650,7 @@ export default function Dashboard() {
                                   await deleteImage(img.id, path || '');
                                   loadGallery();
                                 }}
-                                className="py-1.5 px-2 bg-red-500/80 rounded text-[10px] font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
+                                className="py-1.5 px-2 bg-red-500/80 rounded text-[12px] font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
                               >삭제</button>
                             </div>
                           </div>
@@ -664,7 +664,7 @@ export default function Dashboard() {
                     {Math.ceil(gallery.length / GALLERY_PER_PAGE) > 1 && (
                       <div className="flex items-center justify-center gap-1 pt-2 border-t border-neutral-100 mt-2">
                         {Array.from({ length: Math.ceil(gallery.length / GALLERY_PER_PAGE) }).map((_, i) => (
-                          <button key={i} onClick={() => setGalleryPage(i)} className={`w-6 h-6 rounded text-[10px] font-semibold transition-all cursor-pointer ${galleryPage === i ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-100'}`}>{i + 1}</button>
+                          <button key={i} onClick={() => setGalleryPage(i)} className={`w-7 h-7 rounded text-[12px] font-semibold transition-all cursor-pointer ${galleryPage === i ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-100'}`}>{i + 1}</button>
                         ))}
                       </div>
                     )}
@@ -1029,7 +1029,7 @@ export default function Dashboard() {
               { label: '촬영 예약', href: '/reservation' },
               { label: 'Help', href: '/help' },
             ].map(item => (
-              <Link key={item.href} to={item.href} className={`px-3 py-1.5 text-[13px] font-medium rounded-lg no-underline transition-colors ${loc.pathname === item.href ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-400 hover:text-neutral-900'}`}>
+              <Link key={item.href} to={item.href} className={`px-3 py-1.5 text-[13px] rounded-lg no-underline transition-colors ${loc.pathname === item.href ? 'text-neutral-900 bg-neutral-100 font-semibold' : 'text-neutral-400 font-medium hover:text-neutral-900'}`}>
                 {item.label}
               </Link>
             ))}
