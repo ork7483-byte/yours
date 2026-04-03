@@ -51,7 +51,7 @@ export default function VideoPage() {
   const [galleryTab, setGalleryTab] = useState<'images' | 'videos'>('videos');
   const [galleryPage, setGalleryPage] = useState(0);
   const GALLERY_PER_PAGE = 6;
-  const [generatedVideos, setGeneratedVideos] = useState<string[]>([]);
+  const [generatedVideos, setGeneratedVideos] = useState<{ url: string; created_at: string }[]>([]);
 
   // Image selection
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -99,7 +99,7 @@ export default function VideoPage() {
           setGeneratedVideos(
             all
               .filter((item: any) => item.prompt_summary?.startsWith('영상') || item.image_url?.includes('.mp4'))
-              .map((item: any) => item.image_url)
+              .map((item: any) => ({ url: item.image_url, created_at: item.created_at }))
           );
           setGalleryLoading(false);
         });
@@ -214,7 +214,7 @@ export default function VideoPage() {
           } catch (_) { /* ignore parse errors */ }
           if (!videoUrl) throw new Error('영상이 생성됐지만 URL을 파싱하지 못했습니다. 관리자에게 문의해주세요.');
           setVideoResult(videoUrl);
-          setGeneratedVideos(prev => [videoUrl as string, ...prev]);
+          setGeneratedVideos(prev => [{ url: videoUrl as string, created_at: new Date().toISOString() }, ...prev]);
           // Supabase Storage에 영상 영구 저장
           if (user) {
             try {
@@ -650,16 +650,21 @@ export default function VideoPage() {
                 <p className="text-[13px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {generatedVideos.map((url, i) => (
-                    <div key={i} className="relative rounded-lg overflow-hidden border border-neutral-100 aspect-square cursor-pointer group" onClick={() => setVideoResult(url)}>
-                      <video src={url} className="w-full h-full object-cover pointer-events-none" muted />
+                  {generatedVideos.map((vid, i) => (
+                    <div key={i} className="relative rounded-lg overflow-hidden border border-neutral-100 cursor-pointer group" onClick={() => setVideoResult(vid.url)}>
+                      <div className="aspect-square">
+                        <video src={vid.url} className="w-full h-full object-cover pointer-events-none" muted />
+                      </div>
+                      <div className="px-2 py-1.5 bg-white">
+                        <p className="text-[11px] text-neutral-400">{new Date(vid.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
                           if (!confirm('이 영상을 삭제하시겠습니까?')) return;
-                          await supabase.from('generated_images').delete().match({ image_url: url });
-                          setGeneratedVideos(prev => prev.filter(v => v !== url));
-                          if (videoResult === url) setVideoResult(null);
+                          await supabase.from('generated_images').delete().match({ image_url: vid.url });
+                          setGeneratedVideos(prev => prev.filter(v => v.url !== vid.url));
+                          if (videoResult === vid.url) setVideoResult(null);
                         }}
                         className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                       >
