@@ -209,13 +209,35 @@ export default function VideoPage() {
           if (!videoUrl) throw new Error('영상이 생성됐지만 URL을 파싱하지 못했습니다. 관리자에게 문의해주세요.');
           setVideoResult(videoUrl);
           setGeneratedVideos(prev => [videoUrl as string, ...prev]);
-          // Supabase에 영상 저장
+          // Supabase Storage에 영상 영구 저장
           if (user) {
-            supabase.from('generated_images').insert({
-              user_id: user.id,
-              image_url: videoUrl,
-              prompt_summary: `영상: ${videoPrompt || 'Grok Imagine'}`,
-            }).then(() => {});
+            try {
+              const videoRes = await fetch(videoUrl);
+              const videoBlob = await videoRes.blob();
+              const fileName = `${user.id}/video_${Date.now()}.mp4`;
+              const { error: uploadErr } = await supabase.storage
+                .from('generated-images')
+                .upload(fileName, videoBlob, { contentType: 'video/mp4', upsert: false });
+              let permanentUrl = videoUrl;
+              if (!uploadErr) {
+                const { data: urlData } = supabase.storage
+                  .from('generated-images')
+                  .getPublicUrl(fileName);
+                permanentUrl = urlData.publicUrl;
+              }
+              await supabase.from('generated_images').insert({
+                user_id: user.id,
+                image_url: permanentUrl,
+                prompt_summary: `영상: ${videoPrompt || 'Grok Imagine'}`,
+              });
+            } catch (_) {
+              // 영구 저장 실패 시 원본 URL이라도 저장
+              await supabase.from('generated_images').insert({
+                user_id: user.id,
+                image_url: videoUrl,
+                prompt_summary: `영상: ${videoPrompt || 'Grok Imagine'}`,
+              });
+            }
           }
           setVideoLoading(false);
           return;
