@@ -29,10 +29,10 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-neutral-900' : 'bg-neutral-200'}`}
+      className={`relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-neutral-900' : 'bg-neutral-200'}`}
     >
       <span
-        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`}
+        className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ${checked ? 'translate-x-7' : 'translate-x-0'}`}
       />
     </button>
   );
@@ -83,12 +83,18 @@ export default function VideoPage() {
       setGalleryLoading(true);
       supabase
         .from('generated_images')
-        .select('id, image_url, created_at')
+        .select('id, image_url, created_at, prompt_summary')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(50)
+        .limit(100)
         .then(({ data }) => {
-          setGallery(data || []);
+          const all = data || [];
+          // 이미지만 필터 (영상 URL 제외)
+          setGallery(all.filter((item: any) =>
+            !item.prompt_summary?.startsWith('영상') &&
+            !item.image_url?.includes('.mp4') &&
+            !item.image_url?.includes('.webm')
+          ));
           setGalleryLoading(false);
         });
     }
@@ -116,7 +122,7 @@ export default function VideoPage() {
 
   const allImages: GalleryImage[] = [
     ...uploadedImages.map((url, i) => ({ id: `upload-${i}`, image_url: url, created_at: '' })),
-    ...gallery,
+    ...gallery.filter(img => !img.image_url.includes('.mp4') && !img.image_url.includes('.webm') && !(img as any).prompt_summary?.startsWith('영상')),
   ];
 
   const firstSelectedImage = selectedImages[0];
@@ -291,6 +297,12 @@ export default function VideoPage() {
                 <Upload className="w-3 h-3" /> 이미지 업로드
               </button>
               <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
+
+              {/* AI 피팅 갤러리 라벨 */}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-medium text-neutral-500">AI 피팅에서 생성한 이미지</span>
+                <span className="text-[10px] text-neutral-400">{gallery.length}장</span>
+              </div>
 
               {allImages.length === 0 ? (
                 <p className="text-[12px] text-neutral-400 text-center py-6 bg-neutral-50 rounded-lg border border-neutral-100">
