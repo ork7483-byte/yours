@@ -95,6 +95,12 @@ export default function VideoPage() {
             !item.image_url?.includes('.mp4') &&
             !item.image_url?.includes('.webm')
           ));
+          // 영상 목록 로드
+          setGeneratedVideos(
+            all
+              .filter((item: any) => item.prompt_summary?.startsWith('영상') || item.image_url?.includes('.mp4'))
+              .map((item: any) => item.image_url)
+          );
           setGalleryLoading(false);
         });
     }
@@ -148,8 +154,8 @@ export default function VideoPage() {
               image_urls: [firstSelectedImage],
               prompt: (videoPrompt || 'natural fashion video with gentle movement') + (dialogueEnabled && dialogueText ? (() => {
                 if (dialogueLang === 'ko') return `, the model speaks in Korean: "${dialogueText}"`;
-                if (dialogueLang === 'zh') return `, the model speaks in Chinese. Translate the following Korean text to Chinese and have the model say it naturally: "${dialogueText}"`;
-                return `, the model speaks in English. Translate the following Korean text to English and have the model say it naturally: "${dialogueText}"`;
+                if (dialogueLang === 'zh') return `, the model speaks in Chinese (Mandarin). Translate the following Korean text to Chinese and have the model say it naturally in Chinese language only: "${dialogueText}"`;
+                return `, the model speaks in English only (NOT Korean). Translate the following Korean text to English and have the model say it naturally in English language only: "${dialogueText}"`;
               })() : ''),
               mode: grokMode,
               duration: grokDuration,
