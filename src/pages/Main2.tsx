@@ -474,6 +474,8 @@ const NAV_ITEMS = [
 export default function Main2() {
   useScrollFade();
   const { user, signOut } = useAuth();
+  const bgVideoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => { if (bgVideoRef.current) bgVideoRef.current.muted = true; }, []);
   const [editing, setEditing] = useState(false);
   const [layouts, setLayouts] = useState<LayoutMap>(() => {
     try {
@@ -538,6 +540,7 @@ export default function Main2() {
     <div className="min-h-screen font-sans antialiased relative">
       {/* 고정 비디오 배경 */}
       <video
+        ref={bgVideoRef}
         className="fixed inset-0 w-full h-full object-cover z-0"
         src="https://blurblur.s3.ap-northeast-2.amazonaws.com/production/media/videos/ui/login_bg.mp4"
         autoPlay muted loop playsInline
