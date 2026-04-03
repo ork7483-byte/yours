@@ -61,7 +61,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── 우측: 영상 / 이미지 ── */}
-      <div className="hidden lg:block w-1/2 relative overflow-hidden">
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-black items-center justify-center">
         {IS_VIDEO ? (
           <video
             src={MEDIA_URL}
@@ -69,18 +69,18 @@ export default function LoginPage() {
             loop
             muted
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+            className="h-full object-contain"
           />
         ) : (
           <img
             src={MEDIA_URL}
             alt="Fashion"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="h-full object-contain"
           />
         )}
 
         {/* 하단 오버레이 */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-10">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-10">
           <p className="text-[14px] font-medium text-white/70 mb-3">Trusted by fashion brands</p>
           <p className="text-[24px] font-bold text-white leading-snug">
             AI로 만드는<br />패션 콘텐츠의 새로운 기준
