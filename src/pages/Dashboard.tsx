@@ -35,7 +35,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { Link, useParams, useLocation } from 'react-router-dom';
+import { Link, Navigate, useParams, useLocation } from 'react-router-dom';
 
 // 폴더 내 이미지 자동 로드
 const topImages = Object.keys(import.meta.glob('/public/images/fitting/cloth/top/*.{jpg,jpeg,png,webp}', { eager: false })).map(p => p.replace('/public', ''));
@@ -622,13 +622,7 @@ export default function Dashboard() {
                 <span className="text-[11px] text-neutral-400">{gallery.length}장</span>
               </div>
               <div className="flex-1 overflow-y-auto p-2.5">
-                {!user ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                    <Cloud className="w-8 h-8 text-neutral-200 mb-3" />
-                    <p className="text-[13px] text-neutral-400 mb-4">로그인하면 생성한 이미지를<br/>자동으로 저장할 수 있어요</p>
-                    <button onClick={signInWithGoogle} className="px-4 py-2 bg-neutral-900 text-white text-[12px] font-semibold rounded-lg hover:bg-neutral-800 cursor-pointer transition-colors">Google 로그인</button>
-                  </div>
-                ) : galleryLoading ? (
+                {galleryLoading ? (
                   <div className="flex items-center justify-center h-32">
                     <div className="w-6 h-6 border-2 border-neutral-300 border-t-neutral-900 rounded-full animate-spin" />
                   </div>
@@ -1008,24 +1002,28 @@ export default function Dashboard() {
     }
   };
 
+  // 비로그인 시 로그인 페이지로 리다이렉트
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-neutral-300 border-t-neutral-900 rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!user) {
+    return <Navigate to="/login?redirect=/fitting" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col font-sans antialiased">
       {/* Top Navigation Bar */}
-      {/* 상단 바: 홈 링크 + 로그인 */}
+      {/* 상단 바: 홈 링크 */}
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
         <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
         <div className="flex items-center gap-3">
 
-          {authLoading ? null : user ? (
-            <>
-              <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
-              <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
-            </>
-          ) : (
-            <button onClick={signInWithGoogle} className="px-4 py-2 bg-neutral-900 text-white text-[12px] font-semibold rounded-lg hover:bg-neutral-800 cursor-pointer transition-colors flex items-center gap-1.5">
-              <LogIn className="w-3.5 h-3.5" /> Google 로그인
-            </button>
-          )}
+          <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
+          <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
         </div>
       </div>
 
