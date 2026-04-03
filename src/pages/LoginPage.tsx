@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { useAuth } from '../lib/useAuth';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 
@@ -20,7 +21,12 @@ export default function LoginPage() {
       {/* ── 좌측: 로고 + 로그인 ── */}
       <div className="w-full lg:flex-1 flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-8">
-          <div className="flex flex-col items-center gap-4">
+          <motion.div
+            className="flex flex-col items-center gap-4"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             <Link to="/" className="no-underline">
               <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer text-center">
                 U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
@@ -29,7 +35,7 @@ export default function LoginPage() {
             <p className="text-[25px] text-[#E8532E] font-bold text-center whitespace-nowrap" style={{ fontFamily: 'Pretendard, sans-serif' }}>
               AI로 만드는 패션 콘텐츠의 새로운 기준
             </p>
-          </div>
+          </motion.div>
           <button
             onClick={() => signInWithGoogle(redirectTo)}
             className="flex items-center justify-center gap-3 px-16 py-3.5 bg-white border border-neutral-200 rounded-xl text-[15px] font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
