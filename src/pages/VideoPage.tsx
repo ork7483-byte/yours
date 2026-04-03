@@ -274,7 +274,7 @@ export default function VideoPage() {
           <Video className="w-4 h-4 text-neutral-400" />
           <h1 className="text-[15px] font-bold text-neutral-900">AI 영상 제작</h1>
         </div>
-        <span className="text-[12px] text-neutral-400">{user.email}</span>
+        <span className="text-[13px] text-neutral-400">{user.email}</span>
       </div>
 
       {/* Body: left + center + right */}
@@ -292,7 +292,7 @@ export default function VideoPage() {
               </div>
               <button
                 onClick={() => fileRef.current?.click()}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[12px] font-semibold text-neutral-600 border border-dashed border-neutral-300 rounded-lg hover:bg-neutral-50 hover:border-neutral-400 transition-colors cursor-pointer mb-3"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[13px] font-semibold text-neutral-600 border border-dashed border-neutral-300 rounded-lg hover:bg-neutral-50 hover:border-neutral-400 transition-colors cursor-pointer mb-3"
               >
                 <Upload className="w-3 h-3" /> 이미지 업로드
               </button>
@@ -301,11 +301,11 @@ export default function VideoPage() {
               {/* AI 피팅 갤러리 라벨 */}
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[13px] font-medium text-neutral-500">AI 피팅에서 생성한 이미지</span>
-                <span className="text-[10px] text-neutral-400">{gallery.length}장</span>
+                <span className="text-[13px] text-neutral-400">{gallery.length}장</span>
               </div>
 
               {allImages.length === 0 ? (
-                <p className="text-[12px] text-neutral-400 text-center py-6 bg-neutral-50 rounded-lg border border-neutral-100">
+                <p className="text-[13px] text-neutral-400 text-center py-6 bg-neutral-50 rounded-lg border border-neutral-100">
                   생성된 이미지가 없습니다
                 </p>
               ) : (
@@ -342,7 +342,7 @@ export default function VideoPage() {
 
             {/* Model selection */}
             <div className="hidden">
-              <label className="block text-[12px] font-bold text-neutral-900 mb-2">모델 선택</label>
+              <label className="block text-[13px] font-bold text-neutral-900 mb-2">모델 선택</label>
               <div className="space-y-1.5">
                 {[
                   { value: 'kling/v2-5-turbo-image-to-video-pro', label: 'Kling 2.5 Turbo', price: '500원', badge: '' },
@@ -353,12 +353,12 @@ export default function VideoPage() {
                     key={opt.value}
                     type="button"
                     onClick={() => setVideoModel(opt.value)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-[12px] font-semibold transition-all cursor-pointer ${videoModel === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'}`}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-[13px] font-semibold transition-all cursor-pointer ${videoModel === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'}`}
                   >
                     <span>{opt.label}</span>
                     <div className="flex flex-col items-end">
-                      <span className={`text-[11px] font-medium ${videoModel === opt.value ? 'text-amber-300' : 'text-amber-500'}`}>{opt.price}</span>
-                      {opt.badge && <span className={`text-[9px] ${videoModel === opt.value ? 'text-emerald-300' : 'text-emerald-500'}`}>{opt.badge}</span>}
+                      <span className={`text-[13px] font-medium ${videoModel === opt.value ? 'text-amber-300' : 'text-amber-500'}`}>{opt.price}</span>
+                      {opt.badge && <span className={`text-[13px] ${videoModel === opt.value ? 'text-emerald-300' : 'text-emerald-500'}`}>{opt.badge}</span>}
                     </div>
                   </button>
                 ))}
@@ -369,8 +369,8 @@ export default function VideoPage() {
             {videoModel === 'grok-imagine/image-to-video' && false && (
               <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-neutral-500 font-medium w-10">길이</span>
-                  <select value={grokDuration} onChange={e => setGrokDuration(e.target.value)} className="flex-1 px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                  <span className="text-[13px] text-neutral-500 font-medium w-10">길이</span>
+                  <select value={grokDuration} onChange={e => setGrokDuration(e.target.value)} className="flex-1 px-2 py-1 text-[13px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
                     <option value="6">6초</option>
                     <option value="10">10초</option>
                     <option value="15">15초</option>
@@ -379,15 +379,15 @@ export default function VideoPage() {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-neutral-500 font-medium w-10">해상도</span>
-                  <select value={grokResolution} onChange={e => setGrokResolution(e.target.value as '480p' | '720p')} className="flex-1 px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                  <span className="text-[13px] text-neutral-500 font-medium w-10">해상도</span>
+                  <select value={grokResolution} onChange={e => setGrokResolution(e.target.value as '480p' | '720p')} className="flex-1 px-2 py-1 text-[13px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
                     <option value="480p">480p</option>
                     <option value="720p">720p</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-neutral-500 font-medium w-10">모드</span>
-                  <select value={grokMode} onChange={e => setGrokMode(e.target.value as 'normal' | 'fun')} className="flex-1 px-2 py-1 text-[12px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
+                  <span className="text-[13px] text-neutral-500 font-medium w-10">모드</span>
+                  <select value={grokMode} onChange={e => setGrokMode(e.target.value as 'normal' | 'fun')} className="flex-1 px-2 py-1 text-[13px] bg-white border border-neutral-200 rounded-md cursor-pointer outline-none">
                     <option value="normal">Normal</option>
                     <option value="fun">Fun</option>
                   </select>
@@ -399,8 +399,8 @@ export default function VideoPage() {
             {videoModel === 'kling-2.6/image-to-video' && (
               <div className="flex items-center gap-3">
                 <ToggleSwitch checked={videoWithSound} onChange={setVideoWithSound} />
-                <span className="text-[12px] text-neutral-600">영상 오디오 포함</span>
-                <span className="text-[11px] text-amber-500 font-medium">+300원</span>
+                <span className="text-[13px] text-neutral-600">영상 오디오 포함</span>
+                <span className="text-[13px] text-amber-500 font-medium">+300원</span>
               </div>
             )}
 
@@ -488,14 +488,14 @@ export default function VideoPage() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <label className="text-[15px] font-bold text-neutral-900">대사 입력</label>
-                      <span className="text-[10px] text-amber-500 font-medium">립싱크 자동</span>
+                      <span className="text-[13px] text-amber-500 font-medium">립싱크 자동</span>
                     </div>
                     <ToggleSwitch checked={dialogueEnabled} onChange={(v) => { setDialogueEnabled(v); if (!v) setDialogueText(''); }} />
                   </div>
                   {dialogueEnabled && (
                     <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100 space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] text-neutral-400 font-medium">대사 입력 (한글로 작성)</label>
+                        <label className="text-[13px] text-neutral-400 font-medium">대사 입력 (한글로 작성)</label>
                         <div className="flex gap-1">
                           {[
                             { value: 'ko' as const, label: '🇰🇷 한국어' },
@@ -506,7 +506,7 @@ export default function VideoPage() {
                               key={lang.value}
                               type="button"
                               onClick={() => setDialogueLang(lang.value)}
-                              className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${dialogueLang === lang.value ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
+                              className={`px-2 py-1 text-[13px] font-semibold rounded-md transition-all cursor-pointer ${dialogueLang === lang.value ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
                             >
                               {lang.label}
                             </button>
@@ -518,9 +518,9 @@ export default function VideoPage() {
                         placeholder="예: 이번 시즌 신상품을 소개합니다"
                         value={dialogueText}
                         onChange={e => setDialogueText(e.target.value)}
-                        className="w-full px-2.5 py-2 text-[12px] bg-white border border-neutral-200 rounded-md outline-none focus:border-neutral-400 transition-colors"
+                        className="w-full px-2.5 py-2 text-[13px] bg-white border border-neutral-200 rounded-md outline-none focus:border-neutral-400 transition-colors"
                       />
-                      <p className="text-[9px] text-neutral-400">
+                      <p className="text-[13px] text-neutral-400">
                         {dialogueLang === 'ko' && '한국어로 대사를 말합니다 · 립싱크 자동'}
                         {dialogueLang === 'zh' && '한글로 입력하면 중국어로 변환하여 더빙합니다 · 립싱크 자동'}
                         {dialogueLang === 'en' && '한글로 입력하면 영어로 변환하여 더빙합니다 · 립싱크 자동'}
@@ -535,7 +535,7 @@ export default function VideoPage() {
             {firstSelectedImage && (
               <div className="flex items-center gap-3 p-2.5 bg-neutral-50 rounded-lg border border-neutral-100">
                 <img src={firstSelectedImage} alt="" className="w-10 h-10 object-cover rounded-md shrink-0" />
-                <p className="text-[11px] text-neutral-500 leading-snug">이 이미지로 영상을 생성합니다</p>
+                <p className="text-[13px] text-neutral-500 leading-snug">이 이미지로 영상을 생성합니다</p>
               </div>
             )}
 
@@ -552,7 +552,7 @@ export default function VideoPage() {
               )}
             </button>
 
-            {videoError && <p className="text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{videoError}</p>}
+            {videoError && <p className="text-[13px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{videoError}</p>}
 
           </div>
         </div>
@@ -583,7 +583,7 @@ export default function VideoPage() {
                   style={{ width: `${Math.min(95, videoPollCount * 5)}%` }}
                 />
               </div>
-              <p className="text-[12px] text-neutral-400 mt-4">최대 5분 소요 · 페이지를 닫지 마세요</p>
+              <p className="text-[13px] text-neutral-400 mt-4">최대 5분 소요 · 페이지를 닫지 마세요</p>
             </div>
           ) : videoResult ? (
             /* Video result */
@@ -631,7 +631,7 @@ export default function VideoPage() {
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto p-3">
             {generatedVideos.length === 0 ? (
-                <p className="text-[12px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
+                <p className="text-[13px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
               ) : (
                 <div className="space-y-2">
                   {generatedVideos.map((url, i) => (
