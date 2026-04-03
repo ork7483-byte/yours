@@ -36,6 +36,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Link, Navigate, useParams, useLocation } from 'react-router-dom';
+import MobileMenu from '../components/MobileMenu';
 
 // 폴더 내 이미지 자동 로드
 const topImages = Object.keys(import.meta.glob('/public/images/fitting/cloth/top/*.{jpg,jpeg,png,webp}', { eager: false })).map(p => p.replace('/public', ''));
@@ -1037,7 +1038,8 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
-          <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
+          <button onClick={signOut} className="hidden md:block px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
+          <MobileMenu />
         </div>
       </div>
 

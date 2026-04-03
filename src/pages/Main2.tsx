@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Move, Save, Eye, Pencil, RotateCcw, Image as ImageIcon, Globe, Sparkles, CheckCircle2, Camera, ArrowRight, HelpCircle, LogIn } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
+import MobileMenu from '../components/MobileMenu';
 
 /* ─── 스크롤 페이드인 훅 ─── */
 function useScrollFade() {
@@ -569,8 +570,12 @@ export default function Main2() {
               </div>
               {/* 스페이서 */}
               <div style={{ flex: navProgress < 0.5 ? 1 : 0 }} />
-              {/* 메뉴 */}
-              <div className="flex items-center" style={{ gap: 4 - navProgress * 2 }}>
+              {/* 모바일 햄버거 */}
+              <div className="md:hidden ml-auto" style={{ pointerEvents: 'auto' }}>
+                <MobileMenu />
+              </div>
+              {/* 데스크톱 메뉴 */}
+              <div className="hidden md:flex items-center" style={{ gap: 4 - navProgress * 2 }}>
                 {NAV_ITEMS.map(item => {
                   const isActive = location.pathname === item.href;
                   const isHovered = hoveredNav === item.id;
@@ -601,8 +606,8 @@ export default function Main2() {
                   );
                 })}
               </div>
-              {/* 로그인/로그아웃 */}
-              <div className="ml-2" style={{ opacity: 1 - navProgress * 1.2, flexShrink: 0 }}>
+              {/* 로그인/로그아웃 (데스크톱) */}
+              <div className="hidden md:block ml-2" style={{ opacity: 1 - navProgress * 1.2, flexShrink: 0 }}>
                 {user ? (
                   <button onClick={signOut} className="px-4 py-2 text-[13px] font-medium text-neutral-500 border border-neutral-200 rounded-full hover:bg-neutral-100 cursor-pointer transition-colors whitespace-nowrap" style={{ pointerEvents: 'auto' }}>
                     로그아웃

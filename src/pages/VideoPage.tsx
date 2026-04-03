@@ -4,6 +4,7 @@ import { useAuth } from '../lib/useAuth';
 import { supabase } from '../lib/supabase';
 import { getApiKey } from '../lib/apiSettings';
 import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import MobileMenu from '../components/MobileMenu';
 import {
   Video, Image as ImageIcon, Upload, Play, Download,
   LogIn, Check, ChevronRight, X,
@@ -305,7 +306,8 @@ export default function VideoPage() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
-          <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
+          <button onClick={signOut} className="hidden md:block px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
+          <MobileMenu />
         </div>
       </div>
 
