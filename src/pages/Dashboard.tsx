@@ -1019,9 +1019,23 @@ export default function Dashboard() {
       {/* Top Navigation Bar */}
       {/* 상단 바: 홈 링크 */}
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
-        <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+        <div className="flex items-center gap-6">
+          <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+          <nav className="hidden md:flex items-center gap-1">
+            {[
+              { label: 'Home', href: '/' },
+              { label: 'AI 피팅', href: '/fitting' },
+              { label: 'AI 영상', href: '/video' },
+              { label: '촬영 예약', href: '/reservation' },
+              { label: 'Help', href: '/help' },
+            ].map(item => (
+              <Link key={item.href} to={item.href} className={`px-3 py-1.5 text-[13px] font-medium rounded-lg no-underline transition-colors ${loc.pathname === item.href ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-400 hover:text-neutral-900'}`}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
         <div className="flex items-center gap-3">
-
           <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
           <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
         </div>

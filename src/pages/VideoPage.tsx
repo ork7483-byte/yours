@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../lib/useAuth';
 import { supabase } from '../lib/supabase';
 import { getApiKey } from '../lib/apiSettings';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import {
   Video, Image as ImageIcon, Upload, Play, Download,
   LogIn, Check, ChevronRight, X,
@@ -42,8 +42,9 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
 // Main Component
 // ─────────────────────────────────────────────
 export default function VideoPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const loc = useLocation();
 
   // Gallery
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
@@ -285,15 +286,27 @@ export default function VideoPage() {
     <div className="min-h-screen bg-[#FAFAF9] font-sans antialiased flex flex-col">
 
       {/* 상단바 */}
-      <div className="bg-white border-b border-neutral-100 px-6 py-3 flex items-center justify-between sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="text-neutral-400 hover:text-neutral-900 transition-colors no-underline">
-            <ChevronRight className="w-4 h-4 rotate-180" />
-          </Link>
-          <Video className="w-4 h-4 text-neutral-400" />
-          <h1 className="text-[15px] font-bold text-neutral-900">AI 영상 제작</h1>
+      <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between sticky top-0 z-20">
+        <div className="flex items-center gap-6">
+          <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+          <nav className="hidden md:flex items-center gap-1">
+            {[
+              { label: 'Home', href: '/' },
+              { label: 'AI 피팅', href: '/fitting' },
+              { label: 'AI 영상', href: '/video' },
+              { label: '촬영 예약', href: '/reservation' },
+              { label: 'Help', href: '/help' },
+            ].map(item => (
+              <Link key={item.href} to={item.href} className={`px-3 py-1.5 text-[13px] font-medium rounded-lg no-underline transition-colors ${loc.pathname === item.href ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-400 hover:text-neutral-900'}`}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </div>
-        <span className="text-[13px] text-neutral-400">{user.email}</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] text-neutral-500 hidden md:inline">{user.email}</span>
+          <button onClick={signOut} className="px-3 py-1.5 text-[12px] font-medium text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">로그아웃</button>
+        </div>
       </div>
 
       {/* Body: left + center + right */}
