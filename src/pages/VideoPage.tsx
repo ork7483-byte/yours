@@ -287,7 +287,7 @@ export default function VideoPage() {
             {/* Image selection */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-[13px] font-bold text-neutral-900">이미지 선택</h2>
+                <h2 className="font-bold text-neutral-900" style={{ fontSize: '15px' }}>이미지 선택</h2>
                 <span className="text-[13px] text-neutral-400">{selectedImages.length}/5</span>
               </div>
               <button
@@ -300,7 +300,7 @@ export default function VideoPage() {
 
               {/* AI 피팅 갤러리 라벨 */}
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-medium text-neutral-500">AI 피팅에서 생성한 이미지</span>
+                <span className="text-[13px] font-medium text-neutral-500">AI 피팅에서 생성한 이미지</span>
                 <span className="text-[10px] text-neutral-400">{gallery.length}장</span>
               </div>
 
@@ -431,7 +431,7 @@ export default function VideoPage() {
                             setVideoPrompt(', no audio, completely silent video');
                           }
                         }}
-                        className={`px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all cursor-pointer ${audioCategory === cat.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                        className={`px-3 py-1.5 text-[13px] font-semibold rounded-lg transition-all cursor-pointer ${audioCategory === cat.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
                       >
                         {cat.label}
                       </button>
@@ -474,7 +474,7 @@ export default function VideoPage() {
                           key={sub.label}
                           type="button"
                           onClick={() => { setAudioSub(sub.value); setVideoPrompt(sub.value); }}
-                          className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer ${audioSub === sub.value ? 'bg-neutral-700 text-white' : 'bg-neutral-50 text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
+                          className={`px-2.5 py-1.5 text-[13px] font-medium rounded-lg transition-all cursor-pointer ${audioSub === sub.value ? 'bg-neutral-700 text-white' : 'bg-neutral-50 text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
                         >
                           {sub.label}
                         </button>
@@ -610,11 +610,11 @@ export default function VideoPage() {
           ) : (
             /* Empty state */
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-neutral-100 rounded-2xl flex items-center justify-center mb-4">
-                <Video className="w-8 h-8 text-neutral-300" />
+              <div className="w-24 h-24 bg-neutral-100 rounded-2xl flex items-center justify-center mb-5">
+                <Video className="w-10 h-10 text-neutral-300" />
               </div>
-              <p className="text-[15px] font-semibold text-neutral-900 mb-1">영상 미리보기</p>
-              <p className="text-[13px] text-neutral-400">왼쪽에서 이미지를 선택하고<br />영상 생성 버튼을 누르세요</p>
+              <p className="text-[20px] font-bold text-neutral-900 mb-2">영상 미리보기</p>
+              <p className="text-[15px] text-neutral-400 leading-relaxed">왼쪽에서 이미지를 선택하고<br />영상 생성 버튼을 누르세요</p>
             </div>
           )}
         </div>
