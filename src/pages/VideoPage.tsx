@@ -653,7 +653,7 @@ export default function VideoPage() {
                   {generatedVideos.map((vid, i) => (
                     <div key={i} className="relative rounded-lg overflow-hidden border border-neutral-100 cursor-pointer group" onClick={() => setVideoResult(vid.url)}>
                       <div className="aspect-square">
-                        <video src={vid.url} className="w-full h-full object-cover pointer-events-none" muted preload="none" />
+                        <video src={vid.url} className="w-full h-full object-cover pointer-events-none" muted />
                       </div>
                       <div className="px-2 py-1.5 bg-white">
                         <p className="text-[11px] text-neutral-400">{new Date(vid.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
