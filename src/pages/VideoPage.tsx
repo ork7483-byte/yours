@@ -288,7 +288,7 @@ export default function VideoPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-[13px] font-bold text-neutral-900">이미지 선택</h2>
-                <span className="text-[11px] text-neutral-400">{selectedImages.length}/5</span>
+                <span className="text-[13px] text-neutral-400">{selectedImages.length}/5</span>
               </div>
               <button
                 onClick={() => fileRef.current?.click()}
@@ -411,7 +411,7 @@ export default function VideoPage() {
             {videoModel === 'grok-imagine/image-to-video' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[12px] font-bold text-neutral-900 mb-2">오디오 스타일</label>
+                  <label className="block text-[15px] font-bold text-neutral-900 mb-2">오디오 스타일</label>
                   {/* 1차: 카테고리 */}
                   <div className="flex gap-1.5 flex-wrap mb-2">
                     {[
@@ -487,7 +487,7 @@ export default function VideoPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <label className="text-[12px] font-bold text-neutral-900">대사 입력</label>
+                      <label className="text-[15px] font-bold text-neutral-900">대사 입력</label>
                       <span className="text-[10px] text-amber-500 font-medium">립싱크 자동</span>
                     </div>
                     <ToggleSwitch checked={dialogueEnabled} onChange={(v) => { setDialogueEnabled(v); if (!v) setDialogueText(''); }} />
@@ -624,7 +624,7 @@ export default function VideoPage() {
           {/* Tab header */}
           <div className="px-4 pt-3 pb-0 border-b border-neutral-100">
             <div className="flex gap-1">
-              <span className="px-3 py-2 text-[12px] font-semibold text-neutral-900 border-b-2 border-neutral-900">내 영상</span>
+              <span className="px-3 py-2 text-[15px] font-bold text-neutral-900 border-b-2 border-neutral-900">내 영상</span>
             </div>
           </div>
 
