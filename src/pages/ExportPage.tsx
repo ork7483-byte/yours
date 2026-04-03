@@ -82,7 +82,7 @@ export default function ExportPage() {
             </div>
             {videoUrl ? (
               <div className="rounded-xl overflow-hidden border border-neutral-100">
-                <video src={videoUrl} controls className="w-full" />
+                <video src={videoUrl} controls muted className="w-full" />
               </div>
             ) : (
               <div className="bg-neutral-50 border border-neutral-100 rounded-xl px-4 py-3">

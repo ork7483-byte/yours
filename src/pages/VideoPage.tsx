@@ -611,7 +611,7 @@ export default function VideoPage() {
             /* Video result */
             <div className="w-full max-w-xl flex flex-col gap-4">
               <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
-                <video src={videoResult} controls className="w-full" />
+                <video src={videoResult} controls muted className="w-full" />
               </div>
               <div className="flex items-center gap-3">
                 <a

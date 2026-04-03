@@ -181,7 +181,7 @@ export default function DubPage() {
         {/* Video preview */}
         <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
           {videoUrl ? (
-            <video src={videoUrl} controls className="w-full" />
+            <video src={videoUrl} controls muted className="w-full" />
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-neutral-300">
               <Play className="w-10 h-10 mb-3" />
