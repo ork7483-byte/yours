@@ -48,7 +48,7 @@ export default function VideoPage() {
   // Gallery
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(false);
-  const [galleryTab, setGalleryTab] = useState<'images' | 'videos'>(GALLERY_TAB as 'images');
+  const [galleryTab, setGalleryTab] = useState<'images' | 'videos'>('videos');
   const [galleryPage, setGalleryPage] = useState(0);
   const GALLERY_PER_PAGE = 6;
   const [generatedVideos, setGeneratedVideos] = useState<string[]>([]);
@@ -473,10 +473,12 @@ export default function VideoPage() {
 
                 {/* 대사 입력 */}
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <label className="text-[12px] font-bold text-neutral-900">대사 입력</label>
+                      <span className="text-[10px] text-amber-500 font-medium">립싱크 자동</span>
+                    </div>
                     <ToggleSwitch checked={dialogueEnabled} onChange={(v) => { setDialogueEnabled(v); if (!v) setDialogueText(''); }} />
-                    <label className="text-[12px] font-bold text-neutral-900">대사 입력</label>
-                    <span className="text-[10px] text-amber-500 font-medium">립싱크 자동</span>
                   </div>
                   {dialogueEnabled && (
                     <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100 space-y-2">
@@ -610,72 +612,23 @@ export default function VideoPage() {
           {/* Tab header */}
           <div className="px-4 pt-3 pb-0 border-b border-neutral-100">
             <div className="flex gap-1">
-              {(['images', 'videos'] as const).map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setGalleryTab(tab)}
-                  className={`px-3 py-2 text-[12px] font-semibold transition-colors cursor-pointer border-b-2 ${galleryTab === tab ? 'border-neutral-900 text-neutral-900' : 'border-transparent text-neutral-400 hover:text-neutral-600'}`}
-                >
-                  {tab === 'images' ? '이미지' : '영상'}
-                </button>
-              ))}
+              <span className="px-3 py-2 text-[12px] font-semibold text-neutral-900 border-b-2 border-neutral-900">내 영상</span>
             </div>
           </div>
 
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto p-3">
-            {galleryTab === 'images' ? (
-              galleryLoading ? (
-                <div className="flex items-center justify-center py-10">
-                  <div className="w-5 h-5 border-2 border-neutral-200 border-t-neutral-600 rounded-full animate-spin" />
-                </div>
-              ) : allImages.length === 0 ? (
-                <p className="text-[12px] text-neutral-400 text-center py-10">갤러리가 비어있습니다</p>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-1.5 flex-1">
-                    {allImages.slice(galleryPage * GALLERY_PER_PAGE, (galleryPage + 1) * GALLERY_PER_PAGE).map(img => {
-                      const isSelected = selectedImages.includes(img.image_url);
-                      return (
-                        <div key={img.id} className="relative aspect-[4/5]">
-                          <button
-                            type="button"
-                            onClick={() => toggleImageSelect(img.image_url)}
-                            className={`w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? 'border-neutral-900' : 'border-transparent hover:border-neutral-300'}`}
-                          >
-                            <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
-                          </button>
-                          {isSelected && (
-                            <div className="absolute top-1 right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center pointer-events-none">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {Math.ceil(allImages.length / GALLERY_PER_PAGE) > 1 && (
-                    <div className="flex items-center justify-center gap-1 pt-2 border-t border-neutral-100 mt-2">
-                      {Array.from({ length: Math.ceil(allImages.length / GALLERY_PER_PAGE) }).map((_, i) => (
-                        <button key={i} onClick={() => setGalleryPage(i)} className={`w-6 h-6 rounded text-[10px] font-semibold transition-all cursor-pointer ${galleryPage === i ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-100'}`}>{i + 1}</button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )
-            ) : (
-              generatedVideos.length === 0 ? (
+            {generatedVideos.length === 0 ? (
                 <p className="text-[12px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
               ) : (
                 <div className="space-y-2">
                   {generatedVideos.map((url, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100 aspect-[4/5]">
+                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100">
                       <video src={url} className="w-full" controls />
                     </div>
                   ))}
                 </div>
-              )
-            )}
+              )}
           </div>
         </div>
 
