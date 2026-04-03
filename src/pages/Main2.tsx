@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Move, Save, Eye, Pencil, RotateCcw, Image as ImageIcon, Globe, Sparkles, CheckCircle2, Camera, ArrowRight, HelpCircle } from 'lucide-react';
+import { Move, Save, Eye, Pencil, RotateCcw, Image as ImageIcon, Globe, Sparkles, CheckCircle2, Camera, ArrowRight, HelpCircle, LogIn } from 'lucide-react';
+import { useAuth } from '../lib/useAuth';
 
 /* ─── 스크롤 페이드인 훅 ─── */
 function useScrollFade() {
@@ -472,6 +473,7 @@ const NAV_ITEMS = [
 /* ─── 메인 컴포넌트 ─── */
 export default function Main2() {
   useScrollFade();
+  const { user, signOut } = useAuth();
   const [editing, setEditing] = useState(false);
   const [layouts, setLayouts] = useState<LayoutMap>(() => {
     try {
@@ -598,6 +600,18 @@ export default function Main2() {
                     </Link>
                   );
                 })}
+              </div>
+              {/* 로그인/로그아웃 */}
+              <div className="ml-2" style={{ opacity: 1 - navProgress * 1.2, flexShrink: 0 }}>
+                {user ? (
+                  <button onClick={signOut} className="px-4 py-2 text-[13px] font-medium text-neutral-500 border border-neutral-200 rounded-full hover:bg-neutral-100 cursor-pointer transition-colors whitespace-nowrap" style={{ pointerEvents: 'auto' }}>
+                    로그아웃
+                  </button>
+                ) : (
+                  <Link to="/login" className="px-4 py-2 text-[13px] font-semibold text-white bg-neutral-900 rounded-full hover:bg-neutral-700 cursor-pointer transition-colors no-underline whitespace-nowrap" style={{ pointerEvents: 'auto' }}>
+                    로그인 / 회원가입
+                  </Link>
+                )}
               </div>
             </div>
           </div>

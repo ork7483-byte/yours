@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../lib/useAuth';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 
 // 우측 미디어 설정
 const MEDIA_URL = '/videos/login-bg.webm';
@@ -23,9 +23,11 @@ export default function LoginPage() {
 
         {/* 상단: 타이틀 */}
         <div>
-          <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1]">
-            U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
-          </h1>
+          <Link to="/" className="no-underline">
+            <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer">
+              U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
+            </h1>
+          </Link>
           <p className="text-[15px] text-neutral-400 mt-3 tracking-wide">AI 패션 플랫폼</p>
         </div>
 
