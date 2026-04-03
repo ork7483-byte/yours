@@ -66,6 +66,8 @@ export default function VideoPage() {
   const [grokDuration, setGrokDuration] = useState('6');
   const [grokResolution, setGrokResolution] = useState<'480p' | '720p'>('720p');
   const [videoPrompt, setVideoPrompt] = useState('');
+  const [audioCategory, setAudioCategory] = useState('mute');
+  const [audioSub, setAudioSub] = useState(', no audio, completely silent video');
   const [dialogueEnabled, setDialogueEnabled] = useState(false);
   const [dialogueText, setDialogueText] = useState('');
   const [dialogueLang, setDialogueLang] = useState<'ko' | 'zh' | 'en'>('ko');
@@ -393,48 +395,80 @@ export default function VideoPage() {
             {/* 프롬프트 — 숨김 (내부용, 오디오/대사에서 자동 빌드) */}
             <input type="hidden" value={videoPrompt} />
 
-            {/* 오디오 스타일 */}
+            {/* 오디오 스타일 — 2단 버튼 구조 */}
             {videoModel === 'grok-imagine/image-to-video' && (
               <div className="space-y-3">
                 <div>
                   <label className="block text-[12px] font-bold text-neutral-900 mb-2">오디오 스타일</label>
-                  <select
-                    value={videoPrompt}
-                    onChange={e => setVideoPrompt(e.target.value)}
-                    className="w-full px-3 py-2.5 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 cursor-pointer"
-                  >
-                    <optgroup label="🔇 무음">
-                      <option value=", no audio, completely silent video">무음 (소리 없음)</option>
-                    </optgroup>
-                    <optgroup label="🎵 잔잔한 BGM">
-                      <option value=", with calm soft piano background music">잔잔한 피아노</option>
-                      <option value=", with gentle acoustic guitar background music">어쿠스틱 기타</option>
-                      <option value=", with soft orchestral strings background music">부드러운 현악</option>
-                      <option value=", with peaceful ambient pad background music">앰비언트 패드</option>
-                      <option value=", with warm jazz piano background music">재즈 피아노</option>
-                    </optgroup>
-                    <optgroup label="🎧 트렌디 BGM">
-                      <option value=", with trendy fashion runway electronic background music">패션 런웨이 일렉트로닉</option>
-                      <option value=", with modern minimal tech house background music">미니멀 테크 하우스</option>
-                      <option value=", with stylish deep house fashion music">스타일리시 딥 하우스</option>
-                      <option value=", with upbeat indie pop fashion background music">인디 팝</option>
-                      <option value=", with sleek synthwave retro fashion music">신스웨이브 레트로</option>
-                    </optgroup>
-                    <optgroup label="👠 발걸음+천소리">
-                      <option value=", with realistic footstep sounds and fabric rustling sound effects">발걸음 + 천 스치는 소리</option>
-                      <option value=", with high heels clicking on marble floor sound effects">하이힐 + 대리석 바닥</option>
-                      <option value=", with soft footsteps on wooden floor and gentle fabric sounds">나무 바닥 + 부드러운 천소리</option>
-                      <option value=", with fashion model walking sounds with light jewelry clinking">워킹 + 주얼리 소리</option>
-                      <option value=", with confident footsteps echoing in a modern space">에코 공간 발걸음</option>
-                    </optgroup>
-                    <optgroup label="🌿 자연 효과음">
-                      <option value=", with ambient nature sounds, wind and birds">바람 + 새소리</option>
-                      <option value=", with gentle ocean waves and seagulls ambient sound">바다 파도 + 갈매기</option>
-                      <option value=", with soft rain and cozy indoor atmosphere sounds">잔잔한 빗소리</option>
-                      <option value=", with city street ambient sounds, distant traffic">도시 거리 앰비언트</option>
-                      <option value=", with cafe ambient sounds, coffee shop atmosphere">카페 분위기</option>
-                    </optgroup>
-                  </select>
+                  {/* 1차: 카테고리 */}
+                  <div className="flex gap-1.5 flex-wrap mb-2">
+                    {[
+                      { id: 'mute', label: '🔇 무음' },
+                      { id: 'calm', label: '🎵 차분한' },
+                      { id: 'trendy', label: '🎧 트렌디' },
+                      { id: 'realistic', label: '👠 현장감' },
+                      { id: 'nature', label: '🌿 분위기' },
+                    ].map(cat => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => {
+                          setAudioCategory(cat.id);
+                          if (cat.id === 'mute') {
+                            setAudioSub(', no audio, completely silent video');
+                            setVideoPrompt(', no audio, completely silent video');
+                          }
+                        }}
+                        className={`px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all cursor-pointer ${audioCategory === cat.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* 2차: 세부 스타일 */}
+                  {audioCategory !== 'mute' && (
+                    <div className="flex gap-1.5 flex-wrap">
+                      {({
+                        calm: [
+                          { label: '고급 브랜드', value: ', with elegant luxury brand commercial piano music' },
+                          { label: '따뜻한 감성', value: ', with warm emotional acoustic background music' },
+                          { label: '편안한 일상', value: ', with relaxed cozy everyday mood background music' },
+                          { label: '몽환적인', value: ', with dreamy ethereal ambient background music' },
+                          { label: '클래식 무드', value: ', with sophisticated classical inspired background music' },
+                        ],
+                        trendy: [
+                          { label: '런웨이 패션', value: ', with trendy fashion runway electronic background music' },
+                          { label: '힙한 스트릿', value: ', with cool urban street fashion hip-hop beat background music' },
+                          { label: '세련된 모던', value: ', with sleek modern minimal electronic fashion music' },
+                          { label: '활기찬 팝', value: ', with upbeat energetic pop fashion background music' },
+                          { label: '레트로 감성', value: ', with retro vintage fashion music nostalgic vibe' },
+                        ],
+                        realistic: [
+                          { label: '실내 스튜디오', value: ', with indoor studio ambiance, soft footsteps on floor' },
+                          { label: '하이힐 워킹', value: ', with high heels clicking on marble floor sound effects' },
+                          { label: '옷감 스치는 소리', value: ', with realistic fabric rustling and clothing movement sounds' },
+                          { label: '악세서리 소리', value: ', with fashion accessories sounds, jewelry and bag clinking' },
+                          { label: '야외 워킹', value: ', with outdoor walking footsteps on pavement, gentle wind' },
+                        ],
+                        nature: [
+                          { label: '카페 분위기', value: ', with cozy cafe ambient sounds, coffee shop atmosphere' },
+                          { label: '도시 거리', value: ', with city street ambient sounds, urban atmosphere' },
+                          { label: '바닷가', value: ', with gentle ocean waves and sea breeze ambient sounds' },
+                          { label: '비 오는 날', value: ', with soft rain and cozy indoor atmosphere sounds' },
+                          { label: '숲속 산책', value: ', with forest walk ambient sounds, birds and gentle wind' },
+                        ],
+                      } as Record<string, { label: string; value: string }[]>)[audioCategory]?.map(sub => (
+                        <button
+                          key={sub.label}
+                          type="button"
+                          onClick={() => { setAudioSub(sub.value); setVideoPrompt(sub.value); }}
+                          className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer ${audioSub === sub.value ? 'bg-neutral-700 text-white' : 'bg-neutral-50 text-neutral-500 border border-neutral-200 hover:border-neutral-400'}`}
+                        >
+                          {sub.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* 대사 입력 */}
