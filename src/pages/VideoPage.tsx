@@ -666,9 +666,9 @@ export default function VideoPage() {
                           setGeneratedVideos(prev => prev.filter(v => v.url !== vid.url));
                           if (videoResult === vid.url) setVideoResult(null);
                         }}
-                        className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                        className="absolute bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 bg-red-500 text-white text-[11px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                       >
-                        <X className="w-3 h-3 text-white" />
+                        삭제
                       </button>
                     </div>
                   ))}
