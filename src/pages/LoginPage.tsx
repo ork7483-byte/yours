@@ -15,7 +15,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden">
 
       {/* ── 좌측 ── */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
@@ -41,7 +41,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── 우측: 영상 ── */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-black items-center justify-center">
+      <div className="hidden lg:flex w-1/2 h-screen relative overflow-hidden bg-black items-center justify-center">
         {IS_VIDEO ? (
           <video
             src={MEDIA_URL}
