@@ -201,6 +201,14 @@ export default function VideoPage() {
           if (!videoUrl) throw new Error('영상이 생성됐지만 URL을 파싱하지 못했습니다. 관리자에게 문의해주세요.');
           setVideoResult(videoUrl);
           setGeneratedVideos(prev => [videoUrl as string, ...prev]);
+          // Supabase에 영상 저장
+          if (user) {
+            supabase.from('generated_images').insert({
+              user_id: user.id,
+              image_url: videoUrl,
+              prompt_summary: `영상: ${videoPrompt || 'Grok Imagine'}`,
+            }).then(() => {});
+          }
           setVideoLoading(false);
           return;
         }
@@ -343,8 +351,8 @@ export default function VideoPage() {
               </div>
             </div>
 
-            {/* Grok settings */}
-            {videoModel === 'grok-imagine/image-to-video' && (
+            {/* Grok settings — 숨김 (기본값 사용) */}
+            {videoModel === 'grok-imagine/image-to-video' && false && (
               <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100 space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] text-neutral-500 font-medium w-10">길이</span>
@@ -382,58 +390,58 @@ export default function VideoPage() {
               </div>
             )}
 
-            {/* Prompt */}
-            <div>
-              <label className="block text-[12px] font-bold text-neutral-900 mb-1">프롬프트 <span className="font-normal text-neutral-400">(선택)</span></label>
-              <input
-                type="text"
-                placeholder="예: 옷이 자연스럽게 흔들리는 영상"
-                value={videoPrompt}
-                onChange={e => setVideoPrompt(e.target.value)}
-                className="w-full px-3 py-2 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 focus:bg-white transition-colors"
-              />
-            </div>
+            {/* 프롬프트 — 숨김 (내부용, 오디오/대사에서 자동 빌드) */}
+            <input type="hidden" value={videoPrompt} />
 
-            {/* Grok 전용: 오디오 스타일 + 대사 — Grok 선택 시에만 표시 */}
+            {/* 오디오 스타일 */}
             {videoModel === 'grok-imagine/image-to-video' && (
               <div className="space-y-3">
-                {/* 오디오 스타일 탭 */}
                 <div>
-                  <label className="block text-[11px] font-medium text-neutral-500 mb-1.5">오디오 스타일</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {[
-                      { label: '🔇 무음', value: ', no audio, completely silent video' },
-                      { label: '🎵 잔잔한 BGM', value: ', with calm soft piano background music' },
-                      { label: '🎧 트렌디 BGM', value: ', with trendy fashion runway electronic background music' },
-                      { label: '👠 발걸음+천소리', value: ', with realistic footstep sounds and fabric rustling sound effects' },
-                      { label: '🌿 자연 효과음', value: ', with ambient nature sounds, wind and birds' },
-                    ].map(chip => {
-                      const isActive = videoPrompt.includes(chip.value);
-                      return (
-                        <button
-                          key={chip.label}
-                          type="button"
-                          onClick={() => {
-                            if (isActive) {
-                              setVideoPrompt(prev => prev.replace(chip.value, ''));
-                            } else {
-                              setVideoPrompt(prev => prev + chip.value);
-                            }
-                          }}
-                          className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer ${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
-                        >
-                          {chip.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <label className="block text-[12px] font-bold text-neutral-900 mb-2">오디오 스타일</label>
+                  <select
+                    value={videoPrompt}
+                    onChange={e => setVideoPrompt(e.target.value)}
+                    className="w-full px-3 py-2.5 text-[13px] bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-400 cursor-pointer"
+                  >
+                    <optgroup label="🔇 무음">
+                      <option value=", no audio, completely silent video">무음 (소리 없음)</option>
+                    </optgroup>
+                    <optgroup label="🎵 잔잔한 BGM">
+                      <option value=", with calm soft piano background music">잔잔한 피아노</option>
+                      <option value=", with gentle acoustic guitar background music">어쿠스틱 기타</option>
+                      <option value=", with soft orchestral strings background music">부드러운 현악</option>
+                      <option value=", with peaceful ambient pad background music">앰비언트 패드</option>
+                      <option value=", with warm jazz piano background music">재즈 피아노</option>
+                    </optgroup>
+                    <optgroup label="🎧 트렌디 BGM">
+                      <option value=", with trendy fashion runway electronic background music">패션 런웨이 일렉트로닉</option>
+                      <option value=", with modern minimal tech house background music">미니멀 테크 하우스</option>
+                      <option value=", with stylish deep house fashion music">스타일리시 딥 하우스</option>
+                      <option value=", with upbeat indie pop fashion background music">인디 팝</option>
+                      <option value=", with sleek synthwave retro fashion music">신스웨이브 레트로</option>
+                    </optgroup>
+                    <optgroup label="👠 발걸음+천소리">
+                      <option value=", with realistic footstep sounds and fabric rustling sound effects">발걸음 + 천 스치는 소리</option>
+                      <option value=", with high heels clicking on marble floor sound effects">하이힐 + 대리석 바닥</option>
+                      <option value=", with soft footsteps on wooden floor and gentle fabric sounds">나무 바닥 + 부드러운 천소리</option>
+                      <option value=", with fashion model walking sounds with light jewelry clinking">워킹 + 주얼리 소리</option>
+                      <option value=", with confident footsteps echoing in a modern space">에코 공간 발걸음</option>
+                    </optgroup>
+                    <optgroup label="🌿 자연 효과음">
+                      <option value=", with ambient nature sounds, wind and birds">바람 + 새소리</option>
+                      <option value=", with gentle ocean waves and seagulls ambient sound">바다 파도 + 갈매기</option>
+                      <option value=", with soft rain and cozy indoor atmosphere sounds">잔잔한 빗소리</option>
+                      <option value=", with city street ambient sounds, distant traffic">도시 거리 앰비언트</option>
+                      <option value=", with cafe ambient sounds, coffee shop atmosphere">카페 분위기</option>
+                    </optgroup>
+                  </select>
                 </div>
 
-                {/* 대사 포함 탭 */}
+                {/* 대사 입력 */}
                 <div>
-                  <div className="flex items-center gap-2 mb-1.5">
+                  <div className="flex items-center gap-2 mb-2">
                     <ToggleSwitch checked={dialogueEnabled} onChange={(v) => { setDialogueEnabled(v); if (!v) setDialogueText(''); }} />
-                    <label className="text-[11px] font-medium text-neutral-500">🎤 대사 포함</label>
+                    <label className="text-[12px] font-bold text-neutral-900">대사 입력</label>
                     <span className="text-[10px] text-amber-500 font-medium">립싱크 자동</span>
                   </div>
                   {dialogueEnabled && (
@@ -502,7 +510,7 @@ export default function VideoPage() {
         </div>
 
         {/* ── Center: Video Preview ── */}
-        <div className="flex-1 flex flex-col items-center justify-start pt-4 px-8 pb-8 overflow-y-auto">
+        <div className={`flex-1 flex flex-col items-center px-8 pb-8 overflow-y-auto ${videoLoading || videoResult ? 'justify-start pt-4' : 'justify-center'}`}>
           {videoLoading ? (
             /* Inline loading state — 큰 화면 */
             <div className="w-full max-w-lg flex flex-col items-center text-center bg-white rounded-2xl border border-neutral-100 shadow-sm p-10">
