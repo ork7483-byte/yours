@@ -2,9 +2,9 @@ import React from 'react';
 import { useAuth } from '../lib/useAuth';
 import { Navigate, useSearchParams } from 'react-router-dom';
 
-// 우측 미디어: 이미지 또는 영상 URL (나중에 영상으로 교체 가능)
-const MEDIA_URL = 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1920&auto=format&fit=crop';
-const IS_VIDEO = false; // true로 바꾸면 영상 재생
+// 우측 미디어 설정
+const MEDIA_URL = '/videos/login-bg.webm';
+const IS_VIDEO = true;
 
 export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -22,15 +22,17 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-8 bg-white">
         <div className="w-full max-w-md">
 
-          {/* 로고 */}
-          <div className="mb-16">
-            <h1 className="text-[20px] font-bold text-neutral-900 tracking-tight">U:US <span className="font-normal text-neutral-400">x</span> Junto AI</h1>
+          {/* 타이틀 (크게) */}
+          <div className="mb-20">
+            <h1 className="text-[36px] font-bold text-neutral-900 tracking-tight leading-tight">
+              U:US <span className="font-light text-neutral-300">×</span> Junto AI
+            </h1>
+            <p className="text-[15px] text-neutral-400 mt-2">촬영 없이, AI로 완성하는 패션 콘텐츠</p>
           </div>
 
-          {/* 타이틀 */}
-          <div className="mb-10">
-            <h2 className="text-[32px] font-bold text-neutral-900 leading-tight">Sign in</h2>
-            <p className="text-[14px] text-neutral-400 mt-2">AI 패션 플랫폼에 오신 것을 환영합니다</p>
+          {/* Sign in */}
+          <div className="mb-8">
+            <h2 className="text-[24px] font-bold text-neutral-900">Sign in</h2>
           </div>
 
           {/* 구글 로그인 */}
@@ -58,7 +60,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ── 우측: 이미지 / 영상 ── */}
+      {/* ── 우측: 영상 / 이미지 ── */}
       <div className="hidden lg:block w-1/2 relative overflow-hidden">
         {IS_VIDEO ? (
           <video
@@ -77,11 +79,11 @@ export default function LoginPage() {
           />
         )}
 
-        {/* 하단 오버레이 텍스트 */}
+        {/* 하단 오버레이 */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-10">
-          <p className="text-[14px] font-medium text-white/80 mb-3">Trusted by fashion brands</p>
+          <p className="text-[14px] font-medium text-white/70 mb-3">Trusted by fashion brands</p>
           <p className="text-[24px] font-bold text-white leading-snug">
-            AI로 만드는<br />패션 콘텐츠의 새로운 기준
+            사진 한 장이면<br />모델컷, 영상까지
           </p>
         </div>
       </div>
