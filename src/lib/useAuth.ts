@@ -21,17 +21,19 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectPath?: string) => {
+    const redirect = redirectPath || new URLSearchParams(window.location.search).get('redirect') || '/fitting';
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/fitting' },
+      options: { redirectTo: window.location.origin + redirect },
     });
   };
 
-  const signInWithKakao = async () => {
+  const signInWithKakao = async (redirectPath?: string) => {
+    const redirect = redirectPath || new URLSearchParams(window.location.search).get('redirect') || '/fitting';
     await supabase.auth.signInWithOAuth({
       provider: 'kakao',
-      options: { redirectTo: window.location.origin + '/fitting' },
+      options: { redirectTo: window.location.origin + redirect },
     });
   };
 

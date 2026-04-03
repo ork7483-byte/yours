@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../lib/useAuth';
 import { supabase } from '../lib/supabase';
 import { getApiKey } from '../lib/apiSettings';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {
   Video, Image as ImageIcon, Upload, Play, Download,
   LogIn, Check, ChevronRight, X,
@@ -275,16 +275,7 @@ export default function VideoPage() {
   // Not logged in
   // ─────────────────────────────────────────────
   if (!user) {
-    return (
-      <div className="min-h-screen bg-[#FAFAF9] flex flex-col items-center justify-center gap-4">
-        <LogIn className="w-10 h-10 text-neutral-300" />
-        <p className="text-[15px] font-semibold text-neutral-900">로그인이 필요합니다</p>
-        <p className="text-[13px] text-neutral-500">AI 영상 제작 기능을 사용하려면 로그인해주세요.</p>
-        <Link to="/" className="mt-2 px-5 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors no-underline">
-          홈으로 이동
-        </Link>
-      </div>
-    );
+    return <Navigate to="/login?redirect=/video" replace />;
   }
 
   // ─────────────────────────────────────────────

@@ -9,12 +9,14 @@ import VideoPage from './pages/VideoPage';
 import DubPage from './pages/DubPage';
 import MusicPage from './pages/MusicPage';
 import ExportPage from './pages/ExportPage';
+import LoginPage from './pages/LoginPage';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Main2 />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/old" element={<Landing />} />
         <Route path="/fitting" element={<Dashboard />} />
         <Route path="/fitting2" element={<Dashboard2 />} />
