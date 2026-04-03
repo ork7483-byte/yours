@@ -18,30 +18,48 @@ export default function LoginPage() {
   const redirectTo = searchParams.get('redirect') || '/fitting';
   const [inApp, setInApp] = useState(false);
 
+  const [redirecting, setRedirecting] = useState(false);
+
   useEffect(() => {
     if (isInAppBrowser()) {
-      // 안드로이드: intent로 Chrome 열기, iOS: Safari로 열기
+      setRedirecting(true);
       const currentUrl = window.location.href;
       const isAndroid = /android/i.test(navigator.userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-      if (isAndroid) {
-        // Chrome intent로 외부 브라우저 열기
-        window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
-        // intent 실패 시 폴백
-        setTimeout(() => setInApp(true), 1500);
-      } else if (isIOS) {
-        // iOS는 x-safari-https로 시도
-        window.location.href = currentUrl.replace(/^https?:\/\//, 'x-safari-https://');
-        setTimeout(() => setInApp(true), 1500);
-      } else {
-        setInApp(true);
-      }
+      const timer = setTimeout(() => {
+        if (isAndroid) {
+          window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+        } else if (isIOS) {
+          window.location.href = currentUrl.replace(/^https?:\/\//, 'x-safari-https://');
+        }
+        // 리다이렉트 실패 시 폴백
+        setTimeout(() => { setRedirecting(false); setInApp(true); }, 1500);
+      }, 1200);
+
+      return () => clearTimeout(timer);
     }
   }, []);
 
   if (!loading && user) {
     return <Navigate to={redirectTo} replace />;
+  }
+
+  // 리다이렉트 중 안내 화면
+  if (redirecting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white px-6">
+        <div className="max-w-sm text-center">
+          <div className="w-10 h-10 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin mx-auto mb-6" />
+          <p className="text-[16px] font-semibold text-neutral-900 mb-2">
+            외부 브라우저로 이동 중입니다
+          </p>
+          <p className="text-[13px] text-neutral-400">
+            원활한 로그인을 위해 Chrome 또는 Safari로 이동됩니다
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // 인앱 브라우저 폴백 UI
