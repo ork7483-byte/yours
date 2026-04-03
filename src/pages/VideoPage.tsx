@@ -50,7 +50,7 @@ export default function VideoPage() {
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [galleryTab, setGalleryTab] = useState<'images' | 'videos'>(GALLERY_TAB as 'images');
   const [galleryPage, setGalleryPage] = useState(0);
-  const GALLERY_PER_PAGE = 10;
+  const GALLERY_PER_PAGE = 6;
   const [generatedVideos, setGeneratedVideos] = useState<string[]>([]);
 
   // Image selection
@@ -60,7 +60,7 @@ export default function VideoPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Video generation (Kie.ai)
-  const [videoModel, setVideoModel] = useState('kling/v2-5-turbo-image-to-video-pro');
+  const [videoModel, setVideoModel] = useState('grok-imagine/image-to-video');
   const [videoWithSound, setVideoWithSound] = useState(false);
   const [grokMode, setGrokMode] = useState<'normal' | 'fun'>('normal');
   const [grokDuration, setGrokDuration] = useState('6');
@@ -139,8 +139,9 @@ export default function VideoPage() {
             input: {
               image_urls: [firstSelectedImage],
               prompt: (videoPrompt || 'natural fashion video with gentle movement') + (dialogueEnabled && dialogueText ? (() => {
-                const langMap = { ko: 'in Korean', zh: 'in Chinese', en: 'in English' };
-                return `, the model speaks ${langMap[dialogueLang]}: "${dialogueText}"`;
+                if (dialogueLang === 'ko') return `, the model speaks in Korean: "${dialogueText}"`;
+                if (dialogueLang === 'zh') return `, the model speaks in Chinese. Translate the following Korean text to Chinese and have the model say it naturally: "${dialogueText}"`;
+                return `, the model speaks in English. Translate the following Korean text to English and have the model say it naturally: "${dialogueText}"`;
               })() : ''),
               mode: grokMode,
               duration: grokDuration,
@@ -290,7 +291,7 @@ export default function VideoPage() {
                   {allImages.map(img => {
                     const isSelected = selectedImages.includes(img.image_url);
                     return (
-                      <div key={img.id} className="relative aspect-square">
+                      <div key={img.id} className="relative aspect-[4/5]">
                         <div
                           onClick={() => setPreviewUrl(img.image_url)}
                           className="w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-neutral-300 transition-all"
@@ -318,7 +319,7 @@ export default function VideoPage() {
             <div className="h-px bg-neutral-100" />
 
             {/* Model selection */}
-            <div>
+            <div className="hidden">
               <label className="block text-[12px] font-bold text-neutral-900 mb-2">모델 선택</label>
               <div className="space-y-1.5">
                 {[
@@ -501,32 +502,32 @@ export default function VideoPage() {
         </div>
 
         {/* ── Center: Video Preview ── */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center justify-start pt-4 px-8 pb-8 overflow-y-auto">
           {videoLoading ? (
-            /* Inline loading state */
-            <div className="flex flex-col items-center text-center">
+            /* Inline loading state — 큰 화면 */
+            <div className="w-full max-w-lg flex flex-col items-center text-center bg-white rounded-2xl border border-neutral-100 shadow-sm p-10">
               {firstSelectedImage && (
-                <div className="w-40 h-52 rounded-xl overflow-hidden shadow-lg mb-6 border border-neutral-100">
+                <div className="w-56 h-72 rounded-xl overflow-hidden shadow-lg mb-8 border border-neutral-100">
                   <img src={firstSelectedImage} alt="" className="w-full h-full object-cover" />
                 </div>
               )}
-              <div className="relative mb-5">
-                <div className="w-14 h-14 border-[3px] border-neutral-200 border-t-neutral-900 rounded-full animate-spin" />
+              <div className="relative mb-6">
+                <div className="w-16 h-16 border-[3px] border-neutral-200 border-t-neutral-900 rounded-full animate-spin" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Video className="w-4 h-4 text-neutral-400" />
+                  <Video className="w-5 h-5 text-neutral-400" />
                 </div>
               </div>
-              <p className="text-[15px] font-semibold text-neutral-900 mb-1">{videoStatus}</p>
-              <p className="text-[12px] text-neutral-400 mb-4">
+              <p className="text-[17px] font-bold text-neutral-900 mb-2">{videoStatus}</p>
+              <p className="text-[13px] text-neutral-400 mb-6">
                 {videoPollCount > 0 ? `확인 중… (${videoPollCount}/20)` : '요청을 전송하고 있습니다'}
               </p>
-              <div className="w-56 h-1 bg-neutral-100 rounded-full overflow-hidden">
+              <div className="w-72 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-neutral-900 rounded-full transition-all duration-[15000ms] ease-linear"
                   style={{ width: `${Math.min(95, videoPollCount * 5)}%` }}
                 />
               </div>
-              <p className="text-[11px] text-neutral-400 mt-3">최대 5분 소요 · 페이지를 닫지 마세요</p>
+              <p className="text-[12px] text-neutral-400 mt-4">최대 5분 소요 · 페이지를 닫지 마세요</p>
             </div>
           ) : videoResult ? (
             /* Video result */
@@ -594,7 +595,7 @@ export default function VideoPage() {
                     {allImages.slice(galleryPage * GALLERY_PER_PAGE, (galleryPage + 1) * GALLERY_PER_PAGE).map(img => {
                       const isSelected = selectedImages.includes(img.image_url);
                       return (
-                        <div key={img.id} className="relative aspect-square">
+                        <div key={img.id} className="relative aspect-[4/5]">
                           <button
                             type="button"
                             onClick={() => toggleImageSelect(img.image_url)}
@@ -626,7 +627,7 @@ export default function VideoPage() {
               ) : (
                 <div className="space-y-2">
                   {generatedVideos.map((url, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100">
+                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100 aspect-[4/5]">
                       <video src={url} className="w-full" controls />
                     </div>
                   ))}
