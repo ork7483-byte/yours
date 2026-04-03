@@ -660,8 +660,8 @@ export default function VideoPage() {
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   {generatedVideos.map((url, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100 aspect-square">
-                      <video src={url} className="w-full h-full object-cover" controls />
+                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100 aspect-square cursor-pointer" onClick={() => setVideoResult(url)}>
+                      <video src={url} className="w-full h-full object-cover pointer-events-none" muted />
                     </div>
                   ))}
                 </div>
