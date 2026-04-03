@@ -8,3 +8,4 @@ coverage/
 !.env.example
 
 .vercel
+public/videos/login-bg.mp4
