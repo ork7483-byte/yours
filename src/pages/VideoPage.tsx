@@ -389,6 +389,41 @@ export default function VideoPage() {
               />
             </div>
 
+            {/* Grok 오디오 프리셋 칩 — Grok 선택 시에만 표시 */}
+            {videoModel === 'grok-imagine/image-to-video' && (
+              <div>
+                <label className="block text-[11px] font-medium text-neutral-500 mb-1.5">오디오 스타일</label>
+                <div className="flex gap-1.5 flex-wrap">
+                  {[
+                    { label: '🔇 무음', value: ', no audio, completely silent video' },
+                    { label: '🎵 잔잔한 BGM', value: ', with calm soft piano background music' },
+                    { label: '🎧 트렌디 BGM', value: ', with trendy fashion runway electronic background music' },
+                    { label: '👠 발걸음+천소리', value: ', with realistic footstep sounds and fabric rustling sound effects' },
+                    { label: '🌿 자연 효과음', value: ', with ambient nature sounds, wind and birds' },
+                    { label: '🎤 대사 포함', value: ', model speaks: "Check out our new collection"' },
+                  ].map(chip => {
+                    const isActive = videoPrompt.includes(chip.value);
+                    return (
+                      <button
+                        key={chip.label}
+                        type="button"
+                        onClick={() => {
+                          if (isActive) {
+                            setVideoPrompt(prev => prev.replace(chip.value, ''));
+                          } else {
+                            setVideoPrompt(prev => prev + chip.value);
+                          }
+                        }}
+                        className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer ${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                      >
+                        {chip.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Selected image preview */}
             {firstSelectedImage && (
               <div className="flex items-center gap-3 p-2.5 bg-neutral-50 rounded-lg border border-neutral-100">
