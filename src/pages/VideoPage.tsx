@@ -568,7 +568,7 @@ export default function VideoPage() {
             <button
               onClick={generateVideo}
               disabled={videoLoading || !firstSelectedImage}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-[15px] font-semibold rounded-xl hover:bg-neutral-700 transition-colors cursor-pointer disabled:opacity-40"
             >
               {videoLoading ? (
                 <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 생성 중…</>
