@@ -658,10 +658,10 @@ export default function VideoPage() {
             {generatedVideos.length === 0 ? (
                 <p className="text-[13px] text-neutral-400 text-center py-10">생성된 영상이 없습니다</p>
               ) : (
-                <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
                   {generatedVideos.map((url, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100">
-                      <video src={url} className="w-full" controls />
+                    <div key={i} className="rounded-lg overflow-hidden border border-neutral-100 aspect-square">
+                      <video src={url} className="w-full h-full object-cover" controls />
                     </div>
                   ))}
                 </div>
