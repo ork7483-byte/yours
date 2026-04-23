@@ -381,7 +381,7 @@ function CtaSection() {
     <section id="cta" className="py-16 md:py-32 bg-white/70 relative z-10">
       <div className="text-center mb-12 px-8">
         <h2 className="text-[1.8rem] md:text-[2.8rem] lg:text-[3.5rem] font-bold leading-[1.15] text-black tracking-tight scroll-fade">
-          U:US의 도약,<br/>Junto AI가 함께 합니다.
+          당신의 도약,<br/>Junto AI가 함께 합니다.
         </h2>
       </div>
       <div className="max-w-[1400px] mx-auto px-8">
@@ -566,7 +566,7 @@ export default function Main2() {
             <div className="flex items-center" style={{ gap: 8 - navProgress * 4, maxWidth: navProgress < 0.3 ? 1280 : 'none', margin: '0 auto' }}>
               {/* 로고 */}
               <div className="overflow-hidden" style={{ width: (1 - navProgress) * 200, opacity: 1 - navProgress * 1.5, flexShrink: 0 }}>
-                <span className="text-sm md:text-lg font-bold tracking-tight text-black whitespace-nowrap">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</span>
+                <span className="text-sm md:text-lg font-bold tracking-tight text-black whitespace-nowrap">Junto AI</span>
               </div>
               {/* 스페이서 */}
               <div style={{ flex: navProgress < 0.5 ? 1 : 0 }} />
@@ -689,7 +689,7 @@ export default function Main2() {
           <DraggableBlock id="center-text" layout={layouts['center-text']} editing={editing} onUpdate={updateLayout}>
             <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
               <h1 className="text-[clamp(2.2rem,4.5vw,3.5rem)] font-bold leading-[1.4] tracking-tight text-black animate-[fadeInUp_1s_ease-out_both]">
-                <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">U:US</span>의 새로운 시작,<br/>
+                <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">당신</span>의 새로운 시작,<br/>
                 <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Junto AI</span>가 함께 합니다.
               </h1>
             </div>
@@ -698,7 +698,7 @@ export default function Main2() {
         {/* 모바일 히어로 */}
         <div className="md:hidden flex flex-col items-center justify-center min-h-screen px-5 py-20 gap-8">
           <h1 className="text-[1.8rem] font-bold leading-[1.4] tracking-tight text-black text-center animate-[fadeInUp_1s_ease-out_both]">
-            <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">U:US</span>의 새로운 시작,<br/>
+            <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">당신</span>의 새로운 시작,<br/>
             <span className="inline-block bg-gradient-to-b from-neutral-400 to-black bg-clip-text text-transparent">Junto AI</span>가 함께 합니다.
           </h1>
           {/* 모바일 이미지 그리드 */}
@@ -907,7 +907,7 @@ export default function Main2() {
             </div>
             <h3 className="text-[1.6rem] md:text-[2.3rem] font-bold leading-[1.3] text-black mb-4 md:mb-5 scroll-fade scroll-fade-delay-1">전문 포토그래퍼가<br/>직접 촬영해 드립니다</h3>
             <p className="hidden">
-              유어스몰 현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영합니다. 온라인 예약 한 번이면 고퀄리티 원본 사진이 준비됩니다.
+              현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영합니다. 온라인 예약 한 번이면 고퀄리티 원본 사진이 준비됩니다.
             </p>
             <ul className="space-y-4 scroll-fade scroll-fade-delay-2">
               {['전문 스튜디오 & 장비 완비', '예약 후 당일 촬영 가능', '촬영본 즉시 AI 모델컷 변환 연동'].map((text, i) => (

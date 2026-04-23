@@ -3,8 +3,8 @@
 // 핵심 프롬프트 로직만 서버에서 생성하여 반환
 
 const ALLOWED_ORIGINS = [
-  'https://yours-lovat.vercel.app',
-  'https://yours-mall.vercel.app',
+  'https://junto-vision.vercel.app',
+  'https://yours-vision.vercel.app',
   'http://localhost:3000',
   'http://localhost:3030',
 ];

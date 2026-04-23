@@ -1,6 +1,6 @@
 {
-  "name": "Yours Mall",
-  "short_name": "Yours",
+  "name": "Junto AI",
+  "short_name": "Junto",
   "description": "AI 패션 피팅 플랫폼",
   "start_url": "/",
   "display": "standalone",

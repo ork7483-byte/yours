@@ -68,7 +68,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-white px-6">
         <div className="max-w-sm text-center">
           <h1 className="text-[28px] font-extrabold text-neutral-900 mb-3">
-            U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
+            Junto AI
           </h1>
           <p className="text-[14px] text-neutral-500 mb-6 leading-relaxed">
             원활한 로그인을 위해<br />Chrome 또는 Safari에서 열어주세요
@@ -104,7 +104,7 @@ export default function LoginPage() {
           >
             <Link to="/" className="no-underline">
               <h1 className="text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.1] hover:opacity-70 transition-opacity cursor-pointer text-center">
-                U:US <span className="font-extralight text-neutral-300">×</span> Junto AI
+                Junto AI
               </h1>
             </Link>
             <p className="text-[25px] text-[#E8532E] font-bold text-center whitespace-nowrap" style={{ fontFamily: 'Pretendard, sans-serif' }}>

@@ -923,7 +923,7 @@ export default function Dashboard() {
             <div className="max-w-2xl w-full">
               <div className="mb-12">
                 <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-black mb-3">촬영 예약</h1>
-                <p className="text-neutral-500 text-[15px]">유어스몰 현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영해 드립니다.</p>
+                <p className="text-neutral-500 text-[15px]">현장 스튜디오에서 전문 포토그래퍼가 바닥컷을 촬영해 드립니다.</p>
               </div>
 
               <div className="bg-white rounded-xl p-5 md:p-8 border border-neutral-100 space-y-5 md:space-y-6">
@@ -1021,7 +1021,7 @@ export default function Dashboard() {
       {/* 상단 바: 홈 링크 */}
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-6">
-          <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+          <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Junto AI</Link>
           <nav className="hidden md:flex items-center gap-1">
             {[
               { label: 'Home', href: '/' },

@@ -30,7 +30,7 @@ export default function Landing() {
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-sm font-semibold mb-6">
           <Sparkles className="w-4 h-4" />
-          유어스몰(UUS) 입점사 전용 AI 플랫폼
+          패션 브랜드 전용 AI 플랫폼
         </div>
         <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
           동대문의 새로운 시작,<br />
@@ -165,7 +165,7 @@ export default function Landing() {
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
             <div className="grid grid-cols-3 bg-slate-50 border-b border-slate-200">
               <div className="p-6 font-bold text-slate-500">비교 항목</div>
-              <div className="p-6 font-black text-xl text-amber-600 bg-amber-50/50 text-center border-l border-r border-amber-100">UUS (JUNTO AI)</div>
+              <div className="p-6 font-black text-xl text-amber-600 bg-amber-50/50 text-center border-l border-r border-amber-100">JUNTO AI</div>
               <div className="p-6 font-bold text-slate-900 text-center">A 상가 (경쟁사)</div>
             </div>
             {[

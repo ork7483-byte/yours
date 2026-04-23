@@ -289,7 +289,7 @@ export default function VideoPage() {
       {/* 상단바 */}
       <div className="bg-white border-b border-neutral-100 px-4 md:px-6 py-2.5 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center gap-6">
-          <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">U:US <span className="text-neutral-400 font-normal">x</span> Junto AI</Link>
+          <Link to="/" className="text-sm md:text-base font-bold text-black no-underline">Junto AI</Link>
           <nav className="hidden md:flex items-center gap-1">
             {[
               { label: 'Home', href: '/' },
