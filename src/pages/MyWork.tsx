@@ -284,19 +284,15 @@ export default function MyWork() {
   );
 }
 
-function MediaCard({
-  item,
-  kind,
-  onClick,
-  onDelete,
-  onDownload,
-}: {
+interface MediaCardProps {
   item: WorkItem;
   kind: 'image' | 'video';
   onClick: () => void;
-  onDelete: () => void;
-  onDownload: () => void;
-}) {
+  onDelete: () => void | Promise<void>;
+  onDownload: () => void | Promise<void>;
+}
+
+const MediaCard: React.FC<MediaCardProps> = ({ item, kind, onClick, onDelete, onDownload }) => {
   return (
     <div className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-neutral-100 border border-neutral-100 cursor-pointer">
       <div onClick={onClick} className="w-full h-full">
