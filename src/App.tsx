@@ -10,6 +10,7 @@ import DubPage from './pages/DubPage';
 import MusicPage from './pages/MusicPage';
 import ExportPage from './pages/ExportPage';
 import LoginPage from './pages/LoginPage';
+import MyWork from './pages/MyWork';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/video/export" element={<ExportPage />} />
         <Route path="/reservation" element={<Dashboard />} />
         <Route path="/help" element={<Dashboard />} />
+        <Route path="/my" element={<MyWork />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>

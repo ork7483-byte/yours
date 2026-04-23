@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'AI 피팅', href: '/fitting' },
   { label: 'AI 영상', href: '/video' },
-  { label: '촬영 예약', href: '/reservation' },
+  { label: '내 작업', href: '/my' },
   { label: 'Help', href: '/help' },
 ];
 

@@ -295,7 +295,6 @@ export default function VideoPage() {
               { label: 'Home', href: '/' },
               { label: 'AI 피팅', href: '/fitting' },
               { label: 'AI 영상', href: '/video' },
-              { label: '촬영 예약', href: '/reservation' },
               { label: 'Help', href: '/help' },
             ].map(item => (
               <Link key={item.href} to={item.href} className={`px-3 py-1.5 text-[13px] font-medium rounded-lg no-underline transition-colors ${loc.pathname === item.href ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-400 hover:text-neutral-900'}`}>

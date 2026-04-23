@@ -467,7 +467,7 @@ const NAV_ITEMS = [
   { id: 'main', label: 'Home', href: '/' },
   { id: 'lookbook', label: 'AI 피팅', href: '/fitting' },
   { id: 'video', label: 'AI 영상', href: '/video' },
-  { id: 'floorcut', label: '촬영 예약', href: '/reservation' },
+  { id: 'mywork', label: '내 작업', href: '/my' },
   { id: 'cs', label: 'Help', href: '/help' },
 ];
 
